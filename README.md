@@ -1,1 +1,1 @@
-# komparo
+# komparoǒ
