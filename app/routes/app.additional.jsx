@@ -9,6 +9,7 @@ import {
   BlockStack,
 } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
+import "../styles/pastel.colors.css"; 
 
 export default function AdditionalPage() {
   return (
@@ -26,24 +27,25 @@ export default function AdditionalPage() {
                   url="https://shopify.dev/docs/apps/tools/app-bridge"
                   target="_blank"
                   removeUnderline
+                  className="pastel-green"
                 >
                   App Bridge
                 </Link>
                 .
               </Text>
-              <Text as="p" variant="bodyMd">
+              <Text as="p" variant="bodyMd" className="pastel-yellow">
                 To create your own page and have it show up in the app
-                navigation, add a page inside <Code>app/routes</Code>, and a
-                link to it in the <Code>&lt;NavMenu&gt;</Code> component found
+                navigation, add a page inside <Code color="pastel-pink">app/routes</Code>, and a
+                link to it in the <Code color="pastel-purple">&lt;NavMenu&gt;</Code> component found
                 in <Code>app/routes/app.jsx</Code>.
               </Text>
             </BlockStack>
           </Card>
         </Layout.Section>
         <Layout.Section variant="oneThird">
-          <Card>
+          <Card className="pastel-purple"> 
             <BlockStack gap="200">
-              <Text as="h2" variant="headingMd">
+              <Text as="h2" variant="headingMd" className="pastel-pink">
                 Resources
               </Text>
               <List>
@@ -52,6 +54,7 @@ export default function AdditionalPage() {
                     url="https://shopify.dev/docs/apps/design-guidelines/navigation#app-nav"
                     target="_blank"
                     removeUnderline
+                    className="pastel-blue"
                   >
                     App nav best practices
                   </Link>
@@ -65,7 +68,7 @@ export default function AdditionalPage() {
   );
 }
 
-function Code({ children }) {
+function Code({ children, color = "pastel-green" }) {
   return (
     <Box
       as="span"
@@ -76,6 +79,7 @@ function Code({ children }) {
       borderWidth="025"
       borderColor="border"
       borderRadius="100"
+      className={color}
     >
       <code>{children}</code>
     </Box>
