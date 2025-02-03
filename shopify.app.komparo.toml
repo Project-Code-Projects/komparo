@@ -1,0 +1,29 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "14eecd3c23b30159050b0aee0b714c16"
+application_url = "https://reproduced-notification-laughing-merry.trycloudflare.com"
+embedded = true
+name = "komparo"
+handle = "komparo-3"
+
+[build]
+include_config_on_deploy = true
+dev_store_url = "project-code-biscuits.myshopify.com"
+automatically_update_urls_on_dev = true
+
+[webhooks]
+api_version = "2025-01"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_products"
+
+[auth]
+redirect_urls = [
+  "https://reproduced-notification-laughing-merry.trycloudflare.com/auth/callback",
+  "https://reproduced-notification-laughing-merry.trycloudflare.com/auth/shopify/callback",
+  "https://reproduced-notification-laughing-merry.trycloudflare.com/api/auth/callback"
+]
+
+[pos]
+embedded = false
