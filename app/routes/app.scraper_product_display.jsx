@@ -1,8 +1,9 @@
+import { useState, useEffect } from "react";
 import { Card, Layout, Page, Text, BlockStack, InlineStack } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
 import { Rating } from "../components/rating";
 import "../styles/product.css";
-import { useState, useEffect } from "react";
+
 
 export default function ScraperProductDisplayPage() {
   const [products, setProducts] = useState([]);
@@ -92,10 +93,19 @@ export default function ScraperProductDisplayPage() {
                         </div>
                         <div className="product-details">
                           <div className="product-header">
-                            <Text as="p" variant="bodyMd" fontWeight="bold" className="product-title">
+                            <Text
+                              as="p"
+                              variant="bodyMd"
+                              fontWeight="bold"
+                              className="product-title"
+                            >
                               {product.title}
                             </Text>
-                            <Text as="p" variant="headingLg" className="product-price">
+                            <Text
+                              as="p"
+                              variant="headingLg"
+                              className="product-price"
+                            >
                               {product.price}
                             </Text>
                           </div>
