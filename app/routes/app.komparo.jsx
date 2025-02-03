@@ -3,33 +3,24 @@ import { TitleBar } from "@shopify/app-bridge-react"
 import { useLoaderData } from "@remix-run/react"
 import { loader } from "../utils/fetch.products"
 import "../styles/komparo.css"
-import { useState } from "react"
 
 export { loader }
 
 export default function KomparoPage() {
-  const [showScanner, setShowScanner] = useState(false);
-  const [scannedData, setScannedData] = useState(null);
   const data = useLoaderData()
   const products = data?.products || []
-  // console.log(scannedData);
-  // console.log(products);
+
   return (
-    <div className="back-ground">
+    <Page>
       <Layout>
         <Layout.Section>
-          <h3 className="heading">Your Products</h3>
           <div className="container">
-            
+            <TitleBar title="Your Products" />
             {products.length > 0 ? (
               <>
-                <div className={showScanner ? 'none' : "grid"}>
+                <div className="grid">
                   {products.map((product) => (
-                    <ProductCard key={product.id} 
-                    product={product} 
-                    setShowScanner={setShowScanner}
-                    setScannedData ={setScannedData}
-                    />
+                    <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
 
@@ -91,30 +82,24 @@ export default function KomparoPage() {
           </div>
         </Layout.Section>
       </Layout>
-    </div>
+    </Page>
   )
 }
 
-function ProductCard({ product, setShowScanner, setScannedData }) {
-
-  function scanHandler(data) {
-    setShowScanner(true);
-    setScannedData(data);
-    // console.log(data);
-  }
+function ProductCard({ product }) {
   return (
     <div className="card">
-      <img src={product.imageUrl || "/placeholder.svg"} alt={product.title} className="image" />
-      <div>
-        <h5 className="title">
+      <div className="image-container">
+        <img src={product.imageUrl || "/placeholder.svg"} alt={product.title} className="image" />
+      </div>
+      <div className="product-info">
+        <Text as="h2" className="title">
           {product.title}
-        </h5>
-        <p className="price">
+        </Text>
+        <Text as="p" className="price">
           ${product.price}
-        </p>
-        <p className="btn-container">
-        <button className="scan-button" onClick={() => scanHandler(product)}>scan</button>
-        </p>
+        </Text>
+        <button className="scan-button">scan</button>
       </div>
     </div>
   )
