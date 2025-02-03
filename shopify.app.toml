@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "21b4c0a9d6281f5be2f20872a3eeac36"
-application_url = "https://example.com/"
+application_url = "https://hoped-punk-terry-matched.trycloudflare.com"
 embedded = true
 name = "Komparo"
 handle = "komparo-2"
@@ -22,7 +22,15 @@ api_version = "2025-01"
 scopes = "write_products"
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [
+  "https://hoped-punk-terry-matched.trycloudflare.com/auth/callback",
+  "https://hoped-punk-terry-matched.trycloudflare.com/auth/shopify/callback",
+  "https://hoped-punk-terry-matched.trycloudflare.com/api/auth/callback"
+]
 
 [pos]
 embedded = false
+
+[build]
+dev_store_url = "pricepredictions.myshopify.com"
+automatically_update_urls_on_dev = true

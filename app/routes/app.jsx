@@ -23,6 +23,8 @@ export default function App() {
           Home
         </Link>
         <Link to="/app/additional">Additional page</Link>
+        <Link to="/app/komparo">Products</Link>
+        <Link to="/app/scraper_product_display">Scraped Data</Link>
       </NavMenu>
       <Outlet />
     </AppProvider>

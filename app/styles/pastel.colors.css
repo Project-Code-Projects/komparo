@@ -1,0 +1,56 @@
+:root {
+    --pastel-pink-bg: #FFE5E5;
+    --pastel-pink-border: #FFB3B3;
+    --pastel-pink-text: #FF6666;
+
+    --pastel-blue-bg: #E5F0FF;
+    --pastel-blue-border: #B3D4FF;
+    --pastel-blue-text: #6699FF;
+
+    --pastel-green-bg: #E5FFE5;
+    --pastel-green-border: #B3FFB3;
+    --pastel-green-text: #66CC66;
+
+    --pastel-yellow-bg: #FFFFE5;
+    --pastel-yellow-border: #FFFFB3;
+    --pastel-yellow-text: #CCCC66;
+
+    --pastel-purple-bg: #F0E5FF;
+    --pastel-purple-border: #D4B3FF;
+    --pastel-purple-text: #9966FF;
+}
+
+.pastel-pink {
+    background-color: var(--pastel-pink-bg);
+    border: 1px solid var(--pastel-pink-border);
+    padding: 2px;
+    color: var(--pastel-pink-text);
+}
+
+.pastel-blue {
+    background-color: var(--pastel-blue-bg);
+    border: 1px solid var(--pastel-blue-border);
+    padding: 2px;
+    color: var(--pastel-blue-text);
+}
+
+.pastel-green {
+    background-color: var(--pastel-green-bg);
+    border: 1px solid var(--pastel-green-border);
+    padding: 2px;
+    color: var(--pastel-green-text);
+}
+
+.pastel-yellow {
+    background-color: var(--pastel-yellow-bg);
+    border: 1px solid var(--pastel-yellow-border);
+    padding: 2px;
+    color: var(--pastel-yellow-text);
+}
+
+.pastel-purple {
+    background-color: var(--pastel-purple-bg);
+    border: 1px solid var(--pastel-purple-border);
+    padding: 2px;
+    color: var(--pastel-purple-text);
+}

@@ -1,0 +1,255 @@
+// import { Card, Layout, Page, Text, BlockStack, InlineStack } from "@shopify/polaris"
+// import { TitleBar } from "@shopify/app-bridge-react"
+// import { Rating } from "../components/rating"
+// import { alibabaScraper } from "../../scraper/alibaba-selenium-scraper"
+// import "../styles/product.css"
+
+// const products = [
+//   {
+//     title: "Fashion Women Solid Color Casual Elegant Sleeveless Sexy Summer Slip",
+//     price: "$6.99",
+//     company: "Suzhou Mingzhou Import And Export Co., Ltd.",
+//     moq: "Min. order: 10 pieces",
+//     rating: "4.2",
+//     image: "https://s.alicdn.com/@sc04/kf/H1122ac66e2e548b19f6324aaa2947e95q.jpg_300x300.jpg",
+//     link: "https://www.alibaba.com/product-detail/Fashion-Women-Solid-Color-Casual-Elegant_1601283348054.html?selectedCarrierCode=SEMI_MANAGED_STANDARD@@STANDARD",
+//   },
+//   {
+//     title: "New Solid Color High Street Long Summer Dresses Sexy With Slit 2025 Summer",
+//     price: "$6.55",
+//     company: "Shenzhen Miya Apparel Co., Ltd.",
+//     moq: "Min. order: 5 pieces",
+//     rating: "4.4",
+//     image: "https://s.alicdn.com/@sc04/kf/H35eed7acd16b4d5d8b706c2241363d18D.jpg_300x300.jpg",
+//     link: "https://www.alibaba.com/product-detail/New-Solid-Color-High-Street-Long_1601322848080.html?selectedCarrierCode=SEMI_MANAGED_STANDARD@@STANDARD",
+//   },
+//   {
+//     title:
+//       "Women's Solid Color Fashion Wine Red Dress Slim Autumn and Winter Simple High Collar Versatile Short Skirt Wholesale",
+//     price: "$5.39",
+//     company: "Yiwu Kaizhuo Trading Co., Ltd.",
+//     moq: "Min. order: 2 pieces",
+//     rating: "4.1",
+//     image: "https://s.alicdn.com/@sc04/kf/H19d560b044e24093bc3fce745d9a11e6b.jpg_300x300.jpg",
+//     link: "https://www.alibaba.com/product-detail/Women-s-Solid-Color-Fashion-Wine_1601289655080.html",
+//   },
+// ]
+
+// export default function ScraperProductDisplayPage() {
+//   return (
+//     <Page>
+//       <Layout>
+//         <Layout.Section>
+//           <BlockStack gap="400">
+//             <TitleBar title="Product Comparison" />
+//             <Card background="bg-surface-secondary">
+//               <div className="card-wrapper">
+//                 <div className="product-grid">
+//                   {products.map((product, index) => (
+//                     <div key={index} className="product-box">
+//                       <div className="product-image-container">
+//                         <img src={product.image || "/placeholder.svg"} alt={product.title} className="product-image" />
+//                         <div className="retailer-label">Alibaba</div>
+//                       </div>
+//                       <div className="product-details">
+//                         <div className="product-header">
+//                           <Text as="p" variant="bodyMd" fontWeight="bold" className="product-title">
+//                             {product.title}
+//                           </Text>
+//                           <Text as="p" variant="headingLg" className="product-price">
+//                             {product.price}
+//                           </Text>
+//                         </div>
+//                           <Text as="p" variant="bodySm">
+//                             {product.company}
+//                           </Text>
+//                           <Text as="p" variant="bodySm">
+//                             {product.moq}
+//                           </Text>
+//                           <InlineStack gap="100" align="start">
+//                             <Rating rating={product.rating} />
+//                           </InlineStack>
+//                       </div>
+//                     </div>
+//                   ))}
+//                 </div>
+//               </div>
+//             </Card>
+//           </BlockStack>
+//         </Layout.Section>
+//       </Layout>
+//     </Page>
+//   )
+// }
+
+import {
+  Card,
+  Layout,
+  Page,
+  Text,
+  BlockStack,
+  InlineStack,
+} from "@shopify/polaris";
+import { TitleBar } from "@shopify/app-bridge-react";
+import { Rating } from "../components/rating";
+import { alibabaScraper } from "../scraper/alibaba-selenium-scraper";
+import "../styles/product.css";
+import { useState, useEffect } from "react";
+import { useLoaderData } from "@remix-run/react";
+import { json } from "@remix-run/node";
+
+import { promises as fs } from "fs";
+
+export async function loader() {
+  const jsonDirectory = "E:/PC Thesis/komparo/app/scraper";
+  // Read the json data file data.json
+  const fileContents = await fs.readFile(
+    jsonDirectory + "/alibaba_results.json",
+    "utf8",
+  );
+  // Parse the json data file contents into a json object
+  console.log("Path: ", fileContents);
+  const data = JSON.parse(fileContents);
+
+  return json({
+    data,
+  });
+}
+
+export default function ScraperProductDisplayPage() {
+  const { data } = useLoaderData();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+
+  const handleSearch = async () => {
+    console.log("HandleSearch function triggered");
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/scrape", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: searchInput, maxPrice }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setProducts(result.data);
+      } else {
+        console.error("Scraper failed:", result.error);
+      }
+    } catch (error) {
+      console.error("Error calling scraper API:", error);
+    }
+
+    setLoading(false);
+  };
+
+  // useEffect(() => {
+  //   console.log("Page rendered");
+  //   handleSearch();
+  //   setProducts(data); // Use initial loader data if needed
+  // }, []);
+
+  useEffect(() => {
+    console.log("Page rendered");
+
+    const fetchData = async () => {
+      await handleSearch(); // Run the scraper function
+    };
+
+    fetchData();
+
+    setProducts(data); // Use initial loader data if needed
+  }, []);
+
+  return (
+    <Page>
+      <Layout>
+        <Layout.Section>
+          <BlockStack gap="400">
+            <TitleBar title="Product Comparison" />
+            <Card>
+              <div style={{ padding: "1rem" }}>
+                <input
+                  type="text"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  placeholder="Enter product to search"
+                />
+                <input
+                  type="number"
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                  placeholder="Maximum price"
+                />
+                {console.log("Test log")}
+                <button
+                  onClick={() => {
+                    console.log("Search button clicked");
+                    handleSearch();
+                  }}
+                >
+                  Search
+                </button>
+              </div>
+            </Card>
+            <Card background="bg-surface-secondary">
+              <div className="card-wrapper">
+                {loading ? (
+                  <Text as="p">Loading... please wait</Text>
+                ) : (
+                  <div className="product-grid">
+                    {data.map((product, index) => (
+                      <div key={index} className="product-box">
+                        <div className="product-image-container">
+                          <img
+                            src={product.image || "/placeholder.svg"}
+                            alt={product.title}
+                            className="product-image"
+                          />
+                          <div className="retailer-label">Alibaba</div>
+                        </div>
+                        <div className="product-details">
+                          <div className="product-header">
+                            <Text
+                              as="p"
+                              variant="bodyMd"
+                              fontWeight="bold"
+                              className="product-title"
+                            >
+                              {product.title}
+                            </Text>
+                            <Text
+                              as="p"
+                              variant="headingLg"
+                              className="product-price"
+                            >
+                              {product.price}
+                            </Text>
+                          </div>
+                          <Text as="p" variant="bodySm">
+                            {product.company}
+                          </Text>
+                          <Text as="p" variant="bodySm">
+                            {product.moq}
+                          </Text>
+                          <InlineStack gap="100" align="start">
+                            <Rating rating={product.rating} />
+                          </InlineStack>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </Card>
+          </BlockStack>
+        </Layout.Section>
+      </Layout>
+    </Page>
+  );
+}
