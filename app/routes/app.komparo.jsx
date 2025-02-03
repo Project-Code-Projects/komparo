@@ -1,9 +1,10 @@
-// import { Layout, Page, Text } from "@shopify/polaris";
-// import { TitleBar } from "@shopify/app-bridge-react";
-// import { useLoaderData } from "@remix-run/react";
-// import { loader } from "../utils/fetch.products";
-// import "../styles/komparo.css";
-// import { useState } from "react";
+
+import { Layout, Page, Text } from "@shopify/polaris"
+import { TitleBar } from "@shopify/app-bridge-react"
+import { useLoaderData } from "@remix-run/react"
+import { loader } from "../utils/fetch.products"
+import "../styles/komparo.css"
+
 
 // export { loader };
 
@@ -117,109 +118,25 @@ import "../styles/komparo.css";
 export { loader };
 
 export default function KomparoPage() {
-  const [showScanner, setShowScanner] = useState(false);
-  const [scannedData, setScannedData] = useState(null);
-  const [newPrice, setNewPrice] = useState("");
-  const [loading, setLoading] = useState(false);
-  const data = useLoaderData();
-  const products = data?.products || [];
+  const data = useLoaderData()
+  const products = data?.products || []
 
-  async function updatePrice() {
-    if (!scannedData || !newPrice) return;
-    console.log("updatePrice: ", scannedData);
-    setLoading(true);
-
-    try {
-      const response = await fetch("/api/updateProductPrice", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          productId: scannedData.id,
-          newPrice,
-        }),
-      });
-
-      const result = await response.json();
-      if (result.success) {
-        alert("Price updated successfully!");
-        setScannedData({ ...scannedData, price: newPrice });
-      } else {
-        alert("Failed to update price.");
-      }
-    } catch (error) {
-      console.error("Error updating price:", error);
-    }
-
-    setLoading(false);
-  }
 
   return (
-    <div className="back-ground">
+    <Page>
       <Layout>
         <Layout.Section>
-          <h3 className="heading">Your Products</h3>
           <div className="container">
+
+            <TitleBar title="Your Products" />
             {products.length > 0 ? (
               <>
-                {/* Products Grid */}
-                <div className={showScanner ? "none" : "grid"}>
+                <div className="grid">
                   {products.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      setShowScanner={setShowScanner}
-                      setScannedData={setScannedData}
-                      setNewPrice={setNewPrice}
-                    />
+                    <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
 
-                {/* Scanned Product Details */}
-                <div className={showScanner ? "block" : "none"}>
-                  <section className="sc-1">
-                    <img src={scannedData?.imageUrl} className="image-scan" />
-                    <article className="card-body">
-                      <h3
-                        className="title"
-                        style={{ fontSize: "26px", marginBottom: "12px" }}
-                      >
-                        {scannedData?.title}
-                      </h3>
-                      <h4 className="price">
-                        Current Price: ${scannedData?.price}
-                      </h4>
-
-                      {/* Price Update Input Field & Button */}
-                      <input
-                        type="number"
-                        value={newPrice}
-                        onChange={(e) => setNewPrice(e.target.value)}
-                        className="price-input"
-                        placeholder="Enter new price"
-                      />
-                      <button
-                        className="update-button"
-                        onClick={updatePrice}
-                        disabled={loading}
-                      >
-                        {loading ? "Updating..." : "Update Price"}
-                      </button>
-
-                      <p
-                        style={{
-                          padding: "25px",
-                          backgroundColor: "white",
-                          borderRadius: "20px",
-                          marginTop: "20px",
-                        }}
-                      >
-                        {scannedData?.description}
-                      </p>
-                    </article>
-                  </section>
-                </div>
-
-                {/* Pagination */}
                 <div className="pagination-container">
                   <button className="pagination-arrow">←</button>
                   <button
@@ -239,32 +156,25 @@ export default function KomparoPage() {
           </div>
         </Layout.Section>
       </Layout>
-    </div>
-  );
+
+    </Page>
+  )
 }
 
-function ProductCard({ product, setShowScanner, setScannedData, setNewPrice }) {
-  function scanHandler(data) {
-    setShowScanner(true);
-    setScannedData(data);
-    setNewPrice(data.price); // Set the initial price in input field
-  }
-
+function ProductCard({ product }) {
   return (
     <div className="card">
-      <img
-        src={product.imageUrl || "/placeholder.svg"}
-        alt={product.title}
-        className="image"
-      />
-      <div>
-        <h5 className="title">{product.title}</h5>
-        <p className="price">${product.price}</p>
-        <p className="btn-container">
-          <button className="scan-button" onClick={() => scanHandler(product)}>
-            Scan
-          </button>
-        </p>
+      <div className="image-container">
+        <img src={product.imageUrl || "/placeholder.svg"} alt={product.title} className="image" />
+      </div>
+      <div className="product-info">
+        <Text as="h2" className="title">
+          {product.title}
+        </Text>
+        <Text as="p" className="price">
+          ${product.price}
+        </Text>
+        <button className="scan-button">scan</button>
       </div>
     </div>
   );
