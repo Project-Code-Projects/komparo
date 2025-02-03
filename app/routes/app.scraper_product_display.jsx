@@ -118,17 +118,17 @@ export default function ScraperProductDisplayPage() {
                           <InlineStack gap="100" align="start">
                             <Rating rating={product.rating} />
                           </InlineStack>
-                        </div>
-                        <Text as="p" variant="bodySm">
+                          <Text as="p" variant="bodySm">
                           <a 
                             href={product.link} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            style={{ color: "blue", textDecoration: "underline" }}
+                            style={{ color: "white", textDecoration: "underline" }}
                           >
-                            View Product
+                            View on Alibaba
                           </a>
                         </Text>
+                        </div>
                       </div>
                     ))}
                   </div>
