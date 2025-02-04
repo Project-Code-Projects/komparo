@@ -120,9 +120,9 @@ function ProductCard({ product, setShowScanner, setScannedData }) {
         <p className="price">
           ${product.price}
         </p>
-        <p className="btn-container">
+        {/* <p className="btn-container">
         <button className="scan-button btn" onClick={() => scanHandler(product)}>scan</button>
-        </p>
+        </p> */}
       </div>
     </div>
   )
