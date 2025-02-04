@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "734580de7f1c2eff34c67313dbde400c"
-application_url = "https://chapter-academy-americans-correspondence.trycloudflare.com"
+application_url = "https://blow-expectations-hostel-introduction.trycloudflare.com"
 embedded = true
 name = "PricePredictions"
 handle = "PricePredictions"
@@ -23,9 +23,9 @@ scopes = "write_products, read_products"
 
 [auth]
 redirect_urls = [
-  "https://chapter-academy-americans-correspondence.trycloudflare.com/auth/callback",
-  "https://chapter-academy-americans-correspondence.trycloudflare.com/auth/shopify/callback",
-  "https://chapter-academy-americans-correspondence.trycloudflare.com/api/auth/callback"
+  "https://blow-expectations-hostel-introduction.trycloudflare.com/auth/callback",
+  "https://blow-expectations-hostel-introduction.trycloudflare.com/auth/shopify/callback",
+  "https://blow-expectations-hostel-introduction.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
