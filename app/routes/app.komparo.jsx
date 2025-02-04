@@ -15,7 +15,8 @@ export default function KomparoPage() {
   // console.log(scannedData);
   // console.log(products);
   return (
-    <div className="back-ground">
+    <main style={{padding: '60px', paddingTop: '80px', backgroundColor: '#3D3D3D'}}>
+          <div className="back-ground">
       <Layout>
         <Layout.Section>
           <h3 className="heading">Your Products</h3>
@@ -72,9 +73,9 @@ export default function KomparoPage() {
                     }}>
                       <p style={{fontSize: '18px', marginBottom: '20px', textAlign: 'left'}}><span style={{fontWeight: 'bold'}}>Current Price &nbsp; &nbsp;$</span><span style={{fontWeight: '600', marginLeft: '8px', backgroundColor: 'lightgray', padding: '10px', paddingRight: '40px', borderRadius: '10px'}}>{scannedData?.price}</span></p>
                       <p style={{fontSize: '18px', marginLeft: '27px', textAlign: 'left'}}><span style={{fontWeight: 'bold'}}>New Price &nbsp; &nbsp;$</span> <input style={{width: '95px', marginLeft: '8px', backgroundColor: 'lightgray', border: 'none', padding: '10px', borderRadius: '10px'}} name="price" type="number" className="" /></p>
-                      <button style={{color: "white", backgroundColor: 'MediumAquaMarine', border: 'none', padding: '8px 20px', borderRadius: '22px', fontSize: '18px', cursor: 'pointer'}} type="submit" className="">Update</button>
+                      <button style={{color: "white", backgroundColor: 'MediumAquaMarine', border: 'none', padding: '8px 20px', borderRadius: '22px', fontSize: '18px', cursor: 'pointer'}} type="submit" className="btn">Update</button>
                     </form>
-                    <p style={{textAlign: 'center'}}><button type="button" className="back-btn" onClick={() => {
+                    <p style={{textAlign: 'center'}}><button type="button" className="back-btn btn" onClick={() => {
                       setShowScanner(false);
                       setScannedData(null);
                     }}>
@@ -84,11 +85,11 @@ export default function KomparoPage() {
                 </div>
 
                 <div className="pagination-container">
-                  <button className="pagination-arrow">←</button>
-                  <button className="pagination-button" style={{ backgroundColor: "#FBFBFB" }}>1</button>
-                  <button className="pagination-button">2</button>
-                  <button className="pagination-button">3</button>
-                  <button className="pagination-arrow">→</button>
+                  <button className="btn pagination-arrow">←</button>
+                  <button className="btn pagination-button" style={{ backgroundColor: "#FBFBFB" }}>1</button>
+                  <button className="btn pagination-button">2</button>
+                  <button className="btn pagination-button">3</button>
+                  <button className="btn pagination-arrow">→</button>
                 </div>
               </>
             ) : (
@@ -98,6 +99,7 @@ export default function KomparoPage() {
         </Layout.Section>
       </Layout>
     </div>
+    </main>
   )
 }
 
@@ -119,7 +121,7 @@ function ProductCard({ product, setShowScanner, setScannedData }) {
           ${product.price}
         </p>
         <p className="btn-container">
-        <button className="scan-button" onClick={() => scanHandler(product)}>scan</button>
+        <button className="scan-button btn" onClick={() => scanHandler(product)}>scan</button>
         </p>
       </div>
     </div>
