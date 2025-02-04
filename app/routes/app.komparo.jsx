@@ -66,14 +66,20 @@ export default function KomparoPage() {
                     </article>
                     </div>
                     <hr style={{width: '95%', margin: '20px auto'}} />
-                    <form style={{fontFamily: '"Times New Roman", Times, serif', textAlign: 'right', padding: '30px'}} onSubmit={(e) => {
+                    <form style={{textAlign: 'right', padding: '30px'}} onSubmit={(e) => {
                       e.preventDefault();
                       console.log(e.target.price.value);
                     }}>
                       <p style={{fontSize: '18px', marginBottom: '20px', textAlign: 'left'}}><span style={{fontWeight: 'bold'}}>Current Price &nbsp; &nbsp;$</span><span style={{fontWeight: '600', marginLeft: '8px', backgroundColor: 'lightgray', padding: '10px', paddingRight: '40px', borderRadius: '10px'}}>{scannedData?.price}</span></p>
                       <p style={{fontSize: '18px', marginLeft: '27px', textAlign: 'left'}}><span style={{fontWeight: 'bold'}}>New Price &nbsp; &nbsp;$</span> <input style={{width: '95px', marginLeft: '8px', backgroundColor: 'lightgray', border: 'none', padding: '10px', borderRadius: '10px'}} name="price" type="number" className="" /></p>
-                      <button style={{fontFamily: '"Times New Roman", Times, serif', color: "white", backgroundColor: 'MediumAquaMarine', border: 'none', padding: '8px 20px', borderRadius: '22px', fontSize: '18px'}} type="submit" className="">Update</button>
+                      <button style={{color: "white", backgroundColor: 'MediumAquaMarine', border: 'none', padding: '8px 20px', borderRadius: '22px', fontSize: '18px', cursor: 'pointer'}} type="submit" className="">Update</button>
                     </form>
+                    <p style={{textAlign: 'center'}}><button type="button" className="back-btn" onClick={() => {
+                      setShowScanner(false);
+                      setScannedData(null);
+                    }}>
+                        Go Back
+                      </button></p>
                   </section>
                 </div>
 

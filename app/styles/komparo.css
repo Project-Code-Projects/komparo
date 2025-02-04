@@ -29,14 +29,12 @@
 
 
 .title {
-  font-family: "Times New Roman", Times, serif;
   font-size: 22px;
   margin-bottom: 8px;
   text-align: left;
 }
 
 .price {
-  font-family: "Times New Roman", Times, serif;
   font-size: 20px;
   margin-bottom: 12px;
   font-weight: 800;
@@ -44,7 +42,6 @@
 }
 
 .scan-button {
-  font-family: "Times New Roman", Times, serif;
   background-color: #578E7E;
   color: #FFFFFF;
   border: none;
@@ -81,7 +78,6 @@
 }
 
 .heading {
-  font-family: "Times New Roman", Times, serif;
   color: white;
   font-size: 35px;
   margin: 50px;
@@ -139,7 +135,6 @@
 }
 
 .scrapped-title {
-  font-family: "Times New Roman", Times, serif;
   font-size: 18px;
   text-align: center;
   color: white;
@@ -155,8 +150,15 @@
 }
 
 .scrapped-price {
-  font-family: "Times New Roman", Times, serif;
   font-size: 18px;
   font-weight: 800;
   text-align: left;
+}
+
+.back-btn {
+  background-color: #3d3d3d;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 14px;
+  cursor: pointer;
 }
