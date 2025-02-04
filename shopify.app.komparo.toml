@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "14eecd3c23b30159050b0aee0b714c16"
-application_url = "https://tongue-layers-acrylic-translations.trycloudflare.com"
+application_url = "https://logan-clicks-sand-bridges.trycloudflare.com"
 embedded = true
 name = "komparo"
 handle = "komparo-3"
@@ -20,9 +20,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://tongue-layers-acrylic-translations.trycloudflare.com/auth/callback",
-  "https://tongue-layers-acrylic-translations.trycloudflare.com/auth/shopify/callback",
-  "https://tongue-layers-acrylic-translations.trycloudflare.com/api/auth/callback"
+  "https://logan-clicks-sand-bridges.trycloudflare.com/auth/callback",
+  "https://logan-clicks-sand-bridges.trycloudflare.com/auth/shopify/callback",
+  "https://logan-clicks-sand-bridges.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
