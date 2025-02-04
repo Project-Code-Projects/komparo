@@ -16,6 +16,7 @@
   text-align: center;
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
   font-family: "Junge", serif;
+  cursor: pointer;
 }
 
 
@@ -28,16 +29,23 @@
 }
 
 .image-scan {
-  width: 35%;
+  width: 30%;
   border-radius: 50px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 
 .title {
   font-family: "Lusitana", serif;
-  font-size: 18px;
+  font-size: 20px;
   margin-bottom: 10px;
   text-align: left;
+}
+
+.scan-title {
+  font-family: "Jomolhari", serif;
+  font-size: 22px;
+  margin-bottom: 14px;
 }
 
 .price {
@@ -124,7 +132,8 @@
 }
 
 .card-body {
-  padding: 0 25px;
+  padding: 0 20px;
+  padding-left: 30px;
 }
 
 .scrapped-img {
@@ -144,7 +153,8 @@
 }
 
 .scrapped-title {
-  font-size: 18px;
+  font-family: "Judson", serif;
+  font-size: 16px;
   text-align: center;
   color: white;
   background-color: #3d3d3d;
@@ -174,4 +184,9 @@
 
 .btn {
   font-family: "Judson", serif;
+}
+
+.scan-desc {
+  font-family: "Fustat", serif;
+  font-size: 11px;
 }

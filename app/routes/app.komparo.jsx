@@ -38,9 +38,9 @@ export default function KomparoPage() {
                   <section className="sc-1">
                   <img src={scannedData?.imageUrl} className="image-scan"/>
                   <article className="card-body">
-                  <h3 className="title" style={{fontSize: '26px', marginBottom: '12px'}}>{scannedData?.title}</h3>
-                  <h4 className="price">${scannedData?.price}</h4>
-                  <p style={{padding: '25px', backgroundColor: 'white', borderRadius: '20px', marginTop: '20px'}}>
+                  <h3 className="scan-title">{scannedData?.title}</h3>
+                  <h4 className="price" style={{fontSize: '22px'}}>${scannedData?.price}</h4>
+                  <p className="scan-desc" style={{padding: '25px', backgroundColor: 'white', borderRadius: '20px', marginTop: '20px'}}>
                   {scannedData?.description}
                   </p>
                   </article>
@@ -111,7 +111,7 @@ function ProductCard({ product, setShowScanner, setScannedData }) {
     // console.log(data);
   }
   return (
-    <div className="card">
+    <div className="card" onClick={() => scanHandler(product)}>
       <img src={product.imageUrl || "/placeholder.svg"} alt={product.title} className="image" />
       <div>
         <h5 className="title">
