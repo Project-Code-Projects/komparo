@@ -1,6 +1,12 @@
 import { Builder, By, until } from 'selenium-webdriver';
 import { Options } from 'selenium-webdriver/edge.js';
 import { promises as fs } from 'fs';
+import { fileURLToPath } from 'url';
+import { convertJsonToCsv } from '../utils/json_to_csv.js';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function extractData(container, selector, attribute = null) {
     try {
@@ -67,7 +73,7 @@ function isValidProduct(productData) {
         return false;
     }
 
-    if (!productData.price.includes('$')) {
+    if (!productData.price.includes('$')) { // May need to change later
         console.log('Skipping product: Invalid price format');
         return false;
     }
@@ -178,19 +184,22 @@ export async function scrapeProducts(req, res) {
 
         // const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
         // const fileName = `alibaba_results_${timestamp}.json`;
-        const fileName = `alibaba_results.json`;
+        const filePath = path.join(__dirname, 'alibaba_results.json');
+
         await fs.writeFile(
-            fileName,
+            filePath,
             JSON.stringify(allProducts, null, 2),
             'utf-8'
         );
+
+        await convertJsonToCsv(searchQuery, filePath);
 
         return res.status(200).json({
             success: true,
             results: allProducts,
             totalProducts: allProducts.length,
             pagesScraped: currentPage,
-            fileName
+            filePath
         });
 
     } catch (error) {

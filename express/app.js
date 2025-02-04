@@ -3,6 +3,8 @@ import path from 'path';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import alibabaRouter from './routes/scraperRoute.js';
+import webhookRouter from './routes/webhookRoute.js';
+
 import 'dotenv/config.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -14,6 +16,7 @@ app.use(express.json());
 app.use(cors({ origin: "*" }));
 app.use(express.static(__dirname));
 app.use('/api/scrape', alibabaRouter);
+app.use('/api/webhooks', webhookRouter);
 
 app.get('/', (req, res) => {
     res.send('Shopify server is running!');
