@@ -73,7 +73,7 @@
 
         <div class="input-container">
             <input type="text" id="searchQuery" placeholder="Search query"
-                value="wireless headphones">
+                value="man's t-shirt">
             <input type="number" id="maxPrice" placeholder="Max price"
                 value="100">
             <input type="number" id="maxPages" placeholder="Max pages"
@@ -97,7 +97,7 @@
             resultDiv.textContent = '';
 
             try {
-                const response = await fetch('/api/scrape/alibaba', {
+                const response = await fetch('/api/scrape/amazon', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

@@ -1,11 +1,10 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-
-client_id = "36c68ffb8e0d642626679a4448405849"
-application_url = "https://interstate-consulting-corners-lou.trycloudflare.com"
+client_id = "734580de7f1c2eff34c67313dbde400c"
+application_url = "https://blow-expectations-hostel-introduction.trycloudflare.com"
 embedded = true
-name = "price-comparison-app"
-handle = "price-comparison-app"
+name = "PricePredictions"
+handle = "PricePredictions"
 
 [webhooks]
 api_version = "2025-01"
@@ -24,14 +23,14 @@ scopes = "write_products, read_products"
 
 [auth]
 redirect_urls = [
-  "https://interstate-consulting-corners-lou.trycloudflare.com/auth/callback",
-  "https://interstate-consulting-corners-lou.trycloudflare.com/auth/shopify/callback",
-  "https://interstate-consulting-corners-lou.trycloudflare.com/api/auth/callback"
+  "https://blow-expectations-hostel-introduction.trycloudflare.com/auth/callback",
+  "https://blow-expectations-hostel-introduction.trycloudflare.com/auth/shopify/callback",
+  "https://blow-expectations-hostel-introduction.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
 embedded = false
 
 [build]
-dev_store_url = "price-comparison-app.myshopify.com"
+dev_store_url = "pricepredictions.myshopify.com"
 automatically_update_urls_on_dev = true
