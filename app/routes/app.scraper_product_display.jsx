@@ -4,7 +4,6 @@ import { TitleBar } from "@shopify/app-bridge-react";
 import { Rating } from "../components/rating";
 import "../styles/product.css";
 
-
 export default function ScraperProductDisplayPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -52,7 +51,7 @@ export default function ScraperProductDisplayPage() {
       <Layout>
         <Layout.Section>
           <BlockStack gap="400">
-            <TitleBar title="Product Comparison" />
+            <TitleBar title="Scrape Data" />
             <Card>
               <div style={{ padding: "1rem" }}>
                 <input
