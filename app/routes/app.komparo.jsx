@@ -1,10 +1,9 @@
-
-import { Layout, Page, Text } from "@shopify/polaris"
-import { TitleBar } from "@shopify/app-bridge-react"
-import { useLoaderData } from "@remix-run/react"
-import { loader } from "../utils/fetch.products"
-import "../styles/komparo.css"
-
+// import { Layout, Page, Text } from "@shopify/polaris";
+// import { TitleBar } from "@shopify/app-bridge-react";
+// import { useLoaderData } from "@remix-run/react";
+// import { useState } from "react";
+// import { loader } from "../utils/fetch.products";
+// import "../styles/komparo.css";
 
 // export { loader };
 
@@ -118,23 +117,103 @@ import "../styles/komparo.css";
 export { loader };
 
 export default function KomparoPage() {
-  const data = useLoaderData()
-  const products = data?.products || []
+  const [showScanner, setShowScanner] = useState(false);
+  const [scannedData, setScannedData] = useState(null);
+  const [newPrice, setNewPrice] = useState(""); // State for new price
+  const [loading, setLoading] = useState(false);
 
+  const data = useLoaderData();
+  const products = data?.products || [];
+
+  async function updatePrice() {
+    if (!scannedData || !newPrice) return alert("Please enter a price.");
+
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:3001/api/updatePrice", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId: scannedData.id,
+          newPrice: parseFloat(newPrice),
+        }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        alert("Price updated successfully!");
+      } else {
+        throw new Error(result.error || "Failed to update price.");
+      }
+    } catch (error) {
+      console.error("Error updating price:", error);
+      alert("Failed to update price.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <Page>
+    <div className="back-ground">
       <Layout>
         <Layout.Section>
+          <h3 className="heading">Your Products</h3>
           <div className="container">
-
-            <TitleBar title="Your Products" />
             {products.length > 0 ? (
               <>
-                <div className="grid">
+                <div className={showScanner ? "none" : "grid"}>
                   {products.map((product) => (
-                    <ProductCard key={product.id} product={product} />
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      setShowScanner={setShowScanner}
+                      setScannedData={setScannedData}
+                    />
                   ))}
+                </div>
+
+                {/* Scanner View */}
+                <div className={showScanner ? "block" : "none"}>
+                  <section className="sc-1">
+                    <img src={scannedData?.imageUrl} className="image-scan" />
+                    <article className="card-body">
+                      <h3
+                        className="title"
+                        style={{ fontSize: "26px", marginBottom: "12px" }}
+                      >
+                        {scannedData?.title}
+                      </h3>
+                      <h4 className="price">${scannedData?.price}</h4>
+                      <p
+                        style={{
+                          padding: "25px",
+                          backgroundColor: "white",
+                          borderRadius: "20px",
+                          marginTop: "20px",
+                        }}
+                      >
+                        {scannedData?.description}
+                      </p>
+
+                      {/* Price Update Form */}
+                      <input
+                        type="number"
+                        value={newPrice}
+                        onChange={(e) => setNewPrice(e.target.value)}
+                        className="price-input"
+                        placeholder="Enter new price"
+                      />
+                      <button
+                        className="update-button"
+                        onClick={updatePrice}
+                        disabled={loading}
+                      >
+                        {loading ? "Updating..." : "Update Price"}
+                      </button>
+                    </article>
+                  </section>
                 </div>
 
                 <div className="pagination-container">
@@ -156,25 +235,27 @@ export default function KomparoPage() {
           </div>
         </Layout.Section>
       </Layout>
-
-    </Page>
-  )
+    </div>
+  );
 }
 
-function ProductCard({ product }) {
+function ProductCard({ product, setShowScanner, setScannedData }) {
+  function scanHandler(data) {
+    setShowScanner(true);
+    setScannedData(data);
+  }
+
   return (
     <div className="card">
-      <div className="image-container">
-        <img src={product.imageUrl || "/placeholder.svg"} alt={product.title} className="image" />
-      </div>
-      <div className="product-info">
-        <Text as="h2" className="title">
-          {product.title}
-        </Text>
-        <Text as="p" className="price">
-          ${product.price}
-        </Text>
-        <button className="scan-button">scan</button>
+      <img src={product.imageUrl} alt={product.title} className="image" />
+      <div>
+        <h5 className="title">{product.title}</h5>
+        <p className="price">${product.price}</p>
+        <p className="btn-container">
+          <button className="scan-button" onClick={() => scanHandler(product)}>
+            scan
+          </button>
+        </p>
       </div>
     </div>
   );
