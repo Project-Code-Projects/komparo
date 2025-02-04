@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "36c68ffb8e0d642626679a4448405849"
-application_url = "https://fiction-kg-park-effective.trycloudflare.com"
+application_url = "https://mostly-awful-reactions-assumptions.trycloudflare.com"
 embedded = true
 name = "price-comparison-app"
 handle = "price-comparison-app"
@@ -23,9 +23,9 @@ scopes = "write_products, read_products"
 
 [auth]
 redirect_urls = [
-  "https://fiction-kg-park-effective.trycloudflare.com/auth/callback",
-  "https://fiction-kg-park-effective.trycloudflare.com/auth/shopify/callback",
-  "https://fiction-kg-park-effective.trycloudflare.com/api/auth/callback"
+  "https://mostly-awful-reactions-assumptions.trycloudflare.com/auth/callback",
+  "https://mostly-awful-reactions-assumptions.trycloudflare.com/auth/shopify/callback",
+  "https://mostly-awful-reactions-assumptions.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
