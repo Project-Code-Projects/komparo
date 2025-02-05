@@ -4,7 +4,7 @@ import cors from 'cors';
 import { fileURLToPath } from 'url';
 import alibabaRouter from './routes/scraperRoute.js';
 import webhookRouter from './routes/webhookRoute.js';
-import updatePriceRouter from "./routes/updatePrice.js"; 
+import updatePriceRouter from "./routes/updatePrice.js";
 import 'dotenv/config.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -25,5 +25,5 @@ app.get("/", (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
-  console.log(`Test page available at http://localhost:${PORT}/test.html`);
+  console.log(`Test page available at http://localhost:${PORT}/scraper-test.html`);
 });

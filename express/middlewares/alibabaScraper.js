@@ -129,7 +129,7 @@ async function scrapePage(driver) {
     return productDataList;
 }
 
-export async function scrapeProducts(req, res) {
+export async function scrapeAlibabaProducts(req, res) {
     console.log('Scraping products...');
     const { searchQuery, maxPrice = 1000, maxPages = 1 } = req.body;
 

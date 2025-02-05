@@ -1,15 +1,26 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client';
+
 const prisma = new PrismaClient();
 
-async function testDB() {
+async function main() {
     try {
-        await prisma.$connect();
-        console.log("✅ Connected to PostgreSQL successfully!");
+        const body = await prisma.queryTracker.create({
+            data: {
+                query: "white shirt men",
+                status: "scraped",
+                csvLink: "https://example.com/file.csv"
+            },
+        });
+        console.log("✅ Query added:", body);
+
+        const queries = await prisma.queryTracker.findMany();
+        console.log("📌 All Queries:", queries);
+
     } catch (error) {
-        console.error("❌ Connection failed:", error);
+        console.error("❌ Error:", error);
     } finally {
         await prisma.$disconnect();
     }
 }
 
-testDB();
+main();
