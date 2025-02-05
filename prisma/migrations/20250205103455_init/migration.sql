@@ -20,13 +20,17 @@ CREATE TABLE "Session" (
 );
 
 -- CreateTable
-CREATE TABLE "QueryTracker" (
+CREATE TABLE "Comparator" (
     "id" SERIAL NOT NULL,
     "query" TEXT NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'pending',
-    "csvLink" TEXT,
+    "amazon" TEXT,
+    "alibaba" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "QueryTracker_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Comparator_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Comparator_query_key" ON "Comparator"("query");
