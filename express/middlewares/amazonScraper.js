@@ -1,13 +1,12 @@
 import { Builder, By, until } from "selenium-webdriver";
 import { Options } from "selenium-webdriver/edge.js";
-import { convertJsonToCsv } from '../utils/json_to_csv.js';
 import { promises as fs } from "fs";
 import { fileURLToPath } from 'url';
+import { convertJsonToCsv } from '../utils/json_to_csv.js';
 import path from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 
 // Reusable function to extract text or attribute from an element.
 async function extractData(container, selector, attribute = null) {
@@ -164,7 +163,8 @@ export async function scrapeAmazonProducts(req, res) {
 
     // Save results to a JSON file.
     // const fileName = `amazon_results.json`;
-    const filePath = path.join(__dirname, 'alibaba_results.json');
+    const filePath = path.join(__dirname, 'results.json');
+
     await fs.writeFile(
       filePath,
       JSON.stringify(allProducts, null, 2),
@@ -180,6 +180,7 @@ export async function scrapeAmazonProducts(req, res) {
       pagesScraped: currentPage,
       filePath,
     });
+
   } catch (error) {
     console.error("Scraping error:", error);
     return res.status(500).json({

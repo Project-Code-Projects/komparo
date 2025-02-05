@@ -155,7 +155,7 @@ export async function scrapeAlibabaProducts(req, res) {
         await driver.get(url);
         await driver.sleep(5000);
 
-        await applyNewFilter(driver);
+        // await applyNewFilter(driver);
 
         let allProducts = [];
         let currentPage = 1;
@@ -184,7 +184,7 @@ export async function scrapeAlibabaProducts(req, res) {
 
         // const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
         // const fileName = `alibaba_results_${timestamp}.json`;
-        const filePath = path.join(__dirname, 'alibaba_results.json');
+        const filePath = path.join(__dirname, 'results.json');
 
         await fs.writeFile(
             filePath,
