@@ -4,16 +4,17 @@ const prisma = new PrismaClient();
 
 async function main() {
     try {
-        const body = await prisma.queryTracker.create({
+        const body = await prisma.comparator.create({
             data: {
                 query: "white shirt men",
                 status: "scraped",
-                csvLink: "https://example.com/file.csv"
+                amazon: "https://example.com/file.csv",
+                alibaba: "https://example.com/file.csv",
             },
         });
         console.log("✅ Query added:", body);
 
-        const queries = await prisma.queryTracker.findMany();
+        const queries = await prisma.comparator.findMany();
         console.log("📌 All Queries:", queries);
 
     } catch (error) {
