@@ -1,9 +1,9 @@
 import { Builder, By, until } from "selenium-webdriver";
 import { Options } from "selenium-webdriver/edge.js";
 import { promises as fs } from "fs";
-import { fileURLToPath } from 'url';
-import { convertJsonToCsv } from '../utils/json_to_csv.js';
-import path from 'path';
+import { fileURLToPath } from "url";
+import { convertJsonToCsv } from "../utils/json_to_csv.js";
+import path from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,9 +12,6 @@ const __dirname = path.dirname(__filename);
 async function extractData(container, selector, attribute = null) {
   try {
     const element = await container.findElement(By.css(selector));
-    // selector === "i.a-icon span.a-icon-alt"
-    //   ? console.log("Rating Element: ", element)
-    //   : console.log(" No Rating element");
     let value = attribute
       ? await element.getAttribute(attribute)
       : await element.getText();
@@ -73,11 +70,6 @@ async function scrapePage(driver) {
             container,
             "span.a-price span.a-price-whole",
           ),
-          // rating: await extractData(
-          //   container,
-          //   "i.a-icon-star-small span.a-icon-alt",
-          // ),
-          //rating: await extractData(container, "span.a-icon-alt"),
           image: await extractData(container, "img.s-image", "src"),
           link: await extractData(
             container,
@@ -128,7 +120,8 @@ export async function scrapeAmazonProducts(req, res) {
     // Amazon's price filter uses price in cents.
     const maxPriceInCents = parseInt(maxPrice) * 100;
     // Construct the Amazon search URL.
-    const url = `https://www.amazon.com/s?k=${formattedQuery}&rh=p_36:0-${maxPriceInCents}`;
+    // Search with Price ---> &rh=p_36:0-${maxPriceInCents}
+    const url = `https://www.amazon.com/s?k=${formattedQuery}`;
     console.log("Amazon URL:", url);
 
     await driver.get(url);
@@ -163,13 +156,9 @@ export async function scrapeAmazonProducts(req, res) {
 
     // Save results to a JSON file.
     // const fileName = `amazon_results.json`;
-    const filePath = path.join(__dirname, 'results.json');
+    const filePath = path.join(__dirname, "results.json");
 
-    await fs.writeFile(
-      filePath,
-      JSON.stringify(allProducts, null, 2),
-      "utf-8"
-    );
+    await fs.writeFile(filePath, JSON.stringify(allProducts, null, 2), "utf-8");
 
     await convertJsonToCsv(searchQuery, filePath, "Amazon");
 
@@ -180,7 +169,6 @@ export async function scrapeAmazonProducts(req, res) {
       pagesScraped: currentPage,
       filePath,
     });
-
   } catch (error) {
     console.error("Scraping error:", error);
     return res.status(500).json({
