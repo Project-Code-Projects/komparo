@@ -1,11 +1,13 @@
-import express from "express";
 import path from "path";
 import cors from "cors";
+import "dotenv/config.js";
+import cron from "node-cron";
+import express from "express";
+import db from "./database/db.js";
 import { fileURLToPath } from "url";
 import alibabaRouter from "./routes/scraperRoute.js";
 import webhookRouter from "./routes/webhookRoute.js";
 import updatePriceRouter from "./routes/updatePrice.js";
-import "dotenv/config.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,3 +31,134 @@ app.listen(PORT, async (req, res) => {
     `Test page available at http://localhost:${PORT}/scraper-test.html`,
   );
 });
+
+// -------------------------------
+// Schedule a Cron Job every 2 minutes
+// -------------------------------
+
+// cron.schedule("*/1 * * * *", async () => {
+//   console.log(
+//     "Cron job triggered: scraping pending queries from PostgreSQL...",
+//   );
+
+//   try {
+//     // Query all rows where status is 'pending'
+//     const { rows } = await db.query(
+//       'SELECT * FROM public."Comparator" WHERE status = $1',
+//       ["pending"],
+//     );
+
+//     if (!rows.length) {
+//       console.log("No pending queries found.");
+//       return;
+//     }
+
+//     // Loop through each pending query row
+//     for (const row of rows) {
+//       const searchQuery = row.query; // Your query column value
+//       console.log("Panding task: ", searchQuery);
+//       console.log("Scraping for query:", searchQuery);
+
+//       try {
+//         const response = await fetch(
+//           "http://localhost:3001/api/scrape/alibaba",
+//           {
+//             method: "POST",
+//             headers: { "Content-Type": "application/json" },
+//             body: JSON.stringify({
+//               searchQuery,
+//               maxPrice: 100, // adjust as needed; you could also store maxPrice in the DB
+//               maxPages: 1,
+//             }),
+//           },
+//         );
+
+//         const result = await response.json();
+//         console.log("Scraping job result for", searchQuery, ":", result);
+
+//         // Optionally update the status after successful scraping:
+//         await db.query('UPDATE public."Comparator" SET status = $1 WHERE query = $2', ['completed', searchQuery]);
+//       } catch (scrapeError) {
+//         console.error(
+//           `Error scraping for query "${searchQuery}":`,
+//           scrapeError,
+//         );
+//       }
+//     }
+//   } catch (error) {
+//     console.error("Error in cron job:", error);
+//   }
+// });
+cron.schedule("*/1 * * * *", async () => {
+  console.log(
+    "Cron job triggered: scraping pending queries from PostgreSQL...",
+  );
+
+  try {
+    const { rows } = await db.query(
+      'SELECT * FROM public."Comparator" WHERE status = $1',
+      ["pending"],
+    );
+
+    if (!rows.length) {
+      console.log("No pending queries found.");
+      return;
+    }
+
+    for (const row of rows) {
+      const searchQuery = row.query; // Your query column value
+      console.log("Panding task: ", searchQuery);
+      console.log("Scraping for query:", searchQuery);
+
+      try {
+        const response = await fetch(
+          "http://localhost:3001/api/scrape/amazon",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              searchQuery,
+              maxPrice: 100,
+              maxPages: 1,
+            }),
+          },
+        );
+
+        const result = await response.json();
+        console.log("Scraping job result for", searchQuery, ":", result);
+
+        // Optionally update the status after successful scraping:
+        // await db.query(
+        //   'UPDATE public."Comparator" SET status = $1 WHERE query = $2',
+        //   ["completed", searchQuery],
+        // );
+      } catch (scrapeError) {
+        console.error(
+          `Error scraping for query "${searchQuery}":`,
+          scrapeError,
+        );
+      }
+    }
+  } catch (error) {
+    console.error("Error in cron job:", error);
+  }
+});
+// cron.schedule("*/1 * * * *", async () => {
+//   console.log("Cron job triggered: scraping Alibaba data...");
+//   try {
+//     // Adjust the searchQuery and parameters as needed.
+//     const response = await fetch("http://localhost:3001/api/scrape/amazon", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({
+//         searchQuery: "man's t-shirt",
+//         maxPrice: 100,
+//         maxPages: 1,
+//       }),
+//     });
+//     const result = await response.json();
+//     console.log("Scraping job result:", result);
+//   } catch (error) {
+//     console.error("Error in cron job:", error);
+//   }
+// });
