@@ -97,7 +97,7 @@
             resultDiv.textContent = '';
 
             try {
-                const response = await fetch('/api/scrape/amazon', {
+                const response = await fetch('/api/scrape/alibaba', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -108,6 +108,7 @@
                         maxPages
                     })
                 });
+                
 
                 const data = await response.json();
                 resultDiv.textContent = JSON.stringify(data, null, 2);

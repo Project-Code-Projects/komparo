@@ -1,6 +1,13 @@
 import { Builder, By, until } from "selenium-webdriver";
 import { Options } from "selenium-webdriver/edge.js";
+import { convertJsonToCsv } from '../utils/json_to_csv.js';
 import { promises as fs } from "fs";
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 // Reusable function to extract text or attribute from an element.
 async function extractData(container, selector, attribute = null) {
@@ -9,7 +16,7 @@ async function extractData(container, selector, attribute = null) {
     // selector === "i.a-icon span.a-icon-alt"
     //   ? console.log("Rating Element: ", element)
     //   : console.log(" No Rating element");
-    const value = attribute
+    let value = attribute
       ? await element.getAttribute(attribute)
       : await element.getText();
     if (!value || value.trim() === "") {
@@ -156,15 +163,22 @@ export async function scrapeAmazonProducts(req, res) {
     }
 
     // Save results to a JSON file.
-    const fileName = `amazon_results.json`;
-    await fs.writeFile(fileName, JSON.stringify(allProducts, null, 2), "utf-8");
+    // const fileName = `amazon_results.json`;
+    const filePath = path.join(__dirname, 'alibaba_results.json');
+    await fs.writeFile(
+      filePath,
+      JSON.stringify(allProducts, null, 2),
+      "utf-8"
+    );
+
+    await convertJsonToCsv(searchQuery, filePath, "Amazon");
 
     return res.status(200).json({
       success: true,
       results: allProducts,
       totalProducts: allProducts.length,
       pagesScraped: currentPage,
-      fileName,
+      filePath,
     });
   } catch (error) {
     console.error("Scraping error:", error);

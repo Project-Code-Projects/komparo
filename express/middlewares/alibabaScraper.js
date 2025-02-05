@@ -129,8 +129,8 @@ async function scrapePage(driver) {
     return productDataList;
 }
 
-export async function scrapeProducts(req, res) {
-    console.log('Scraping products...');
+export async function scrapeAlibabaProducts(req, res) {
+    console.log('Scraping Alibaba products...');
     const { searchQuery, maxPrice = 1000, maxPages = 1 } = req.body;
 
     console.log('Search query:', searchQuery);
@@ -192,7 +192,7 @@ export async function scrapeProducts(req, res) {
             'utf-8'
         );
 
-        await convertJsonToCsv(searchQuery, filePath);
+        await convertJsonToCsv(searchQuery, filePath, 'Alibaba');
 
         return res.status(200).json({
             success: true,

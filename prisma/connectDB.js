@@ -1,16 +1,15 @@
-import { PrismaClient } from '@prisma/client';
-
+import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-async function testDB() {
+async function connectDB() {
     try {
         await prisma.$connect();
-        console.log('✅ Database connected successfully');
+        console.log("✅ Connected to PostgreSQL successfully!");
     } catch (error) {
-        console.error('❌ Database connection failed:', error);
+        console.error("❌ Connection failed:", error);
     } finally {
         await prisma.$disconnect();
     }
 }
 
-testDB();
+connectDB();
