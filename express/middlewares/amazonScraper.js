@@ -171,7 +171,7 @@ export async function scrapeAmazonProducts(req, res) {
       "utf-8"
     );
 
-    await convertJsonToCsv(searchQuery, filePath);
+    await convertJsonToCsv(searchQuery, filePath, "Amazon");
 
     return res.status(200).json({
       success: true,
