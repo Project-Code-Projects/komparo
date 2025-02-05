@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import alibabaRouter from './routes/scraperRoute.js';
 import webhookRouter from './routes/webhookRoute.js';
 import updatePriceRouter from "./routes/updatePrice.js";
+import { connectDB } from '../prisma/connectDB.js';
 import 'dotenv/config.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -23,7 +24,8 @@ app.get("/", (req, res) => {
   res.send("Shopify server is running!");
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async (req, res) => {
   console.log(`Server running on http://localhost:${PORT}`);
   console.log(`Test page available at http://localhost:${PORT}/scraper-test.html`);
+  await connectDB();
 });
