@@ -42,16 +42,15 @@ async function scrapePage(driver) {
   const productDataList = [];
 
   try {
-    await driver.wait(
-      until.elementLocated(
-        By.css("div[data-component-type='s-search-result']"),
-      ),
-      10000,
-    );
+    await driver.wait(until.elementLocated(By.css("div.s-result-item")), 10000);
     // Find product containers. Amazon search results typically use 'div.s-result-item'
     const productContainers = await driver.findElements(
-      By.css("div[data-component-type='s-search-result']"),
+      By.css("div.s-result-item"),
     );
+    //"div[data-component-type='s-search-result']"
+    // const productContainers = await driver.findElements(
+    //   By.css("div.s-result-item"),
+    // );
     //console.log("Product Container: ", productContainers);
     if (!productContainers.length) {
       console.log("No products found on this page.");
@@ -121,7 +120,7 @@ export async function scrapeAmazonProducts(req, res) {
     const maxPriceInCents = parseInt(maxPrice) * 100;
     // Construct the Amazon search URL.
     // Search with Price ---> &rh=p_36:0-${maxPriceInCents}
-    const url = `https://www.amazon.com/s?k=${formattedQuery}`;
+    const url = `https://www.amazon.com/s?k=${formattedQuery}&rh=p_36:0-${maxPriceInCents}`;
     console.log("Amazon URL:", url);
 
     await driver.get(url);
