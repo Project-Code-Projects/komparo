@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Scraper Test</title>
+        <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        input, button {
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        input {
+            flex: 1;
+            min-width: 120px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .loading {
+            display: none;
+            color: #7f8c8d;
+            text-align: center;
+            margin: 20px 0;
+            font-style: italic;
+        }
+        pre {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        @media (max-width: 600px) {
+            .input-container {
+                flex-direction: column;
+            }
+            input, button {
+                width: 100%;
+            }
+        }
+    </style>
+    </head>
+    <body>
+        <h1>Alibaba Scraper Test</h1>
+
+        <div class="input-container">
+            <input type="text" id="searchQuery" placeholder="Search query"
+                value="man's t-shirt">
+            <input type="number" id="maxPrice" placeholder="Max price"
+                value="100">
+            <input type="number" id="maxPages" placeholder="Max pages"
+                value="1">
+            <button onclick="testScraper()">Start Scraping</button>
+        </div>
+
+        <div id="loading" class="loading">Scraping in progress... This may take
+            a few minutes.</div>
+        <pre id="result"></pre>
+
+        <script>
+        async function testScraper() {
+            const searchQuery = document.getElementById('searchQuery').value;
+            const maxPrice = document.getElementById('maxPrice').value;
+            const maxPages = document.getElementById('maxPages').value;
+            const loadingDiv = document.getElementById('loading');
+            const resultDiv = document.getElementById('result');
+
+            loadingDiv.style.display = 'block';
+            resultDiv.textContent = '';
+
+            try {
+                const response = await fetch('/api/scrape/alibaba', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        searchQuery,
+                        maxPrice,
+                        maxPages
+                    })
+                });
+                
+
+                const data = await response.json();
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                resultDiv.textContent = `Error: ${error.message}`;
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+    </script>
+    </body>
+</html>
