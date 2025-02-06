@@ -120,7 +120,7 @@ export async function scrapeAmazonProducts(req, res) {
     const maxPriceInCents = parseInt(maxPrice) * 100;
     // Construct the Amazon search URL.
     // Search with Price ---> &rh=p_36:0-${maxPriceInCents}
-    const url = `https://www.amazon.com/s?k=${formattedQuery}&rh=p_36:0-${maxPriceInCents}`;
+    const url = `https://www.amazon.com/s?k=${formattedQuery}`;
     console.log("Amazon URL:", url);
 
     await driver.get(url);
