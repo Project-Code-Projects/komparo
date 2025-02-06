@@ -1,8 +1,8 @@
+import { convertJsonToCsv } from "../utils/jsonToCsv.js";
 import { Builder, By, until } from "selenium-webdriver";
 import { Options } from "selenium-webdriver/edge.js";
 import { promises as fs } from "fs";
 import { fileURLToPath } from "url";
-import { convertJsonToCsv } from "../utils/json_to_csv.js";
 import path from "path";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -117,7 +117,7 @@ export async function scrapeAmazonProducts(req, res) {
     // Format search query (replace spaces with '+')
     const formattedQuery = searchQuery.split(" ").join("+");
     // Amazon's price filter uses price in cents.
-    const maxPriceInCents = parseInt(maxPrice) * 100;
+    // const maxPriceInCents = parseInt(maxPrice) * 100;
     // Construct the Amazon search URL.
     // Search with Price ---> &rh=p_36:0-${maxPriceInCents}
     const url = `https://www.amazon.com/s?k=${formattedQuery}`;
@@ -155,7 +155,7 @@ export async function scrapeAmazonProducts(req, res) {
 
     // Save results to a JSON file.
     // const fileName = `amazon_results.json`;
-    const filePath = path.join(__dirname, "results.json");
+    const filePath = path.join(__dirname, "../datasets/json/scraped_results.json");
 
     await fs.writeFile(filePath, JSON.stringify(allProducts, null, 2), "utf-8");
 

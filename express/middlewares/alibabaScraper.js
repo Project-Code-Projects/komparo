@@ -1,14 +1,14 @@
+import { convertJsonToCsv } from "../utils/jsonToCsv.js";
 import { Builder, By, until } from "selenium-webdriver";
 import { Options } from "selenium-webdriver/edge.js";
 import { promises as fs } from "fs";
 import { fileURLToPath } from "url";
-import { convertJsonToCsv } from "../utils/json_to_csv.js";
 import path from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-async function extractData(container, selector, attribute = null) {
+export async function extractData(container, selector, attribute = null) {
   try {
     const element = await container.findElement(By.css(selector));
     return attribute
@@ -19,16 +19,14 @@ async function extractData(container, selector, attribute = null) {
   }
 }
 
-async function applyNewFilter(driver) {
+export async function applyNewFilter(driver) {
   try {
     const filterSection = await driver.wait(
       until.elementLocated(By.className("searchx-filter-wrapper")),
       10000,
     );
 
-    const filterElements = await filterSection.findElements(
-      By.css(".searchx-filter-item__label"),
-    );
+    const filterElements = await filterSection.findElements(By.css('.searchx-filter-item__label'));
 
     for (const filterElement of filterElements) {
       const filterText = (await filterElement.getText()).toLowerCase();
@@ -36,9 +34,7 @@ async function applyNewFilter(driver) {
         console.log('Applying "New" filter...');
         try {
           const linkElement = await filterElement.findElement(
-            By.xpath(
-              "./ancestor::div[contains(@class, 'searchx-filter-item')]//a",
-            ),
+            By.xpath("./ancestor::div[contains(@class, 'searchx-filter-item')]//a")
           );
 
           await driver.wait(until.elementIsVisible(linkElement), 10000);
@@ -47,7 +43,7 @@ async function applyNewFilter(driver) {
           try {
             await linkElement.click();
           } catch (clickError) {
-            console.log("Using JavaScriptExecutor for click...");
+            console.log('Using JavaScriptExecutor for click...');
             await driver.executeScript("arguments[0].click();", linkElement);
           }
 
@@ -65,7 +61,7 @@ async function applyNewFilter(driver) {
   return false;
 }
 
-function isValidProduct(productData) {
+export async function isValidProduct(productData) {
   const requiredFields = ["title", "price", "image", "link"];
   for (const field of requiredFields) {
     if (!productData[field] || productData[field] === "nil") {
@@ -74,37 +70,34 @@ function isValidProduct(productData) {
     }
   }
 
-  if (productData.price.includes("-")) {
-    console.log("Skipping product: Price range detected");
+  if (productData.price.includes('-')) {
+    console.log('Skipping product: Price range detected');
     return false;
   }
 
-  if (!productData.price.includes("$")) {
-    // May need to change later
-    console.log("Skipping product: Invalid price format");
+  if (!productData.price.includes('$')) { // May need to change later
+    console.log('Skipping product: Invalid price format');
     return false;
   }
 
-  if (!productData.image.startsWith("http")) {
-    console.log("Skipping product: Invalid image URL");
+  if (!productData.image.startsWith('http')) {
+    console.log('Skipping product: Invalid image URL');
     return false;
   }
 
-  if (!productData.link.startsWith("http")) {
-    console.log("Skipping product: Invalid product URL");
+  if (!productData.link.startsWith('http')) {
+    console.log('Skipping product: Invalid product URL');
     return false;
   }
 
   return true;
 }
 
-async function scrapePage(driver) {
+export async function scrapePage(driver) {
   const productDataList = [];
 
   try {
-    const productContainers = await driver.findElements(
-      By.className("fy23-search-card"),
-    );
+    const productContainers = await driver.findElements(By.className('fy23-search-card'));
 
     if (!productContainers.length) {
       return [];
@@ -146,28 +139,27 @@ async function scrapePage(driver) {
 }
 
 export async function scrapeAlibabaProducts(req, res) {
-  console.log("Scraping Alibaba products...");
+  console.log('Scraping Alibaba products...');
   const { searchQuery, maxPrice = 1000, maxPages = 1 } = req.body;
 
-  console.log("Search query:", searchQuery);
-  console.log("Max price:", maxPrice);
-  console.log("Max pages:", maxPages);
+  console.log('Search query:', searchQuery);
+  console.log('Max price:', maxPrice);
+  console.log('Max pages:', maxPages);
 
   if (!searchQuery) {
-    return res.status(400).json({ error: "Search query is required" });
+    return res.status(400).json({ error: 'Search query is required' });
   }
 
   let driver;
 
   try {
     driver = await new Builder()
-      .forBrowser("MicrosoftEdge")
+      .forBrowser('MicrosoftEdge')
       .setEdgeOptions(new Options())
       .build();
 
-    const formattedQuery = searchQuery.split(" ").join("+");
-    // Search with Price ---> &pricet=${maxPrice}
-    const url = `https://www.alibaba.com/trade/search?fsb=y&mergeResult=true&ta=y&tab=all&searchText=${formattedQuery}`;
+    const formattedQuery = searchQuery.split(' ').join('+');
+    const url = `https://www.alibaba.com/trade/search?fsb=y&mergeResult=true&ta=y&tab=all&searchText=${formattedQuery}&pricet=${maxPrice}`;
 
     await driver.get(url);
     await driver.sleep(5000);
@@ -201,28 +193,33 @@ export async function scrapeAlibabaProducts(req, res) {
 
     // const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     // const fileName = `alibaba_results_${timestamp}.json`;
-    const filePath = path.join(__dirname, "results.json");
+    const filePath = path.join(__dirname, "../datasets/json/scraped_results.json");
 
-    await fs.writeFile(filePath, JSON.stringify(allProducts, null, 2), "utf-8");
+    await fs.writeFile(
+      filePath,
+      JSON.stringify(allProducts, null, 2),
+      'utf-8'
+    );
 
-    await convertJsonToCsv(searchQuery, filePath, "Alibaba");
+    await convertJsonToCsv(searchQuery, filePath, 'Alibaba');
 
     return res.status(200).json({
       success: true,
       results: allProducts,
       totalProducts: allProducts.length,
       pagesScraped: currentPage,
-      filePath,
+      filePath
     });
+
   } catch (error) {
-    console.error("Scraping error:", error);
+    console.error('Scraping error:', error);
     return res.status(500).json({
-      error: "An error occurred while scraping products",
-      details: error.message,
+      error: 'An error occurred while scraping products',
+      details: error.message
     });
   } finally {
     if (driver) {
-      console.log("Quitting driver...");
+      console.log('Quitting driver...');
       await driver.quit();
     }
   }
