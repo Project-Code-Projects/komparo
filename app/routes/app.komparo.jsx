@@ -17,10 +17,17 @@ export default function KomparoPage() {
   const products = data?.products || []
   const settings = {
     dots: true,
-    infinite: true,
+    infinite: false,
     speed: 500,
     slidesToShow: 3,
     slidesToScroll: 3
+  };
+  const settingsNew = {
+    dots: true,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 3,
   };
   setTimeout(() => {
     setLoading(true);
@@ -80,49 +87,57 @@ export default function KomparoPage() {
                             </article>
                           </section>
                           <section className="sc-2">
-                            <div className="slider-container">
+                            {/* <div className="slider-container">
                               {
                                 loading && 
                                 <Slider {...settings}>
-                                                              <article className="scrapped-data-card">
-                                                                <img src={scannedData?.imageUrl} className="scrapped-img" />
-                                                                <h6 className="scrapped-title">Temu</h6>
-                                                                <p className="scrapped-desc">{scannedData?.description}</p>
-                                                                <h5 className="scrapped-price">${scannedData?.price}</h5>
-                                                              </article>
-                                                              <article className="scrapped-data-card">
-                                                                <img src={scannedData?.imageUrl} className="scrapped-img" />
-                                                                <h6 className="scrapped-title">Amazon</h6>
-                                                                <p className="scrapped-desc">{scannedData?.description}</p>
-                                                                <h5 className="scrapped-price">${scannedData?.price}</h5>
-                                                              </article>
-                                                              <article className="scrapped-data-card">
-                                                                <img src={scannedData?.imageUrl} className="scrapped-img" />
-                                                                <h6 className="scrapped-title">Alibaba</h6>
-                                                                <p className="scrapped-desc">{scannedData?.description}</p>
-                                                                <h5 className="scrapped-price">${scannedData?.price}</h5>
-                                                              </article>
-                                                              <article className="scrapped-data-card">
-                                                                <img src={scannedData?.imageUrl} className="scrapped-img" />
-                                                                <h6 className="scrapped-title">Temu</h6>
-                                                                <p className="scrapped-desc">{scannedData?.description}</p>
-                                                                <h5 className="scrapped-price">${scannedData?.price}</h5>
-                                                              </article>
-                                                              <article className="scrapped-data-card">
-                                                                <img src={scannedData?.imageUrl} className="scrapped-img" />
-                                                                <h6 className="scrapped-title">Amazon</h6>
-                                                                <p className="scrapped-desc">{scannedData?.description}</p>
-                                                                <h5 className="scrapped-price">${scannedData?.price}</h5>
-                                                              </article>
-                                                              <article className="scrapped-data-card">
-                                                                <img src={scannedData?.imageUrl} className="scrapped-img" />
-                                                                <h6 className="scrapped-title">Alibaba</h6>
-                                                                <p className="scrapped-desc">{scannedData?.description}</p>
-                                                                <h5 className="scrapped-price">${scannedData?.price}</h5>
-                                                              </article>
                                 </Slider>
                               }
-                            </div>
+                            </div> */}
+                            <div className="image-slider-container">
+                            {
+                                loading && 
+                                <Slider {...settingsNew}>
+                                                              <article className="scrapped-data-card">
+                                                                <img src={scannedData?.imageUrl} className="scrapped-img" />
+                                                                <h6 className="scrapped-title">Temu</h6>
+                                                                <p className="scrapped-desc">{scannedData?.description}</p>
+                                                                <h5 className="scrapped-price">${scannedData?.price}</h5>
+                                                              </article>
+                                                              <article className="scrapped-data-card">
+                                                                <img src={scannedData?.imageUrl} className="scrapped-img" />
+                                                                <h6 className="scrapped-title">Amazon</h6>
+                                                                <p className="scrapped-desc">{scannedData?.description}</p>
+                                                                <h5 className="scrapped-price">${scannedData?.price}</h5>
+                                                              </article>
+                                                              <article className="scrapped-data-card">
+                                                                <img src={scannedData?.imageUrl} className="scrapped-img" />
+                                                                <h6 className="scrapped-title">Alibaba</h6>
+                                                                <p className="scrapped-desc">{scannedData?.description}</p>
+                                                                <h5 className="scrapped-price">${scannedData?.price}</h5>
+                                                              </article>
+                                                              <article className="scrapped-data-card">
+                                                                <img src={scannedData?.imageUrl} className="scrapped-img" />
+                                                                <h6 className="scrapped-title">Temu</h6>
+                                                                <p className="scrapped-desc">{scannedData?.description}</p>
+                                                                <h5 className="scrapped-price">${scannedData?.price}</h5>
+                                                              </article>
+                                                              <article className="scrapped-data-card">
+                                                                <img src={scannedData?.imageUrl} className="scrapped-img" />
+                                                                <h6 className="scrapped-title">Amazon</h6>
+                                                                <p className="scrapped-desc">{scannedData?.description}</p>
+                                                                <h5 className="scrapped-price">${scannedData?.price}</h5>
+                                                              </article>
+                                                              <article className="scrapped-data-card">
+                                                                <img src={scannedData?.imageUrl} className="scrapped-img" />
+                                                                <h6 className="scrapped-title">Alibaba</h6>
+                                                                <p className="scrapped-desc">{scannedData?.description}</p>
+                                                                <h5 className="scrapped-price">${scannedData?.price}</h5>
+                                                              </article>
+                              </Slider>
+                                }
+
+    </div>
                             <hr style={{ width: '95%', margin: '20px auto' }} />
                             <form style={{ textAlign: 'right', padding: '30px' }} onSubmit={(e) => {
                               e.preventDefault();

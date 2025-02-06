@@ -144,7 +144,7 @@
 }
 
 .scrapped-data-card {
-  margin: 0 25px;
+  /* margin-left: 10px; */
 }
 
 .scrapped-title {
@@ -257,7 +257,18 @@
   padding-bottom: 40px;
 }
 
-.slick-prev, .slick-next {
-  background-color: black !important;
-  border-radius: 15px;
+/* Slider */
+
+.slick-slide {
+  padding: 0 10px;
+  margin: 10px 0;
+}
+
+.image-slider-container .slick-prev:before,
+.image-slider-container .slick-next:before {
+  color: black;
+}
+
+.image-slider-container {
+  margin-bottom: 40px;
 }
