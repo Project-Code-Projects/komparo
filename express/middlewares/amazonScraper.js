@@ -4,6 +4,7 @@ import { Options } from "selenium-webdriver/edge.js";
 import { promises as fs } from "fs";
 import { fileURLToPath } from "url";
 import path from "path";
+import { uploadCsv } from "../utils/cloudinaryUtils.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -155,11 +156,18 @@ export async function scrapeAmazonProducts(req, res) {
 
     // Save results to a JSON file.
     // const fileName = `amazon_results.json`;
-    const filePath = path.join(__dirname, "../datasets/json/scraped_results.json");
+    const filePath = path.join(
+      __dirname,
+      "../datasets/json/scraped_results.json",
+    );
 
     await fs.writeFile(filePath, JSON.stringify(allProducts, null, 2), "utf-8");
 
-    await convertJsonToCsv(searchQuery, filePath, "Amazon");
+    //await convertJsonToCsv(searchQuery, filePath, "amazon");
+    const csvFilePath = await convertJsonToCsv(searchQuery, filePath, "amazon");
+    console.log("convertToCSV: ", csvFilePath);
+    const amazonUrl = await uploadCsv(csvFilePath, "amazon");
+    console.log("amazonURL: ", amazonUrl);
 
     return res.status(200).json({
       success: true,
@@ -167,6 +175,7 @@ export async function scrapeAmazonProducts(req, res) {
       totalProducts: allProducts.length,
       pagesScraped: currentPage,
       filePath,
+      amazonUrl,
     });
   } catch (error) {
     console.error("Scraping error:", error);

@@ -29,7 +29,9 @@ app.get("/", (req, res) => {
 
 app.listen(PORT, async (req, res) => {
   console.log(`✅  Server running on http://localhost:${PORT}`);
-  console.log(`✅  Scraper test page available at http://localhost:${PORT}/scraper-test.html`);
+  console.log(
+    `✅  Scraper test page available at http://localhost:${PORT}/scraper-test.html`,
+  );
   await connectDB();
 });
 
@@ -91,7 +93,7 @@ app.listen(PORT, async (req, res) => {
 //   }
 // });
 
-cron.schedule("*/2 * * * *", async () => {
+cron.schedule("*/1 * * * *", async () => {
   console.log(
     "Cron job triggered: scraping pending queries from PostgreSQL...",
   );
@@ -126,28 +128,34 @@ cron.schedule("*/2 * * * *", async () => {
           },
         );
 
-        const amazonResponse = await fetch(
-          "http://localhost:3001/api/scrape/alibaba",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              searchQuery,
-              maxPrice: 100, // adjust as needed; you could also store maxPrice in the DB
-              maxPages: 1,
-            }),
-          },
-        );
+        // const alibabaResponse = await fetch(
+        //   "http://localhost:3001/api/scrape/alibaba",
+        //   {
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/json" },
+        //     body: JSON.stringify({
+        //       searchQuery,
+        //       // maxPrice: 100,
+        //       // maxPages: 1,
+        //     }),
+        //   },
+        // );
 
-        const result = await response.json();
-        const result2 = await amazonResponse.json();
-        console.log("Scraping job result for", searchQuery, ":", result);
+        // const result = await response.json();
+        // const result2 = await alibabaResponse.json();
+        console.log(
+          "Scraping job result for",
+          searchQuery,
+          ":",
+          // alibabaResponse,
+          response,
+        );
 
         // Optionally update the status after successful scraping:
-        await db.query(
-          'UPDATE public."Comparator" SET status = $1 WHERE query = $2',
-          ["completed", searchQuery],
-        );
+        // await db.query(
+        //   'UPDATE public."Comparator" SET status = $1,alibaba = $2, amazon = $3 WHERE query = $4',
+        //   ["completed", alibabaResponse.alibabaUrl,searchQuery],
+        // );
       } catch (scrapeError) {
         console.error(
           `Error scraping for query "${searchQuery}":`,
