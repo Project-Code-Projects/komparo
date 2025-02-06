@@ -28,10 +28,8 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, async (req, res) => {
-  console.log(`Server running on http://localhost:${PORT}`);
-  console.log(
-    `Test page available at http://localhost:${PORT}/scraper-test.html`,
-  );
+  console.log(`✅  Server running on http://localhost:${PORT}`);
+  console.log(`✅  Scraper test page available at http://localhost:${PORT}/scraper-test.html`);
   await connectDB();
 });
 
