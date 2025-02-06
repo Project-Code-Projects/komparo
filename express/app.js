@@ -1,12 +1,13 @@
+import 'dotenv/config.js';
 import express from 'express';
 import path from 'path';
 import cors from 'cors';
-import { fileURLToPath } from 'url';
 import alibabaRouter from './routes/scraperRoute.js';
 import webhookRouter from './routes/webhookRoute.js';
 import updatePriceRouter from "./routes/updatePrice.js";
+import { fileURLToPath } from 'url';
 import { connectDB } from '../prisma/connectDB.js';
-import 'dotenv/config.js';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
