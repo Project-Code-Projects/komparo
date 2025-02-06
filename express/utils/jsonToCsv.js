@@ -13,7 +13,7 @@ export async function convertJsonToCsv(searchQuery, jsonFilePath, retailer) {
 
         const csvData = Papa.unparse(jsonData);
 
-        const csvDir = path.join(__dirname, 'csv');
+        const csvDir = path.join(__dirname, '../datasets/csv');
         await fs.mkdir(csvDir, { recursive: true });
 
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
