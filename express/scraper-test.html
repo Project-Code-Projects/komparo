@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Alibaba Scraper Test</title>
+        <title>Scraper Test</title>
         <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -97,7 +97,7 @@
             resultDiv.textContent = '';
 
             try {
-                const response = await fetch('/api/scrape/amazon', {
+                const response = await fetch('/api/scrape/alibaba', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
