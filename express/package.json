@@ -20,6 +20,7 @@
     "express": "^4.21.2",
     "ngrok": "^5.0.0-beta.2",
     "papaparse": "^5.5.2",
+    "node-cron": "^3.0.3",
     "prisma": "^6.3.0",
     "selenium-webdriver": "^4.28.1"
   },

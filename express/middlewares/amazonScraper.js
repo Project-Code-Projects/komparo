@@ -8,7 +8,6 @@ import path from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
 // Reusable function to extract text or attribute from an element.
 async function extractData(container, selector, attribute = null) {
   try {

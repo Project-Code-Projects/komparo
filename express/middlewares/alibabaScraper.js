@@ -26,9 +26,7 @@ export async function applyNewFilter(driver) {
       10000,
     );
 
-    const filterElements = await filterSection.findElements(
-      By.css(".searchx-filter-item__label"),
-    );
+    const filterElements = await filterSection.findElements(By.css('.searchx-filter-item__label'));
 
     for (const filterElement of filterElements) {
       const filterText = (await filterElement.getText()).toLowerCase();
@@ -36,9 +34,7 @@ export async function applyNewFilter(driver) {
         console.log('Applying "New" filter...');
         try {
           const linkElement = await filterElement.findElement(
-            By.xpath(
-              "./ancestor::div[contains(@class, 'searchx-filter-item')]//a",
-            ),
+            By.xpath("./ancestor::div[contains(@class, 'searchx-filter-item')]//a")
           );
 
           await driver.wait(until.elementIsVisible(linkElement), 10000);
@@ -47,7 +43,7 @@ export async function applyNewFilter(driver) {
           try {
             await linkElement.click();
           } catch (clickError) {
-            console.log("Using JavaScriptExecutor for click...");
+            console.log('Using JavaScriptExecutor for click...');
             await driver.executeScript("arguments[0].click();", linkElement);
           }
 
@@ -74,24 +70,23 @@ export async function isValidProduct(productData) {
     }
   }
 
-  if (productData.price.includes("-")) {
-    console.log("Skipping product: Price range detected");
+  if (productData.price.includes('-')) {
+    console.log('Skipping product: Price range detected');
     return false;
   }
 
-  if (!productData.price.includes("$")) {
-    // May need to change later
-    console.log("Skipping product: Invalid price format");
+  if (!productData.price.includes('$')) { // May need to change later
+    console.log('Skipping product: Invalid price format');
     return false;
   }
 
-  if (!productData.image.startsWith("http")) {
-    console.log("Skipping product: Invalid image URL");
+  if (!productData.image.startsWith('http')) {
+    console.log('Skipping product: Invalid image URL');
     return false;
   }
 
-  if (!productData.link.startsWith("http")) {
-    console.log("Skipping product: Invalid product URL");
+  if (!productData.link.startsWith('http')) {
+    console.log('Skipping product: Invalid product URL');
     return false;
   }
 
@@ -102,9 +97,7 @@ export async function scrapePage(driver) {
   const productDataList = [];
 
   try {
-    const productContainers = await driver.findElements(
-      By.className("fy23-search-card"),
-    );
+    const productContainers = await driver.findElements(By.className('fy23-search-card'));
 
     if (!productContainers.length) {
       return [];
@@ -146,28 +139,27 @@ export async function scrapePage(driver) {
 }
 
 export async function scrapeAlibabaProducts(req, res) {
-  console.log("Scraping Alibaba products...");
+  console.log('Scraping Alibaba products...');
   const { searchQuery, maxPrice = 1000, maxPages = 1 } = req.body;
 
-  console.log("Search query:", searchQuery);
-  console.log("Max price:", maxPrice);
-  console.log("Max pages:", maxPages);
+  console.log('Search query:', searchQuery);
+  console.log('Max price:', maxPrice);
+  console.log('Max pages:', maxPages);
 
   if (!searchQuery) {
-    return res.status(400).json({ error: "Search query is required" });
+    return res.status(400).json({ error: 'Search query is required' });
   }
 
   let driver;
 
   try {
     driver = await new Builder()
-      .forBrowser("MicrosoftEdge")
+      .forBrowser('MicrosoftEdge')
       .setEdgeOptions(new Options())
       .build();
 
-    const formattedQuery = searchQuery.split(" ").join("+");
-    // Search with Price ---> &pricet=${maxPrice}
-    const url = `https://www.alibaba.com/trade/search?fsb=y&mergeResult=true&ta=y&tab=all&searchText=${formattedQuery}`;
+    const formattedQuery = searchQuery.split(' ').join('+');
+    const url = `https://www.alibaba.com/trade/search?fsb=y&mergeResult=true&ta=y&tab=all&searchText=${formattedQuery}&pricet=${maxPrice}`;
 
     await driver.get(url);
     await driver.sleep(5000);
@@ -199,28 +191,35 @@ export async function scrapeAlibabaProducts(req, res) {
       }
     }
 
-    const filePath = path.join(__dirname, "../datasets/csv/scraped_results.json");
+    // const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    // const fileName = `alibaba_results_${timestamp}.json`;
+    const filePath = path.join(__dirname, "../datasets/json/scraped_results.json");
 
-    await fs.writeFile(filePath, JSON.stringify(allProducts, null, 2), "utf-8");
+    await fs.writeFile(
+      filePath,
+      JSON.stringify(allProducts, null, 2),
+      'utf-8'
+    );
 
-    await convertJsonToCsv(searchQuery, filePath, "Alibaba");
+    await convertJsonToCsv(searchQuery, filePath, 'Alibaba');
 
     return res.status(200).json({
       success: true,
       results: allProducts,
       totalProducts: allProducts.length,
       pagesScraped: currentPage,
-      filePath,
+      filePath
     });
+
   } catch (error) {
-    console.error("Scraping error:", error);
+    console.error('Scraping error:', error);
     return res.status(500).json({
-      error: "An error occurred while scraping products",
-      details: error.message,
+      error: 'An error occurred while scraping products',
+      details: error.message
     });
   } finally {
     if (driver) {
-      console.log("Quitting driver...");
+      console.log('Quitting driver...');
       await driver.quit();
     }
   }
