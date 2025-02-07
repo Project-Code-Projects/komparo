@@ -1,26 +1,27 @@
-import { Layout, Text } from "@shopify/polaris"
-import { useLoaderData } from "@remix-run/react"
-import { loader } from "../utils/fetch.products"
-import "../styles/komparo.css"
-import { useState } from "react"
+import { Layout, Text } from "@shopify/polaris";
+import { useLoaderData } from "@remix-run/react";
+import { loader } from "../utils/fetch.products";
+import "../styles/komparo.css";
+import { useState } from "react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 
-export { loader }
+export { loader };
 
 export default function KomparoPage() {
   const [scannedData, setScannedData] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const data = useLoaderData()
-  const products = data?.products || []
+  const [newPrice, setNewPrice] = useState("");
+  const data = useLoaderData();
+  const products = data?.products || [];
   const settings = {
     dots: true,
     infinite: false,
     speed: 500,
     slidesToShow: 3,
-    slidesToScroll: 3
+    slidesToScroll: 3,
   };
   const settingsNew = {
     dots: true,
@@ -53,36 +54,96 @@ export default function KomparoPage() {
   // function openModal() {
   //   modal.classList.remove("hidden");
   // }
+  async function updatePrice() {
+    if (!scannedData || !newPrice) return alert("Please enter a price.");
+
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:3001/api/updatePrice", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId: scannedData.id,
+          newPrice: parseFloat(newPrice),
+        }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        alert("Price updated successfully!");
+      } else {
+        throw new Error(result.error || "Failed to update price.");
+      }
+    } catch (error) {
+      console.error("Error updating price:", error);
+      alert("Failed to update price.");
+    } finally {
+      setLoading(false);
+    }
+  }
   return (
-    <main style={{ padding: '60px', paddingTop: '80px', backgroundColor: '#3D3D3D' }}>
+    <main
+      style={{
+        padding: "60px",
+        paddingTop: "80px",
+        backgroundColor: "#3D3D3D",
+      }}
+    >
       <div className="back-ground">
         <Layout>
           <Layout.Section>
             <h3 className="heading">Your Products</h3>
             <div className="container">
-
               {products.length > 0 ? (
                 <>
                   <div className="grid">
                     {products.map((product) => (
-                      <ProductCard key={product.id}
+                      <ProductCard
+                        key={product.id}
                         product={product}
-                        setScannedData={setScannedData} setShowModal={setShowModal}
+                        setScannedData={setScannedData}
+                        setShowModal={setShowModal}
                       />
                     ))}
                   </div>
 
-                  <div className="modal" style={{ display: showModal ? 'block' : 'none' }}>
+                  <div
+                    className="modal"
+                    style={{ display: showModal ? "block" : "none" }}
+                  >
                     <div className="modal-content">
                       <div className="modal-body">
                         <div>
                           <section className="sc-1">
-                            <img src={scannedData?.imageUrl} className="image-scan" />
+                            <img
+                              src={scannedData?.imageUrl}
+                              className="image-scan"
+                            />
                             <article className="card-body">
-                              <h3 className="scan-title">{scannedData?.title}</h3>
-                              <h4 className="price" style={{ fontSize: '22px' }}>${scannedData?.price}</h4>
-                              <p className="scan-desc" style={{ padding: '25px', backgroundColor: 'white', borderRadius: '20px', marginTop: '20px' }}>
-                                {scannedData?.description && scannedData.description.length != 0 ? scannedData.description : 'No description provided!'}
+                              <h3 className="scan-title">
+                                {scannedData?.title}
+                              </h3>
+                              <h4
+                                className="price"
+                                style={{ fontSize: "22px" }}
+                              >
+                                ${scannedData?.price}
+                              </h4>
+                              <p
+                                className="scan-desc"
+                                style={{
+                                  padding: "25px",
+                                  backgroundColor: "white",
+                                  borderRadius: "20px",
+                                  marginTop: "20px",
+                                }}
+                              >
+                                {scannedData?.description &&
+                                scannedData.description.length != 0
+                                  ? scannedData.description
+                                  : "No description provided!"}
                               </p>
                             </article>
                           </section>
@@ -148,10 +209,17 @@ export default function KomparoPage() {
                               <button style={{ color: "white", backgroundColor: '#54BAB9', border: 'none', padding: '8px 20px', borderRadius: '22px', fontSize: '18px', cursor: 'pointer' }} type="submit" className="btn">Update</button>
                             </form>
                           </section>
-                          <p style={{textAlign: 'center', marginTop: '30px'}}>
-                          <button type="button" className="" onClick={() => {
-                          setShowModal(false); setScannedData(null);
-                        }}>Close</button>
+                          <p style={{ textAlign: "center", marginTop: "30px" }}>
+                            <button
+                              type="button"
+                              className=""
+                              onClick={() => {
+                                setShowModal(false);
+                                setScannedData(null);
+                              }}
+                            >
+                              Close
+                            </button>
                           </p>
                         </div>
                       </div>
@@ -159,11 +227,27 @@ export default function KomparoPage() {
                   </div>
 
                   <div className="pagination-container">
-                    <button className="pagination-arrow" style={{ borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px' }}><img className="" src="/Polygon 36.png" /></button>
+                    <button
+                      className="pagination-arrow"
+                      style={{
+                        borderTopLeftRadius: "12px",
+                        borderBottomLeftRadius: "12px",
+                      }}
+                    >
+                      <img className="" src="/Polygon 36.png" />
+                    </button>
                     <button className="pagination-button">1</button>
                     <button className="pagination-button">2</button>
                     <button className="pagination-button">3</button>
-                    <button className="pagination-arrow" style={{ borderTopRightRadius: '12px', borderBottomRightRadius: '12px' }}><img className="" src="/Polygon 37.png" /></button>
+                    <button
+                      className="pagination-arrow"
+                      style={{
+                        borderTopRightRadius: "12px",
+                        borderBottomRightRadius: "12px",
+                      }}
+                    >
+                      <img className="" src="/Polygon 37.png" />
+                    </button>
                   </div>
                 </>
               ) : (
@@ -174,11 +258,10 @@ export default function KomparoPage() {
         </Layout>
       </div>
     </main>
-  )
+  );
 }
 
 function ProductCard({ product, setShowModal, setScannedData }) {
-
   function scanHandler(data) {
     setScannedData(data);
     setShowModal(true);
@@ -186,15 +269,15 @@ function ProductCard({ product, setShowModal, setScannedData }) {
   }
   return (
     <div className="card" onClick={() => scanHandler(product)}>
-      <img src={product.imageUrl || "/placeholder.svg"} alt={product.title} className="image" />
+      <img
+        src={product.imageUrl || "/placeholder.svg"}
+        alt={product.title}
+        className="image"
+      />
       <div>
-        <h5 className="title">
-          {product.title}
-        </h5>
-        <p className="price">
-          ${product.price}
-        </p>
+        <h5 className="title">{product.title}</h5>
+        <p className="price">${product.price}</p>
       </div>
     </div>
-  )
+  );
 }
