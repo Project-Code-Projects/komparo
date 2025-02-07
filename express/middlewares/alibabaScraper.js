@@ -214,7 +214,7 @@ export async function scrapeAlibabaProducts(req, res) {
       "Alibaba",
     );
     const alibabaUrl = await uploadCsv(csvFilePath);
-    console.log("alibaab: ", alibabaUrl);
+    console.log("alibaba: ", alibabaUrl);
     return res.status(200).json({ url: alibabaUrl });
     // return res.status(200).json({
     //   success: true,
