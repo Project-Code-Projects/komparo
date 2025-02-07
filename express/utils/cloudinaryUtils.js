@@ -36,7 +36,7 @@ export async function downloadCsv(fileUrl) {
       responseType: "stream",
     });
 
-    const outputPath = path.join(__dirname, "csv/downloaded_file.csv");
+    const outputPath = path.join(__dirname, "../datasets/csv/downloaded_file.csv");
     const writer = fs.createWriteStream(outputPath);
 
     response.data.pipe(writer);
@@ -48,19 +48,20 @@ export async function downloadCsv(fileUrl) {
 
     console.log("CSV file downloaded successfully to:", outputPath);
 
-    const results = await convertCsvToJson(
+    const formattedData = await convertCsvToJson(
       outputPath,
       "../datasets/json/display_results.json",
     );
 
-    console.log("Converted CSV to JSON successfully:", results);
+    console.log("Converted CSV to JSON successfully:", formattedData);
 
-    return results;
+    return formattedData;
   } catch (error) {
     console.error("Error downloading CSV:", fileUrl);
+    return;
   }
 }
 
 // Example Usage
-// uploadCsv("./csv/man's_t-shirt_Alibaba_2025-02-05T07-43-01-428Z_data.csv");
-// downloadCsv("https://res.cloudinary.com/dganhxhid/raw/upload/v1738836532/csv_alibaba/oxdndhttmqqw5aktdwnm.csv");
+// uploadCsv("../datasets/csv/downloaded_file.csv");
+// downloadCsv("https://res.cloudinary.com/dganhxhid/raw/upload/v1738969254/csv_alibaba/kbxwzvwc38wwxqz9wii8.csv");
