@@ -213,15 +213,17 @@ export async function scrapeAlibabaProducts(req, res) {
       filePath,
       "Alibaba",
     );
-    const alibabaUrl = uploadCsv(csvFilePath);
-    return res.status(200).json({
-      success: true,
-      results: allProducts,
-      totalProducts: allProducts.length,
-      pagesScraped: currentPage,
-      filePath,
-      alibabaUrl,
-    });
+    const alibabaUrl = await uploadCsv(csvFilePath);
+    console.log("alibaab: ", alibabaUrl);
+    return res.status(200).json({ url: alibabaUrl });
+    // return res.status(200).json({
+    //   success: true,
+    //   results: allProducts,
+    //   totalProducts: allProducts.length,
+    //   pagesScraped: currentPage,
+    //   filePath,
+    //   alibabaUrl,
+    // });
   } catch (error) {
     console.error("Scraping error:", error);
     return res.status(500).json({

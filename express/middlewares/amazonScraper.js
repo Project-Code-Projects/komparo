@@ -169,14 +169,7 @@ export async function scrapeAmazonProducts(req, res) {
     const amazonUrl = await uploadCsv(csvFilePath, "amazon");
     console.log("amazonURL: ", amazonUrl);
 
-    return res.status(200).json({
-      success: true,
-      results: allProducts,
-      totalProducts: allProducts.length,
-      pagesScraped: currentPage,
-      filePath,
-      amazonUrl,
-    });
+    return res.status(200).json({ url: amazonUrl });
   } catch (error) {
     console.error("Scraping error:", error);
     return res.status(500).json({
