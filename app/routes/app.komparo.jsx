@@ -148,65 +148,169 @@ export default function KomparoPage() {
                             </article>
                           </section>
                           <section className="sc-2">
-                            {/* <div className="slider-container">
-                              {
-                                loading && 
-                                <Slider {...settings}>
-                                </Slider>
-                              }
-                            </div> */}
                             <div className="image-slider-container">
-                            {
-                                loading && 
+                              {loading && (
                                 <Slider {...settingsNew}>
-                                                              <article className="scrapped-data-card">
-                                                                <img src={scannedData?.imageUrl} className="scrapped-img" />
-                                                                <h6 className="scrapped-title">Temu</h6>
-                                                                <p className="scrapped-desc">{scannedData?.description}</p>
-                                                                <h5 className="scrapped-price">${scannedData?.price}</h5>
-                                                              </article>
-                                                              <article className="scrapped-data-card">
-                                                                <img src={scannedData?.imageUrl} className="scrapped-img" />
-                                                                <h6 className="scrapped-title">Amazon</h6>
-                                                                <p className="scrapped-desc">{scannedData?.description}</p>
-                                                                <h5 className="scrapped-price">${scannedData?.price}</h5>
-                                                              </article>
-                                                              <article className="scrapped-data-card">
-                                                                <img src={scannedData?.imageUrl} className="scrapped-img" />
-                                                                <h6 className="scrapped-title">Alibaba</h6>
-                                                                <p className="scrapped-desc">{scannedData?.description}</p>
-                                                                <h5 className="scrapped-price">${scannedData?.price}</h5>
-                                                              </article>
-                                                              <article className="scrapped-data-card">
-                                                                <img src={scannedData?.imageUrl} className="scrapped-img" />
-                                                                <h6 className="scrapped-title">Temu</h6>
-                                                                <p className="scrapped-desc">{scannedData?.description}</p>
-                                                                <h5 className="scrapped-price">${scannedData?.price}</h5>
-                                                              </article>
-                                                              <article className="scrapped-data-card">
-                                                                <img src={scannedData?.imageUrl} className="scrapped-img" />
-                                                                <h6 className="scrapped-title">Amazon</h6>
-                                                                <p className="scrapped-desc">{scannedData?.description}</p>
-                                                                <h5 className="scrapped-price">${scannedData?.price}</h5>
-                                                              </article>
-                                                              <article className="scrapped-data-card">
-                                                                <img src={scannedData?.imageUrl} className="scrapped-img" />
-                                                                <h6 className="scrapped-title">Alibaba</h6>
-                                                                <p className="scrapped-desc">{scannedData?.description}</p>
-                                                                <h5 className="scrapped-price">${scannedData?.price}</h5>
-                                                              </article>
-                              </Slider>
-                                }
-
-    </div>
-                            <hr style={{ width: '95%', margin: '20px auto' }} />
-                            <form style={{ textAlign: 'right', padding: '30px' }} onSubmit={(e) => {
-                              e.preventDefault();
-                              console.log(e.target.price.value);
-                            }}>
-                              <p style={{ fontSize: '18px', marginBottom: '25px', textAlign: 'left' }}><span className="btn" style={{ fontWeight: 'bold' }}>Current Price &nbsp; &nbsp;$</span><span className="form-input-default" style={{ fontWeight: '600', marginLeft: '8px', padding: '10px', paddingRight: '40px', borderRadius: '10px' }}>{scannedData?.price}</span></p>
-                              <p style={{ fontSize: '18px', marginLeft: '25px', textAlign: 'left' }}><span className="btn" style={{ fontWeight: 'bold' }}>New Price &nbsp; &nbsp;$</span> <input className="form-input-default" style={{ fontWeight: '600', width: '98px', marginLeft: '8px', border: 'none', padding: '10px', borderRadius: '10px', fontSize: '18px' }} name="price" type="number" /></p>
-                              <button style={{ color: "white", backgroundColor: '#54BAB9', border: 'none', padding: '8px 20px', borderRadius: '22px', fontSize: '18px', cursor: 'pointer' }} type="submit" className="btn">Update</button>
+                                  <article className="scrapped-data-card">
+                                    <img
+                                      src={scannedData?.imageUrl}
+                                      className="scrapped-img"
+                                    />
+                                    <h6 className="scrapped-title">Temu</h6>
+                                    <p className="scrapped-desc">
+                                      {scannedData?.description}
+                                    </p>
+                                    <h5 className="scrapped-price">
+                                      ${scannedData?.price}
+                                    </h5>
+                                  </article>
+                                  <article className="scrapped-data-card">
+                                    <img
+                                      src={scannedData?.imageUrl}
+                                      className="scrapped-img"
+                                    />
+                                    <h6 className="scrapped-title">Amazon</h6>
+                                    <p className="scrapped-desc">
+                                      {scannedData?.description}
+                                    </p>
+                                    <h5 className="scrapped-price">
+                                      ${scannedData?.price}
+                                    </h5>
+                                  </article>
+                                  <article className="scrapped-data-card">
+                                    <img
+                                      src={scannedData?.imageUrl}
+                                      className="scrapped-img"
+                                    />
+                                    <h6 className="scrapped-title">Alibaba</h6>
+                                    <p className="scrapped-desc">
+                                      {scannedData?.description}
+                                    </p>
+                                    <h5 className="scrapped-price">
+                                      ${scannedData?.price}
+                                    </h5>
+                                  </article>
+                                  <article className="scrapped-data-card">
+                                    <img
+                                      src={scannedData?.imageUrl}
+                                      className="scrapped-img"
+                                    />
+                                    <h6 className="scrapped-title">Temu</h6>
+                                    <p className="scrapped-desc">
+                                      {scannedData?.description}
+                                    </p>
+                                    <h5 className="scrapped-price">
+                                      ${scannedData?.price}
+                                    </h5>
+                                  </article>
+                                  <article className="scrapped-data-card">
+                                    <img
+                                      src={scannedData?.imageUrl}
+                                      className="scrapped-img"
+                                    />
+                                    <h6 className="scrapped-title">Amazon</h6>
+                                    <p className="scrapped-desc">
+                                      {scannedData?.description}
+                                    </p>
+                                    <h5 className="scrapped-price">
+                                      ${scannedData?.price}
+                                    </h5>
+                                  </article>
+                                  <article className="scrapped-data-card">
+                                    <img
+                                      src={scannedData?.imageUrl}
+                                      className="scrapped-img"
+                                    />
+                                    <h6 className="scrapped-title">Alibaba</h6>
+                                    <p className="scrapped-desc">
+                                      {scannedData?.description}
+                                    </p>
+                                    <h5 className="scrapped-price">
+                                      ${scannedData?.price}
+                                    </h5>
+                                  </article>
+                                </Slider>
+                              )}
+                            </div>
+                            <hr style={{ width: "95%", margin: "20px auto" }} />
+                            <form
+                              style={{ textAlign: "right", padding: "30px" }}
+                              onSubmit={(e) => {
+                                e.preventDefault();
+                                console.log(e.target.price.value);
+                              }}
+                            >
+                              <p
+                                style={{
+                                  fontSize: "18px",
+                                  marginBottom: "25px",
+                                  textAlign: "left",
+                                }}
+                              >
+                                <span
+                                  className="btn"
+                                  style={{ fontWeight: "bold" }}
+                                >
+                                  Current Price &nbsp; &nbsp;$
+                                </span>
+                                <span
+                                  className="form-input-default"
+                                  style={{
+                                    fontWeight: "600",
+                                    marginLeft: "8px",
+                                    padding: "10px",
+                                    paddingRight: "40px",
+                                    borderRadius: "10px",
+                                  }}
+                                >
+                                  {scannedData?.price}
+                                </span>
+                              </p>
+                              <p
+                                style={{
+                                  fontSize: "18px",
+                                  marginLeft: "25px",
+                                  textAlign: "left",
+                                }}
+                              >
+                                <span
+                                  className="btn"
+                                  style={{ fontWeight: "bold" }}
+                                >
+                                  New Price &nbsp; &nbsp;$
+                                </span>{" "}
+                                <input
+                                  className="form-input-default"
+                                  style={{
+                                    fontWeight: "600",
+                                    width: "98px",
+                                    marginLeft: "8px",
+                                    border: "none",
+                                    padding: "10px",
+                                    borderRadius: "10px",
+                                    fontSize: "18px",
+                                  }}
+                                  onChange={(e) => setNewPrice(e.target.value)}
+                                  name="price"
+                                  type="number"
+                                />
+                              </p>
+                              <button
+                                style={{
+                                  color: "white",
+                                  backgroundColor: "#54BAB9",
+                                  border: "none",
+                                  padding: "8px 20px",
+                                  borderRadius: "22px",
+                                  fontSize: "18px",
+                                  cursor: "pointer",
+                                }}
+                                type="submit"
+                                className="btn"
+                                onClick={updatePrice}
+                              >
+                                Update
+                              </button>
                             </form>
                           </section>
                           <p style={{ textAlign: "center", marginTop: "30px" }}>
