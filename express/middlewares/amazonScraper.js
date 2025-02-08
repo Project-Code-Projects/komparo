@@ -49,10 +49,7 @@ async function scrapePage(driver) {
       By.css("div.s-result-item"),
     );
     //"div[data-component-type='s-search-result']"
-    // const productContainers = await driver.findElements(
-    //   By.css("div.s-result-item"),
-    // );
-    //console.log("Product Container: ", productContainers);
+
     if (!productContainers.length) {
       console.log("No products found on this page.");
       return [];
@@ -70,6 +67,7 @@ async function scrapePage(driver) {
             container,
             "span.a-price span.a-price-whole",
           ),
+          nop: await extractData(container, "span.a-size-base"),
           image: await extractData(container, "img.s-image", "src"),
           link: await extractData(
             container,

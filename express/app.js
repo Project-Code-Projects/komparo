@@ -66,8 +66,8 @@ cron.schedule("10 * * * * *", async () => {
 
       try {
         const amazonResponse = await scrapeAmazonProducts(searchQuery);
-
         const alibabaResponse = await scrapeAlibabaProducts(searchQuery);
+
         // await fetch(
         //   "http://localhost:3001/api/scrape/alibaba",
         //   {

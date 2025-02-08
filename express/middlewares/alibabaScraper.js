@@ -122,6 +122,10 @@ export async function scrapePage(driver) {
             ".search-card-m-sale-features__item",
           ),
           rating: await extractData(container, ".search-card-e-review strong"),
+          nop: await extractData(
+            container,
+            "div.search-card-e-market-power-common",
+          ),
           image: await extractData(
             container,
             "a.search-card-e-slider__link img.search-card-e-slider__img",
@@ -220,15 +224,6 @@ export async function scrapeAlibabaProducts(
     const alibabaUrl = await uploadCsv(csvFilePath);
     console.log("alibaba: ", alibabaUrl);
     return alibabaUrl;
-    //return res.status(200).json({ url: alibabaUrl });
-    // return res.status(200).json({
-    //   success: true,
-    //   results: allProducts,
-    //   totalProducts: allProducts.length,
-    //   pagesScraped: currentPage,
-    //   filePath,
-    //   alibabaUrl,
-    // });
   } catch (error) {
     console.error("Scraping error:", error);
     return res.status(500).json({
