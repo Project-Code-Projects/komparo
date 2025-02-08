@@ -147,7 +147,7 @@
 }
 
 .scrapped-data-card {
-  /* margin-left: 10px; */
+  position: relative;
 }
 
 
@@ -163,6 +163,8 @@
   font-size: 16px;
   font-weight: 800;
   text-align: left;
+  margin: 5px;
+  margin-left: 3px;
 }
 
 .back-btn {
@@ -177,10 +179,11 @@
   font-family: "Judson", serif;
 }
 
-.scan-desc {
+/* .scan-desc {
   font-family: "Fustat", serif;
   font-size: 11px;
-}
+  text-align: justify;
+} */
 
 .form-input-default {
   font-family: "Lusitana", serif;
@@ -188,16 +191,29 @@
 }
 
 .brand-logo {
-  border: 1px solid black;
+  width: 20%;
+  padding: 0 5px;
+  border-left: 1px solid #3d3d3d;
+  border-bottom: 1px solid #3d3d3d;
+  /* background-color: rgba(102, 102, 102, 0.4); */
+  background-color: #fdfdfd;
   text-align: center;
-  border-bottom-left-radius: 15px;
-  border-bottom-right-radius: 15px;
+  border-bottom-left-radius: 10px;
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .brand-logo svg {
-  width: 18%;
+  width: 100%;
   height: auto;
   margin-top: 5px;
+}
+
+.scraped-title {
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: bold;
 }
 
 /* The Modal (background) */
