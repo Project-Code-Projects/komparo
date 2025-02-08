@@ -49,10 +49,7 @@ async function scrapePage(driver) {
       By.css("div.s-result-item"),
     );
     //"div[data-component-type='s-search-result']"
-    // const productContainers = await driver.findElements(
-    //   By.css("div.s-result-item"),
-    // );
-    //console.log("Product Container: ", productContainers);
+
     if (!productContainers.length) {
       console.log("No products found on this page.");
       return [];
@@ -70,6 +67,7 @@ async function scrapePage(driver) {
             container,
             "span.a-price span.a-price-whole",
           ),
+          nop: await extractData(container, "span.a-size-base"),
           image: await extractData(container, "img.s-image", "src"),
           link: await extractData(
             container,
@@ -95,9 +93,13 @@ async function scrapePage(driver) {
 }
 
 // Main function to scrape Amazon products based on a search query and price filter.
-export async function scrapeAmazonProducts(req, res) {
+export async function scrapeAmazonProducts(
+  searchQuery,
+  maxPrice = 1000,
+  maxPages = 1,
+) {
   console.log("Scraping Amazon products...");
-  const { searchQuery, maxPrice = 1000, maxPages = 1 } = req.body;
+  //const { searchQuery, maxPrice = 1000, maxPages = 1 } = req.body;
 
   console.log("Search query:", searchQuery);
   console.log("Max price:", maxPrice);
@@ -168,8 +170,8 @@ export async function scrapeAmazonProducts(req, res) {
     console.log("convertToCSV: ", csvFilePath);
     const amazonUrl = await uploadCsv(csvFilePath, "amazon");
     console.log("amazonURL: ", amazonUrl);
-
-    return res.status(200).json({ url: amazonUrl });
+    return amazonUrl;
+    //return res.status(200).json({ url: amazonUrl });
   } catch (error) {
     console.error("Scraping error:", error);
     return res.status(500).json({
