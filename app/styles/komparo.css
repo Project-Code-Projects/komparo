@@ -22,7 +22,7 @@
 
 .image {
   width: 100%;
-  height: 71%;
+  height: 217px;
   border-radius: 50px;
   margin-bottom: 15px;
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -188,10 +188,16 @@
 }
 
 .brand-logo {
-  width: 100%;
-  height: 50px;
+  border: 1px solid black;
+  text-align: center;
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
+}
+
+.brand-logo svg {
+  width: 18%;
+  height: auto;
+  margin-top: 5px;
 }
 
 /* The Modal (background) */
