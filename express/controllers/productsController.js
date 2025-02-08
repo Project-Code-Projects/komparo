@@ -1,13 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import { fileURLToPath } from "url";
 import { downloadCsv } from '../utils/cloudinaryUtils.js';
-import fs from "fs";
 import path from "path";
 
 const prisma = new PrismaClient();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export const getScrapedProducts = async (req, res) => {
     try {
