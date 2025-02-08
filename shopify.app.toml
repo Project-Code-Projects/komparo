@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "36c68ffb8e0d642626679a4448405849"
-application_url = "https://webcast-invitations-near-fist.trycloudflare.com"
+application_url = "https://absence-hitachi-tests-muscle.trycloudflare.com"
 embedded = true
 name = "price-comparison-app"
 handle = "price-comparison-app"
@@ -23,9 +23,9 @@ scopes = "write_products, read_products"
 
 [auth]
 redirect_urls = [
-  "https://webcast-invitations-near-fist.trycloudflare.com/auth/callback",
-  "https://webcast-invitations-near-fist.trycloudflare.com/auth/shopify/callback",
-  "https://webcast-invitations-near-fist.trycloudflare.com/api/auth/callback"
+  "https://absence-hitachi-tests-muscle.trycloudflare.com/auth/callback",
+  "https://absence-hitachi-tests-muscle.trycloudflare.com/auth/shopify/callback",
+  "https://absence-hitachi-tests-muscle.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
