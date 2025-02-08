@@ -1,14 +1,15 @@
+import { convertJsonToCsv } from "../utils/jsonToCsv.js";
 import { Builder, By, until } from "selenium-webdriver";
 import { Options } from "selenium-webdriver/edge.js";
 import { promises as fs } from "fs";
 import { fileURLToPath } from "url";
-import { convertJsonToCsv } from "../utils/json_to_csv.js";
 import path from "path";
+import { uploadCsv } from "../utils/cloudinaryUtils.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-async function extractData(container, selector, attribute = null) {
+export async function extractData(container, selector, attribute = null) {
   try {
     const element = await container.findElement(By.css(selector));
     return attribute
@@ -19,7 +20,7 @@ async function extractData(container, selector, attribute = null) {
   }
 }
 
-async function applyNewFilter(driver) {
+export async function applyNewFilter(driver) {
   try {
     const filterSection = await driver.wait(
       until.elementLocated(By.className("searchx-filter-wrapper")),
@@ -65,7 +66,7 @@ async function applyNewFilter(driver) {
   return false;
 }
 
-function isValidProduct(productData) {
+export async function isValidProduct(productData) {
   const requiredFields = ["title", "price", "image", "link"];
   for (const field of requiredFields) {
     if (!productData[field] || productData[field] === "nil") {
@@ -98,7 +99,7 @@ function isValidProduct(productData) {
   return true;
 }
 
-async function scrapePage(driver) {
+export async function scrapePage(driver) {
   const productDataList = [];
 
   try {
@@ -164,9 +165,8 @@ export async function scrapeAlibabaProducts(req, res) {
       .forBrowser("MicrosoftEdge")
       .setEdgeOptions(new Options())
       .build();
-
+    //&pricet=${maxPrice}
     const formattedQuery = searchQuery.split(" ").join("+");
-    // Search with Price ---> &pricet=${maxPrice}
     const url = `https://www.alibaba.com/trade/search?fsb=y&mergeResult=true&ta=y&tab=all&searchText=${formattedQuery}`;
 
     await driver.get(url);
@@ -201,19 +201,29 @@ export async function scrapeAlibabaProducts(req, res) {
 
     // const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     // const fileName = `alibaba_results_${timestamp}.json`;
-    const filePath = path.join(__dirname, "results.json");
+    const filePath = path.join(
+      __dirname,
+      "../datasets/json/scraped_results.json",
+    );
 
     await fs.writeFile(filePath, JSON.stringify(allProducts, null, 2), "utf-8");
 
-    await convertJsonToCsv(searchQuery, filePath, "Alibaba");
-
-    return res.status(200).json({
-      success: true,
-      results: allProducts,
-      totalProducts: allProducts.length,
-      pagesScraped: currentPage,
+    const csvFilePath = await convertJsonToCsv(
+      searchQuery,
       filePath,
-    });
+      "Alibaba",
+    );
+    const alibabaUrl = await uploadCsv(csvFilePath);
+    console.log("alibaba: ", alibabaUrl);
+    return res.status(200).json({ url: alibabaUrl });
+    // return res.status(200).json({
+    //   success: true,
+    //   results: allProducts,
+    //   totalProducts: allProducts.length,
+    //   pagesScraped: currentPage,
+    //   filePath,
+    //   alibabaUrl,
+    // });
   } catch (error) {
     console.error("Scraping error:", error);
     return res.status(500).json({
