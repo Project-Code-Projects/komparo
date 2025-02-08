@@ -146,9 +146,13 @@ export async function scrapePage(driver) {
   return productDataList;
 }
 
-export async function scrapeAlibabaProducts(req, res) {
+export async function scrapeAlibabaProducts(
+  searchQuery,
+  maxPrice = 1000,
+  maxPages = 1,
+) {
   console.log("Scraping Alibaba products...");
-  const { searchQuery, maxPrice = 1000, maxPages = 1 } = req.body;
+  //const { searchQuery, maxPrice = 1000, maxPages = 1 } = req.body;
 
   console.log("Search query:", searchQuery);
   console.log("Max price:", maxPrice);
@@ -215,7 +219,8 @@ export async function scrapeAlibabaProducts(req, res) {
     );
     const alibabaUrl = await uploadCsv(csvFilePath);
     console.log("alibaba: ", alibabaUrl);
-    return res.status(200).json({ url: alibabaUrl });
+    return alibabaUrl;
+    //return res.status(200).json({ url: alibabaUrl });
     // return res.status(200).json({
     //   success: true,
     //   results: allProducts,
