@@ -199,6 +199,7 @@
   background-color: #fdfdfd;
   text-align: center;
   border-bottom-left-radius: 10px;
+  border-top-right-radius: 10px;
   position: absolute;
   top: 0;
   right: 0;
