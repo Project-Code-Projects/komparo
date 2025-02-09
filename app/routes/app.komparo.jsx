@@ -23,6 +23,7 @@ export default function KomparoPage() {
   const [amazonProducts, setAmazonProducts] = useState([]);
   const [newPrice, setNewPrice] = useState("");
   const [toasterMessage, setToasterMessage] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
 
   async function updatePrice() {
     if (!newPrice) return alert("Please enter a price.");
@@ -86,6 +87,21 @@ export default function KomparoPage() {
   function paginationHandler(x) {
     setCardItems(products.slice((x * 9), (x * 9) + 9));
   }
+
+  const handlePrevPage = () => {
+    if (currentPage > 0) {
+      paginationHandler(currentPage - 1);
+      setCurrentPage(currentPage - 1);
+    }
+  };
+  
+  const handleNextPage = () => {
+    if (currentPage < arr.length - 1) {
+      paginationHandler(currentPage + 1);
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
   const settings = {
     dots: true,
     infinite: false,
@@ -303,13 +319,35 @@ export default function KomparoPage() {
                       </div>
                     </div>
                   </div>
-
                   <div className="pagination-container">
-                    <button className="pagination-arrow" style={{ borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px' }}><img className="" src="/Polygon 36.png" alt="Previous page" /></button>
-                    {arr.map(x => <button key={x} className="pagination-button" onClick={() => paginationHandler(x - 1)}>
-                      {x}
-                    </button>)}
-                    <button className="pagination-arrow" style={{ borderTopRightRadius: '12px', borderBottomRightRadius: '12px' }}><img className="" src="/Polygon 37.png" alt="Next page" /></button>
+                    <button 
+                      className="pagination-arrow" 
+                      onClick={handlePrevPage}
+                      disabled={currentPage === 0}
+                      style={{ borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px' }}
+                    >
+                      <img className="" src="/Polygon 36.png" alt="Previous page" />
+                    </button>
+                    {arr.map(x =>
+                      <button 
+                        key={x} 
+                        className={`pagination-button ${currentPage === x - 1 ? 'active' : ''}`}
+                        onClick={() => {
+                          paginationHandler(x - 1);
+                          setCurrentPage(x - 1);
+                        }}
+                      >
+                        {x}
+                      </button>
+                    )}
+                    <button 
+                      className="pagination-arrow"
+                      onClick={handleNextPage}
+                      disabled={currentPage === arr.length - 1}
+                      style={{ borderTopRightRadius: '12px', borderBottomRightRadius: '12px' }}
+                    >
+                      <img className="" src="/Polygon 37.png" alt="Next page" />
+                    </button>
                   </div>
                 </>
               ) : (
