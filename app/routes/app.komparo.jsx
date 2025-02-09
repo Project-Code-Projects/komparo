@@ -19,10 +19,8 @@ export default function KomparoPage() {
   const [cardItems, setCardItems] = useState([]);
   const data = useLoaderData();
   const products = data?.products || [];
-  const [fetchedData, setFetchedData] = useState([]);
-  const [scrappedProducts, setScrappedProducts] = useState([]);
-//   const [alibabaProducts, setAlibabaProducts] = useState([]);
-//   const [amazonProducts, setAmazonProducts] = useState([]);
+  const [alibabaProducts, setAlibabaProducts] = useState([]);
+  const [amazonProducts, setAmazonProducts] = useState([]);
   const [newPrice, setNewPrice] = useState("");
   const [toasterMessage, setToasterMessage] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -46,10 +44,10 @@ export default function KomparoPage() {
         setToasterMessage("Price updated successfully!")
         setScannedData((prevData) => ({
           ...prevData,
-          price: parseFloat(newPrice), 
+          price: parseFloat(newPrice),
         }));
-        setNewPrice(""); 
-        document.querySelector("input[name='price']").value = ""; 
+        setNewPrice("");
+        document.querySelector("input[name='price']").value = "";
       } else {
         throw new Error(result.error || "Failed to update price.");
       }
@@ -64,64 +62,28 @@ export default function KomparoPage() {
   useEffect(() => {
     setCardItems(products.slice((0 * 9), (0 * 9) + 9))
   }, [])
-  const arr = [];
-  for (let i = 1; i <= Math.ceil(products.length / 9); i++) {
-    arr.push(i);
-  }
 
   useEffect(() => {
     const getProducts = async () => {
       try {
-        // const fetchData = await fetchScrappedProducts(scannedData.title);
-        const fetchData = await fetch('/scrapedData.json')
-          .then(res => res.json())
-          .then(data => data);
-        const unifiedArr = [];
-        fetchData.alibaba.forEach(x => {
-          x.platform = 'alibaba'; unifiedArr.push(x);
-        });
-        fetchData.amazon.forEach(x => {
-          x.platform = 'amazon'; unifiedArr.push(x);
-        });
-        // console.log(unifiedArr);
-        setFetchedData(unifiedArr);
-        setScrappedProducts(unifiedArr);
-        setTimeout(() => {
-          const elementsSelected = document.getElementsByClassName('scrapped-title');
-          const heightsArr = [];
-          for (var x of elementsSelected) { heightsArr.push(x.clientHeight); }
-          // console.log(heightsArr); console.log(Math.max.apply(null, heightsArr));
-          const calculatedHeight = Math.max.apply(null, heightsArr);
-          for (var x of elementsSelected) { x.style.height = calculatedHeight + 'px'; }
-        }, 1000);
-      } catch (error) {
-        console.log(error.message);
-      }
+        const data = await fetchScrappedProducts(scannedData.title);
+        setAlibabaProducts(data.alibaba || []);
+        setAmazonProducts(data.amazon || []);
+        } catch (error) {
+            console.log(error.message);
+        }
     };
 
     if (scannedData?.title) {
-      getProducts();
+        getProducts();
     }
   }, [scannedData?.title]);
   
-  
-  function paginationHandler(x) {
-    setCardItems(products.slice((x * 9), (x * 9) + 9));
-  }
 
-  const handlePrevPage = () => {
-    if (currentPage > 0) {
-      paginationHandler(currentPage - 1);
-      setCurrentPage(currentPage - 1);
-    }
-  };
-  
-  const handleNextPage = () => {
-    if (currentPage < arr.length - 1) {
-      paginationHandler(currentPage + 1);
-      setCurrentPage(currentPage + 1);
-    }
-  };
+  const arr = [];
+  for (let i = 1; i <= Math.ceil(products.length / 9); i++) {
+    arr.push(i);
+  }
 
   const settings = {
     dots: true,
@@ -140,6 +102,29 @@ export default function KomparoPage() {
   setTimeout(() => {
     setLoading(true);
   }, 500);
+
+
+  // Pagination logic 
+
+  function paginationHandler(x) {
+    setCardItems(products.slice((x * 9), (x * 9) + 9));
+  }
+
+  const handlePrevPage = () => {
+    if (currentPage > 0) {
+      paginationHandler(currentPage - 1);
+      setCurrentPage(currentPage - 1);
+    }
+  };
+  
+  const handleNextPage = () => {
+    if (currentPage < arr.length - 1) {
+      paginationHandler(currentPage + 1);
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+
   // console.log(scannedData?.description?.length);
 
   // const modal = document.getElementById("myModal");
@@ -160,6 +145,7 @@ export default function KomparoPage() {
   // function openModal() {
   //   modal.classList.remove("hidden");
   // }
+
   return (
     <main style={{ padding: '60px', paddingTop: '80px', backgroundColor: '#3D3D3D' }}>
       <div className="back-ground">
@@ -197,6 +183,9 @@ export default function KomparoPage() {
                               </p>
                             </article>
                           </section>
+
+                          {/* Scrapped Product Display */}
+
                           <section className="sc-2">
                             {/* <div className="slider-container">
                               {
@@ -205,47 +194,60 @@ export default function KomparoPage() {
                                 </Slider>
                               }
                             </div> */}
-                              
-                            {/* Slider Logic */}
+                             <div className="image-slider-container">
+                              {loading && (alibabaProducts.length > 0 || amazonProducts.length > 0) && (
+                                  <Slider {...settingsNew}>
+                                      {alibabaProducts.map((product, index) => (
+                                          <article key={`alibaba-${index}`} className="scrapped-data-card">
+                                              <img 
+                                                  src={product.image || "https://via.placeholder.com/150"} 
+                                                  className="scrapped-img" 
+                                                  alt={product.title} 
+                                              />
+                                              <h4 className="scrapped-title">{product.title}</h4>
 
-                            <div className="image-slider-container">
-                              <p>
-                                <button type="button" onClick={() => {
-                                  setScrappedProducts(fetchedData.filter(x => x.platform == 'alibaba'));
-                                }}>Alibaba</button>
-                                <button type="button" onClick={() => {
-                                  setScrappedProducts(fetchedData.filter(x => x.platform == 'amazon'));
-                                }}>Amazon</button>
-                                <button type="button" onClick={() => {
-                                  setScrappedProducts(fetchedData);
-                                }}>All</button>
-                              </p>
-                              {loading && (
-                                <Slider {...settingsNew}>
-                                  {scrappedProducts.map((product, index) => (
-                                    <article key={product.platform == 'alibaba' ? `alibaba-${index}` : `amazon-${index}`} className="scrapped-data-card">
-                                      <img
-                                        src={product.image || "https://via.placeholder.com/150"}
-                                        className="scrapped-img"
-                                        alt={product.title}
-                                      />
-                                      <h4 className="scrapped-title">{product.title}</h4>
-                                      {product.rating && (
-                                        <div className="scrapped-rating">
-                                          <InlineStack gap="100" align="start">
-                                            <Rating rating={parseFloat(product.rating)} />
-                                          </InlineStack>
-                                        </div>
-                                      )}
-                                      {product.platform == 'alibaba' ? <AlibabaLogo /> : <AmazonLogo />}
-                                      
-                                      <h5 className="scrapped-price">{product.price}</h5>
-                                    </article>
-                                  ))}
-                                </Slider>
+                                              {product.rating && (
+                                                  <div className="scrapped-rating">
+                                                      <InlineStack gap="100" align="start">
+                                                          <Rating rating={parseFloat(product.rating)} />
+                                                      </InlineStack>
+                                                  </div>
+                                              )}
+
+                                              <AlibabaLogo/>
+                                              <h5 className="scrapped-price">{product.price}</h5>
+                                          </article>
+                                      ))}
+
+                                      {amazonProducts.map((product, index) => (
+                                          <article key={`amazon-${index}`} className="scrapped-data-card">
+                                              <img 
+                                                  src={product.image || "https://via.placeholder.com/150"} 
+                                                  className="scrapped-img" 
+                                                  alt={product.title} 
+                                              />
+                                              <h4 className="scrapped-title">{product.title}</h4>
+
+                                              {product.rating && (
+                                                  <div className="scrapped-rating">
+                                                      <InlineStack gap="100" align="start">
+                                                          <Rating rating={parseFloat(product.rating)} />
+                                                      </InlineStack>
+                                                  </div>
+                                              )}
+
+                                              <AmazonLogo/>
+                                              <h5 className="scrapped-price">{product.price}</h5>
+                                          </article>
+                                      ))}
+                                  </Slider>
                               )}
-                          </div>
+                            </div>
+                            
                             <hr style={{ width: '95%', margin: '20px auto' }} />
+
+                            {/* Price Update Form */}
+                          
                             <form
                               style={{ textAlign: "right", padding: "30px" }}
                               onSubmit={(e) => {
@@ -323,6 +325,9 @@ export default function KomparoPage() {
                               onClick={() => {
                                 setShowModal(false);
                                 setScannedData(null);
+                                setAlibabaProducts([]);
+                                setAmazonProducts([]);
+                                setNewPrice("");
                               }}>
                               Close
                             </Button>
@@ -331,6 +336,9 @@ export default function KomparoPage() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Pagination */}
+                  
                   <div className="pagination-container">
                     <button 
                       className="pagination-arrow" 
@@ -374,6 +382,7 @@ export default function KomparoPage() {
   )
 }
 
+
 function ProductCard({ product, setShowModal, setScannedData }) {
 
   function scanHandler(data) {
@@ -381,6 +390,7 @@ function ProductCard({ product, setShowModal, setScannedData }) {
     setShowModal(true);
     // console.log(data);
   }
+
   return (
     <div className="card" onClick={() => scanHandler(product)}>
       <img src={product.imageUrl || "/placeholder.svg"} alt={product.title} className="image" />
