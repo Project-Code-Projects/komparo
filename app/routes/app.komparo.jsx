@@ -9,7 +9,8 @@ import Slider from "react-slick";
 import { Rating } from "../components/rating";
 import { AlibabaLogo, AmazonLogo } from '../components/logo.jsx';
 import { fetchScrappedProducts } from '../services/fetch.scrapped.products';
-export { loader }
+import { Toaster } from "../components/toaster.jsx";
+export { loader };
 
 export default function KomparoPage() {
   const [scannedData, setScannedData] = useState(null);
@@ -21,9 +22,10 @@ export default function KomparoPage() {
   const [alibabaProducts, setAlibabaProducts] = useState([]);
   const [amazonProducts, setAmazonProducts] = useState([]);
   const [newPrice, setNewPrice] = useState("");
+  const [toasterMessage, setToasterMessage] = useState(null);
 
   async function updatePrice() {
-    if (!scannedData || !newPrice) return alert("Please enter a price.");
+    if (!newPrice) return alert("Please enter a price.");
     setLoading(true);
     try {
       const response = await fetch("http://localhost:3001/api/updatePrice", {
@@ -38,7 +40,12 @@ export default function KomparoPage() {
       });
       const result = await response.json();
       if (result.success) {
-        alert("Price updated successfully!");
+        // alert("Price updated successfully!");
+        setToasterMessage("Price updated successfully!")
+        setScannedData((prevData) => ({
+          ...prevData,
+          price: parseFloat(newPrice), 
+        }));
       } else {
         throw new Error(result.error || "Failed to update price.");
       }
@@ -73,6 +80,7 @@ export default function KomparoPage() {
         getProducts();
     }
   }, [scannedData?.title]);
+  
   
   function paginationHandler(x) {
     setCardItems(products.slice((x * 9), (x * 9) + 9));
@@ -309,6 +317,7 @@ export default function KomparoPage() {
             </div>
           </Layout.Section>
         </Layout>
+        {toasterMessage && <Toaster toasterMessage={toasterMessage} setToasterMessage={setToasterMessage} />}
       </div>
     </main>
   )
