@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "36c68ffb8e0d642626679a4448405849"
-application_url = "https://cancer-popularity-robert-yrs.trycloudflare.com"
+application_url = "https://assuming-aaa-calculation-nicholas.trycloudflare.com"
 embedded = true
 name = "price-comparison-app"
 handle = "price-comparison-app"
@@ -23,9 +23,9 @@ scopes = "write_products, read_products"
 
 [auth]
 redirect_urls = [
-  "https://cancer-popularity-robert-yrs.trycloudflare.com/auth/callback",
-  "https://cancer-popularity-robert-yrs.trycloudflare.com/auth/shopify/callback",
-  "https://cancer-popularity-robert-yrs.trycloudflare.com/api/auth/callback"
+  "https://assuming-aaa-calculation-nicholas.trycloudflare.com/auth/callback",
+  "https://assuming-aaa-calculation-nicholas.trycloudflare.com/auth/shopify/callback",
+  "https://assuming-aaa-calculation-nicholas.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]

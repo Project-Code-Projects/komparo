@@ -20,6 +20,35 @@ export default function KomparoPage() {
   const products = data?.products || [];
   const [alibabaProducts, setAlibabaProducts] = useState([]);
   const [amazonProducts, setAmazonProducts] = useState([]);
+  const [newPrice, setNewPrice] = useState("");
+
+  async function updatePrice() {
+    if (!scannedData || !newPrice) return alert("Please enter a price.");
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:3001/api/updatePrice", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId: scannedData.id,
+          newPrice: parseFloat(newPrice),
+        }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        alert("Price updated successfully!");
+      } else {
+        throw new Error(result.error || "Failed to update price.");
+      }
+    } catch (error) {
+      console.error("Error updating price:", error);
+      alert("Failed to update price.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
     setCardItems(products.slice((0 * 9), (0 * 9) + 9))
@@ -176,13 +205,84 @@ export default function KomparoPage() {
                               )}
                           </div>
                             <hr style={{ width: '95%', margin: '20px auto' }} />
-                            <form style={{ textAlign: 'right', padding: '30px' }} onSubmit={(e) => {
-                              e.preventDefault();
-                              console.log(e.target.price.value);
-                            }}>
-                              <p style={{ fontSize: '18px', marginBottom: '25px', textAlign: 'left' }}><span className="btn" style={{ fontWeight: 'bold' }}>Current Price &nbsp; &nbsp;$</span><span className="form-input-default" style={{ fontWeight: '600', marginLeft: '8px', padding: '10px', paddingRight: '40px', borderRadius: '10px' }}>{scannedData?.price}</span></p>
-                              <p style={{ fontSize: '18px', marginLeft: '25px', textAlign: 'left' }}><span className="btn" style={{ fontWeight: 'bold' }}>New Price &nbsp; &nbsp;$</span> <input className="form-input-default" style={{ fontWeight: '600', width: '98px', marginLeft: '8px', border: 'none', padding: '10px', borderRadius: '10px', fontSize: '18px' }} name="price" type="number" step="0.01"/></p>
-                              <button style={{ color: "white", backgroundColor: '#54BAB9', border: 'none', padding: '8px 20px', borderRadius: '22px', fontSize: '18px', cursor: 'pointer' }} type="submit" className="btn">Update</button>
+                            <form
+                              style={{ textAlign: "right", padding: "30px" }}
+                              onSubmit={(e) => {
+                                e.preventDefault();
+                                console.log(e.target.price.value);
+                              }}
+                            >
+                              <p
+                                style={{
+                                  fontSize: "18px",
+                                  marginBottom: "25px",
+                                  textAlign: "left",
+                                }}
+                              >
+                                <span
+                                  className="btn"
+                                  style={{ fontWeight: "bold" }}
+                                >
+                                  Current Price &nbsp; &nbsp;$
+                                </span>
+                                <span
+                                  className="form-input-default"
+                                  style={{
+                                    fontWeight: "600",
+                                    marginLeft: "8px",
+                                    padding: "10px",
+                                    paddingRight: "40px",
+                                    borderRadius: "10px",
+                                  }}
+                                >
+                                  {scannedData?.price}
+                                </span>
+                              </p>
+                              <p
+                                style={{
+                                  fontSize: "18px",
+                                  marginLeft: "25px",
+                                  textAlign: "left",
+                                }}
+                              >
+                                <span
+                                  className="btn"
+                                  style={{ fontWeight: "bold" }}
+                                >
+                                  New Price &nbsp; &nbsp;$
+                                </span>{" "}
+                                <input
+                                  className="form-input-default"
+                                  style={{
+                                    fontWeight: "600",
+                                    width: "98px",
+                                    marginLeft: "8px",
+                                    border: "none",
+                                    padding: "10px",
+                                    borderRadius: "10px",
+                                    fontSize: "18px",
+                                  }}
+                                  onChange={(e) => setNewPrice(e.target.value)}
+                                  name="price"
+                                  type="number"
+                                />
+                              </p>
+                              <button
+                                style={{
+                                  color: "white",
+                                  backgroundColor: "#54BAB9",
+                                  border: "none",
+                                  padding: "8px 20px",
+                                  borderRadius: "22px",
+                                  fontSize: "18px",
+                                  cursor: "pointer",
+                                }}
+                                type="submit"
+                                className="btn"
+                                onClick={updatePrice}
+                              >
+                                Update
+                              </button>
                             </form>
                           </section>
                           <p style={{ textAlign: 'center', marginTop: '30px' }}>
