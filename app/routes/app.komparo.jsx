@@ -150,7 +150,7 @@ export default function KomparoPage() {
                             <img src={scannedData?.imageUrl} className="image-scan" alt={scannedData?.title || 'Product image'} />
                             <article className="card-body">
                               <h3 className="scan-title">{scannedData?.title}</h3>
-                              <h4 className="price" style={{ fontSize: '22px' }}>${scannedData?.price}</h4>
+                              <h4 className="price" style={{ fontSize: '22px' }}>${parseFloat(scannedData?.price).toFixed(2)}</h4>
                               <p className="scan-desc" style={{ padding: '25px', backgroundColor: 'white', borderRadius: '20px', marginTop: '20px' }}>
                                 {scannedData?.description && scannedData.description.length != 0 ? scannedData.description : 'No description provided!'}
                               </p>
@@ -234,16 +234,7 @@ export default function KomparoPage() {
                                 >
                                   Current Price &nbsp; &nbsp;$
                                 </span>
-                                <span
-                                  className="form-input-default"
-                                  style={{
-                                    fontWeight: "600",
-                                    marginLeft: "8px",
-                                    padding: "10px",
-                                    paddingRight: "40px",
-                                    borderRadius: "10px",
-                                  }}
-                                >
+                                <span className="form-default">
                                   {scannedData?.price}
                                 </span>
                               </p>
