@@ -297,11 +297,11 @@ export default function KomparoPage() {
                   </div>
 
                   <div className="pagination-container">
-                    <button className="pagination-arrow" style={{ borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px' }}><img className="" src="/Polygon 36.png" /></button>
+                    <button className="pagination-arrow" style={{ borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px' }}><img className="" src="/Polygon 36.png" alt="Previous page" /></button>
                     {arr.map(x => <button key={x} className="pagination-button" onClick={() => paginationHandler(x - 1)}>
                       {x}
                     </button>)}
-                    <button className="pagination-arrow" style={{ borderTopRightRadius: '12px', borderBottomRightRadius: '12px' }}><img className="" src="/Polygon 37.png" /></button>
+                    <button className="pagination-arrow" style={{ borderTopRightRadius: '12px', borderBottomRightRadius: '12px' }}><img className="" src="/Polygon 37.png" alt="Next page" /></button>
                   </div>
                 </>
               ) : (
