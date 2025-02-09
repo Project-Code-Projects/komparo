@@ -6,7 +6,6 @@ import { useEffect, useState } from "react"
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
-// import { ScrappedCard } from "../components/scrapped.card.jsx"
 import { Rating } from "../components/rating";
 import { AlibabaLogo, AmazonLogo } from '../components/logo.jsx';
 import { fetchScrappedProducts } from '../services/fetch.scrapped.products';
@@ -69,14 +68,6 @@ export default function KomparoPage() {
   function paginationHandler(x) {
     setCardItems(products.slice((x * 9), (x * 9) + 9));
   }
-
-  const settings = {
-    dots: true,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 3
-  };
   const settingsNew = {
     dots: true,
     infinite: false,
@@ -122,13 +113,6 @@ export default function KomparoPage() {
                             </article>
                           </section>
                           <section className="sc-2">
-                            {/* <div className="slider-container">
-                              {
-                                loading && 
-                                <Slider {...settings}>
-                                </Slider>
-                              }
-                            </div> */}
                             <div className="image-slider-container">
                               <p>
                                 <button type="button" onClick={() => {
@@ -137,9 +121,16 @@ export default function KomparoPage() {
                                 <button type="button" onClick={() => {
                                   setScrappedProducts(fetchedData.filter(x => x.platform == 'amazon'));
                                 }}>Amazon</button>
-                                <button type="button" onClick={() => {
+                                <button type="button" style={{ marginRight: '30px' }} onClick={() => {
                                   setScrappedProducts(fetchedData);
                                 }}>All</button>
+                                <button type="button" onClick={() => {
+                                  // scrappedProducts.sort(function(a, b){return a - b});
+                                  console.log(scrappedProducts);
+                                }}>L-H</button>
+                                <button type="button" onClick={() => {
+
+                                }}>H-L</button>
                               </p>
                               {loading && (
                                 <Slider {...settingsNew}>
@@ -160,7 +151,7 @@ export default function KomparoPage() {
                                         </div>
                                       )}
                                       {product.platform == 'alibaba' ? <AlibabaLogo /> : <AmazonLogo />}
-                                      
+
                                       <h5 className="scrapped-price">{product.price}</h5>
                                     </article>
                                   ))}
