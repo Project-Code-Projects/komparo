@@ -40,12 +40,13 @@ export default function KomparoPage() {
       });
       const result = await response.json();
       if (result.success) {
-        // alert("Price updated successfully!");
         setToasterMessage("Price updated successfully!")
         setScannedData((prevData) => ({
           ...prevData,
           price: parseFloat(newPrice), 
         }));
+        setNewPrice(""); 
+        document.querySelector("input[name='price']").value = ""; 
       } else {
         throw new Error(result.error || "Failed to update price.");
       }
@@ -273,6 +274,7 @@ export default function KomparoPage() {
                                   onChange={(e) => setNewPrice(e.target.value)}
                                   name="price"
                                   type="number"
+                                  step="0.01"
                                 />
                               </p>
                               <button
