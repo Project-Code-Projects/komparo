@@ -49,6 +49,7 @@ export default function KomparoPage() {
   function paginationHandler(x) {
     setCardItems(products.slice((x * 9), (x * 9) + 9));
   }
+  
   const settings = {
     dots: true,
     infinite: false,
