@@ -1,4 +1,4 @@
-import { Layout, Text, InlineStack  } from "@shopify/polaris"
+import { Layout, Text, InlineStack, Button } from "@shopify/polaris"
 import { useLoaderData } from "@remix-run/react"
 import { loader } from "../services/fetch.products.js"
 import "../styles/komparo.css"
@@ -23,6 +23,7 @@ export default function KomparoPage() {
   const [amazonProducts, setAmazonProducts] = useState([]);
   const [newPrice, setNewPrice] = useState("");
   const [toasterMessage, setToasterMessage] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
 
   async function updatePrice() {
     if (!newPrice) return alert("Please enter a price.");
@@ -43,10 +44,10 @@ export default function KomparoPage() {
         setToasterMessage("Price updated successfully!")
         setScannedData((prevData) => ({
           ...prevData,
-          price: parseFloat(newPrice), 
+          price: parseFloat(newPrice),
         }));
-        setNewPrice(""); 
-        document.querySelector("input[name='price']").value = ""; 
+        setNewPrice("");
+        document.querySelector("input[name='price']").value = "";
       } else {
         throw new Error(result.error || "Failed to update price.");
       }
@@ -61,10 +62,6 @@ export default function KomparoPage() {
   useEffect(() => {
     setCardItems(products.slice((0 * 9), (0 * 9) + 9))
   }, [])
-  const arr = [];
-  for (let i = 1; i <= Math.ceil(products.length / 9); i++) {
-    arr.push(i);
-  }
 
   useEffect(() => {
     const getProducts = async () => {
@@ -82,10 +79,12 @@ export default function KomparoPage() {
     }
   }, [scannedData?.title]);
   
-  
-  function paginationHandler(x) {
-    setCardItems(products.slice((x * 9), (x * 9) + 9));
+
+  const arr = [];
+  for (let i = 1; i <= Math.ceil(products.length / 9); i++) {
+    arr.push(i);
   }
+
   const settings = {
     dots: true,
     infinite: false,
@@ -103,6 +102,29 @@ export default function KomparoPage() {
   setTimeout(() => {
     setLoading(true);
   }, 500);
+
+
+  // Pagination logic 
+
+  function paginationHandler(x) {
+    setCardItems(products.slice((x * 9), (x * 9) + 9));
+  }
+
+  const handlePrevPage = () => {
+    if (currentPage > 0) {
+      paginationHandler(currentPage - 1);
+      setCurrentPage(currentPage - 1);
+    }
+  };
+  
+  const handleNextPage = () => {
+    if (currentPage < arr.length - 1) {
+      paginationHandler(currentPage + 1);
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+
   // console.log(scannedData?.description?.length);
 
   // const modal = document.getElementById("myModal");
@@ -123,6 +145,7 @@ export default function KomparoPage() {
   // function openModal() {
   //   modal.classList.remove("hidden");
   // }
+
   return (
     <main style={{ padding: '60px', paddingTop: '80px', backgroundColor: '#3D3D3D' }}>
       <div className="back-ground">
@@ -160,6 +183,9 @@ export default function KomparoPage() {
                               </p>
                             </article>
                           </section>
+
+                          {/* Scrapped Product Display */}
+
                           <section className="sc-2">
                             {/* <div className="slider-container">
                               {
@@ -216,8 +242,12 @@ export default function KomparoPage() {
                                       ))}
                                   </Slider>
                               )}
-                          </div>
+                            </div>
+                            
                             <hr style={{ width: '95%', margin: '20px auto' }} />
+
+                            {/* Price Update Form */}
+                          
                             <form
                               style={{ textAlign: "right", padding: "30px" }}
                               onSubmit={(e) => {
@@ -291,21 +321,53 @@ export default function KomparoPage() {
                             </form>
                           </section>
                           <p style={{ textAlign: 'center', marginTop: '30px' }}>
-                            <button type="button" className="" onClick={() => {
-                              setShowModal(false); setScannedData(null);
-                            }}>Close</button>
+                            <Button variant="primary"
+                              onClick={() => {
+                                setShowModal(false);
+                                setScannedData(null);
+                                setAlibabaProducts([]);
+                                setAmazonProducts([]);
+                                setNewPrice("");
+                              }}>
+                              Close
+                            </Button>
                           </p>
                         </div>
                       </div>
                     </div>
                   </div>
 
+                  {/* Pagination */}
+                  
                   <div className="pagination-container">
-                    <button className="pagination-arrow" style={{ borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px' }}><img className="" src="/Polygon 36.png" alt="Previous page" /></button>
-                    {arr.map(x => <button key={x} className="pagination-button" onClick={() => paginationHandler(x - 1)}>
-                      {x}
-                    </button>)}
-                    <button className="pagination-arrow" style={{ borderTopRightRadius: '12px', borderBottomRightRadius: '12px' }}><img className="" src="/Polygon 37.png" alt="Next page" /></button>
+                    <button 
+                      className="pagination-arrow" 
+                      onClick={handlePrevPage}
+                      disabled={currentPage === 0}
+                      style={{ borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px' }}
+                    >
+                      <img className="" src="/Polygon 36.png" alt="Previous page" />
+                    </button>
+                    {arr.map(x =>
+                      <button 
+                        key={x} 
+                        className={`pagination-button ${currentPage === x - 1 ? 'active' : ''}`}
+                        onClick={() => {
+                          paginationHandler(x - 1);
+                          setCurrentPage(x - 1);
+                        }}
+                      >
+                        {x}
+                      </button>
+                    )}
+                    <button 
+                      className="pagination-arrow"
+                      onClick={handleNextPage}
+                      disabled={currentPage === arr.length - 1}
+                      style={{ borderTopRightRadius: '12px', borderBottomRightRadius: '12px' }}
+                    >
+                      <img className="" src="/Polygon 37.png" alt="Next page" />
+                    </button>
                   </div>
                 </>
               ) : (
@@ -320,6 +382,7 @@ export default function KomparoPage() {
   )
 }
 
+
 function ProductCard({ product, setShowModal, setScannedData }) {
 
   function scanHandler(data) {
@@ -327,6 +390,7 @@ function ProductCard({ product, setShowModal, setScannedData }) {
     setShowModal(true);
     // console.log(data);
   }
+
   return (
     <div className="card" onClick={() => scanHandler(product)}>
       <img src={product.imageUrl || "/placeholder.svg"} alt={product.title} className="image" />
