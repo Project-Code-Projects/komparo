@@ -129,7 +129,6 @@ export default function KomparoPage() {
                              <div className="image-slider-container">
                               {loading && (alibabaProducts.length > 0 || amazonProducts.length > 0) && (
                                   <Slider {...settingsNew}>
-                                      {/* Alibaba Products */}
                                       {alibabaProducts.map((product, index) => (
                                           <article key={`alibaba-${index}`} className="scrapped-data-card">
                                               <img 
