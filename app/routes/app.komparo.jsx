@@ -1,4 +1,4 @@
-import { Layout, Text, InlineStack  } from "@shopify/polaris"
+import { Layout, Text, InlineStack, Button } from "@shopify/polaris"
 import { useLoaderData } from "@remix-run/react"
 import { loader } from "../services/fetch.products.js"
 import "../styles/komparo.css"
@@ -291,9 +291,13 @@ export default function KomparoPage() {
                             </form>
                           </section>
                           <p style={{ textAlign: 'center', marginTop: '30px' }}>
-                            <button type="button" className="" onClick={() => {
-                              setShowModal(false); setScannedData(null);
-                            }}>Close</button>
+                            <Button variant="primary"
+                              onClick={() => {
+                                setShowModal(false);
+                                setScannedData(null);
+                              }}>
+                              Close
+                            </Button>
                           </p>
                         </div>
                       </div>
