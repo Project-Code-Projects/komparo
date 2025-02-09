@@ -235,7 +235,7 @@ export default function KomparoPage() {
                                   Current Price &nbsp; &nbsp;$
                                 </span>
                                 <span className="form-default">
-                                  {scannedData?.price}
+                                ${scannedData?.price && Number(scannedData.price).toFixed(2)}
                                 </span>
                               </p>
                               <p
