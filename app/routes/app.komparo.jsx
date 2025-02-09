@@ -149,8 +149,12 @@ export default function KomparoPage() {
                           <section className="sc-1">
                             <img src={scannedData?.imageUrl} className="image-scan" alt={scannedData?.title || 'Product image'} />
                             <article className="card-body">
-                              <h3 className="scan-title">{scannedData?.title}</h3>
-                              <h4 className="price" style={{ fontSize: '22px' }}>${parseFloat(scannedData?.price).toFixed(2)}</h4>
+                              <h3 className="scan-title">
+                                {scannedData?.title}
+                              </h3>
+                              <h4 className="price" style={{ fontSize: '22px' }}>
+                                ${scannedData?.price && Number(scannedData.price).toFixed(2)}
+                              </h4>
                               <p className="scan-desc" style={{ padding: '25px', backgroundColor: 'white', borderRadius: '20px', marginTop: '20px' }}>
                                 {scannedData?.description && scannedData.description.length != 0 ? scannedData.description : 'No description provided!'}
                               </p>
@@ -235,7 +239,7 @@ export default function KomparoPage() {
                                   Current Price &nbsp; &nbsp;$
                                 </span>
                                 <span className="form-default">
-                                ${scannedData?.price && Number(scannedData.price).toFixed(2)}
+                                {scannedData?.price && Number(scannedData.price).toFixed(2)}
                                 </span>
                               </p>
                               <p
@@ -331,7 +335,7 @@ function ProductCard({ product, setShowModal, setScannedData }) {
           {product.title}
         </h5>
         <p className="price">
-          ${product.price}
+          ${Number(product.price).toFixed(2)}
         </p>
       </div>
     </div>
