@@ -6,11 +6,11 @@ import { useEffect, useState } from "react"
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
-// import { ScrappedCard } from "../components/scrapped.card.jsx"
 import { Rating } from "../components/rating";
 import { AlibabaLogo, AmazonLogo } from '../components/logo.jsx';
 import { fetchScrappedProducts } from '../services/fetch.scrapped.products';
-export { loader }
+import { Toaster } from "../components/toaster.jsx";
+export { loader };
 
 export default function KomparoPage() {
   const [scannedData, setScannedData] = useState(null);
@@ -21,6 +21,42 @@ export default function KomparoPage() {
   const products = data?.products || [];
   const [alibabaProducts, setAlibabaProducts] = useState([]);
   const [amazonProducts, setAmazonProducts] = useState([]);
+  const [newPrice, setNewPrice] = useState("");
+  const [toasterMessage, setToasterMessage] = useState(null);
+
+  async function updatePrice() {
+    if (!newPrice) return alert("Please enter a price.");
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:3001/api/updatePrice", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId: scannedData.id,
+          newPrice: parseFloat(newPrice),
+        }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        setToasterMessage("Price updated successfully!")
+        setScannedData((prevData) => ({
+          ...prevData,
+          price: parseFloat(newPrice), 
+        }));
+        setNewPrice(""); 
+        document.querySelector("input[name='price']").value = ""; 
+      } else {
+        throw new Error(result.error || "Failed to update price.");
+      }
+    } catch (error) {
+      console.error("Error updating price:", error);
+      alert("Failed to update price.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
     setCardItems(products.slice((0 * 9), (0 * 9) + 9))
@@ -45,6 +81,7 @@ export default function KomparoPage() {
         getProducts();
     }
   }, [scannedData?.title]);
+  
   
   function paginationHandler(x) {
     setCardItems(products.slice((x * 9), (x * 9) + 9));
@@ -112,8 +149,12 @@ export default function KomparoPage() {
                           <section className="sc-1">
                             <img src={scannedData?.imageUrl} className="image-scan" alt={scannedData?.title || 'Product image'} />
                             <article className="card-body">
-                              <h3 className="scan-title">{scannedData?.title}</h3>
-                              <h4 className="price" style={{ fontSize: '22px' }}>${scannedData?.price}</h4>
+                              <h3 className="scan-title">
+                                {scannedData?.title}
+                              </h3>
+                              <h4 className="price" style={{ fontSize: '22px' }}>
+                                ${scannedData?.price && Number(scannedData.price).toFixed(2)}
+                              </h4>
                               <p className="scan-desc" style={{ padding: '25px', backgroundColor: 'white', borderRadius: '20px', marginTop: '20px' }}>
                                 {scannedData?.description && scannedData.description.length != 0 ? scannedData.description : 'No description provided!'}
                               </p>
@@ -130,7 +171,6 @@ export default function KomparoPage() {
                              <div className="image-slider-container">
                               {loading && (alibabaProducts.length > 0 || amazonProducts.length > 0) && (
                                   <Slider {...settingsNew}>
-                                      {/* Alibaba Products */}
                                       {alibabaProducts.map((product, index) => (
                                           <article key={`alibaba-${index}`} className="scrapped-data-card">
                                               <img 
@@ -178,13 +218,76 @@ export default function KomparoPage() {
                               )}
                           </div>
                             <hr style={{ width: '95%', margin: '20px auto' }} />
-                            <form style={{ textAlign: 'right', padding: '30px' }} onSubmit={(e) => {
-                              e.preventDefault();
-                              console.log(e.target.price.value);
-                            }}>
-                              <p style={{ fontSize: '18px', marginBottom: '25px', textAlign: 'left' }}><span className="btn" style={{ fontWeight: 'bold' }}>Current Price &nbsp; &nbsp;$</span><span className="form-input-default" style={{ fontWeight: '600', marginLeft: '8px', padding: '10px', paddingRight: '40px', borderRadius: '10px' }}>{scannedData?.price}</span></p>
-                              <p style={{ fontSize: '18px', marginLeft: '25px', textAlign: 'left' }}><span className="btn" style={{ fontWeight: 'bold' }}>New Price &nbsp; &nbsp;$</span> <input className="form-input-default" style={{ fontWeight: '600', width: '98px', marginLeft: '8px', border: 'none', padding: '10px', borderRadius: '10px', fontSize: '18px' }} name="price" type="number" step="0.01"/></p>
-                              <button style={{ color: "white", backgroundColor: '#54BAB9', border: 'none', padding: '8px 20px', borderRadius: '22px', fontSize: '18px', cursor: 'pointer' }} type="submit" className="btn">Update</button>
+                            <form
+                              style={{ textAlign: "right", padding: "30px" }}
+                              onSubmit={(e) => {
+                                e.preventDefault();
+                                console.log(e.target.price.value);
+                              }}
+                            >
+                              <p
+                                style={{
+                                  fontSize: "18px",
+                                  marginBottom: "25px",
+                                  textAlign: "left",
+                                }}
+                              >
+                                <span
+                                  className="btn"
+                                  style={{ fontWeight: "bold" }}
+                                >
+                                  Current Price &nbsp; &nbsp;$
+                                </span>
+                                <span className="form-default">
+                                {scannedData?.price && Number(scannedData.price).toFixed(2)}
+                                </span>
+                              </p>
+                              <p
+                                style={{
+                                  fontSize: "18px",
+                                  marginLeft: "25px",
+                                  textAlign: "left",
+                                }}
+                              >
+                                <span
+                                  className="btn"
+                                  style={{ fontWeight: "bold" }}
+                                >
+                                  New Price &nbsp; &nbsp;$
+                                </span>{" "}
+                                <input
+                                  className="form-input-default"
+                                  style={{
+                                    fontWeight: "600",
+                                    width: "98px",
+                                    marginLeft: "8px",
+                                    border: "none",
+                                    padding: "10px",
+                                    borderRadius: "10px",
+                                    fontSize: "18px",
+                                  }}
+                                  onChange={(e) => setNewPrice(e.target.value)}
+                                  name="price"
+                                  type="number"
+                                  step="0.01"
+                                />
+                              </p>
+                              <button
+                                style={{
+                                  color: "white",
+                                  backgroundColor: "#54BAB9",
+                                  border: "none",
+                                  padding: "8px 20px",
+                                  borderRadius: "22px",
+                                  fontSize: "18px",
+                                  cursor: "pointer",
+                                }}
+                                type="submit"
+                                className="btn"
+                                onClick={updatePrice}
+                              >
+                                Update
+                              </button>
                             </form>
                           </section>
                           <p style={{ textAlign: 'center', marginTop: '30px' }}>
@@ -198,11 +301,11 @@ export default function KomparoPage() {
                   </div>
 
                   <div className="pagination-container">
-                    <button className="pagination-arrow" style={{ borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px' }}><img className="" src="/Polygon 36.png" /></button>
+                    <button className="pagination-arrow" style={{ borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px' }}><img className="" src="/Polygon 36.png" alt="Previous page" /></button>
                     {arr.map(x => <button key={x} className="pagination-button" onClick={() => paginationHandler(x - 1)}>
                       {x}
                     </button>)}
-                    <button className="pagination-arrow" style={{ borderTopRightRadius: '12px', borderBottomRightRadius: '12px' }}><img className="" src="/Polygon 37.png" /></button>
+                    <button className="pagination-arrow" style={{ borderTopRightRadius: '12px', borderBottomRightRadius: '12px' }}><img className="" src="/Polygon 37.png" alt="Next page" /></button>
                   </div>
                 </>
               ) : (
@@ -211,6 +314,7 @@ export default function KomparoPage() {
             </div>
           </Layout.Section>
         </Layout>
+        {toasterMessage && <Toaster toasterMessage={toasterMessage} setToasterMessage={setToasterMessage} />}
       </div>
     </main>
   )
@@ -231,7 +335,7 @@ function ProductCard({ product, setShowModal, setScannedData }) {
           {product.title}
         </h5>
         <p className="price">
-          ${product.price}
+          ${Number(product.price).toFixed(2)}
         </p>
       </div>
     </div>

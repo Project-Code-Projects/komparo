@@ -195,6 +195,12 @@
   text-align: justify;
 } */
 
+.form-default {
+  font-family: "Lusitana", serif;
+  font-weight: 600;
+  margin-left: 18px;
+}
+
 .form-input-default {
   font-family: "Lusitana", serif;
   background-color: #F0F0F0;
