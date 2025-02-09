@@ -10,6 +10,8 @@ import alibabaRouter from "./routes/scraperRoute.js";
 import webhookRouter from "./routes/webhookRoute.js";
 import updatePriceRouter from "./routes/updatePrice.js";
 import productsRouter from "./routes/productsRoute.js";
+import { scrapeAmazonProducts } from "./middlewares/amazonScraper.js";
+import { scrapeAlibabaProducts } from "./middlewares/alibabaScraper.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,77 +43,68 @@ app.listen(PORT, async (req, res) => {
 // Schedule a Cron Job every 2 minutes
 // -------------------------------
 
-// cron.schedule("10 * * * * *", async () => {
-//   console.log(
-//     "Cron job triggered: scraping pending queries from PostgreSQL...",
-//   );
+cron.schedule("10 * * * * *", async () => {
+  console.log(
+    "Cron job triggered: scraping pending queries from PostgreSQL...",
+  );
 
-//   try {
-//     const { rows } = await db.query(
-//       'SELECT * FROM public."Comparator" WHERE status = $1',
-//       ["pending"],
-//     );
+  try {
+    const { rows } = await db.query(
+      'SELECT * FROM public."Comparator" WHERE status = $1',
+      ["pending"],
+    );
 
-//     if (!rows.length) {
-//       console.log("No pending queries found.");
-//       return;
-//     }
+    if (!rows.length) {
+      console.log("No pending queries found.");
+      return;
+    }
 
-//     for (const row of rows) {
-//       const searchQuery = row.query; // Your query column value
-//       console.log("Panding task: ", searchQuery);
-//       console.log("Scraping for query:", searchQuery);
+    for (const row of rows) {
+      const searchQuery = row.query; // Your query column value
+      console.log("Panding task: ", searchQuery);
+      console.log("Scraping for query:", searchQuery);
 
-//       try {
-//         const amazonResponse = await fetch(
-//           "http://localhost:3001/api/scrape/amazon",
-//           {
-//             method: "POST",
-//             headers: { "Content-Type": "application/json" },
-//             body: JSON.stringify({
-//               searchQuery,
-//               // maxPrice: 100,
-//               // maxPages: 1,
-//             }),
-//           },
-//         );
+      try {
+        const amazonResponse = await scrapeAmazonProducts(searchQuery);
+        const alibabaResponse = await scrapeAlibabaProducts(searchQuery);
 
-//         const alibabaResponse = await fetch(
-//           "http://localhost:3001/api/scrape/alibaba",
-//           {
-//             method: "POST",
-//             headers: { "Content-Type": "application/json" },
-//             body: JSON.stringify({
-//               searchQuery,
-//               // maxPrice: 100,
-//               // maxPages: 1,
-//             }),
-//           },
-//         );
-//         //fetch() returns a 'Response' object. You need to convert that response to JSON using .json()
-//         const resultAmazon = await amazonResponse.json();
-//         const resultAlibaba = await alibabaResponse.json();
-//         console.log(
-//           "Scraping job result for",
-//           searchQuery,
-//           ":",
-//           resultAmazon.url,
-//           resultAlibaba.url,
-//         );
+        // await fetch(
+        //   "http://localhost:3001/api/scrape/alibaba",
+        //   {
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/json" },
+        //     body: JSON.stringify({
+        //       searchQuery,
+        //       // maxPrice: 100,
+        //       // maxPages: 1,
+        //     }),
+        //   },
+        // );
 
-//         // Optionally update the status after successful scraping:
-//         await db.query(
-//           'UPDATE public."Comparator" SET status = $1,alibaba = $2, amazon = $3 WHERE query = $4',
-//           ["completed", resultAlibaba.url, resultAmazon.url, searchQuery],
-//         );
-//       } catch (scrapeError) {
-//         console.error(
-//           `Error scraping for query "${searchQuery}":`,
-//           scrapeError,
-//         );
-//       }
-//     }
-//   } catch (error) {
-//     console.error("Error in cron job:", error);
-//   }
-// });
+        //fetch() returns a 'Response' object. You need to convert that response to JSON using .json()
+        // const resultAmazon = await amazonResponse.json();
+        // const resultAlibaba = await alibabaResponse.json();
+        console.log(
+          "Scraping job result for",
+          searchQuery,
+          ":",
+          amazonResponse,
+          alibabaResponse,
+        );
+
+        // Optionally update the status after successful scraping:
+        await db.query(
+          'UPDATE public."Comparator" SET status = $1,alibaba = $2, amazon = $3 WHERE query = $4',
+          ["completed", alibabaResponse, amazonResponse, searchQuery],
+        );
+      } catch (scrapeError) {
+        console.error(
+          `Error scraping for query "${searchQuery}":`,
+          scrapeError,
+        );
+      }
+    }
+  } catch (error) {
+    console.error("Error in cron job:", error);
+  }
+});
