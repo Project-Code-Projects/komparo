@@ -54,7 +54,7 @@ export default function KomparoPage() {
           // console.log(heightsArr); console.log(Math.max.apply(null, heightsArr));
           const calculatedHeight = Math.max.apply(null, heightsArr);
           for (var x of elementsSelected) { x.style.height = calculatedHeight + 'px'; }
-        }, 1000);
+        }, 500);
       } catch (error) {
         console.log(error.message);
       }

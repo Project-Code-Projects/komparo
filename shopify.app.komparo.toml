@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "14eecd3c23b30159050b0aee0b714c16"
-application_url = "https://dialogue-heights-enormous-chronicles.trycloudflare.com"
+application_url = "https://char-wiki-noise-what.trycloudflare.com"
 embedded = true
 name = "komparo"
 handle = "komparo-3"
@@ -20,9 +20,9 @@ scopes = "write_products, read_products"
 
 [auth]
 redirect_urls = [
-  "https://dialogue-heights-enormous-chronicles.trycloudflare.com/auth/callback",
-  "https://dialogue-heights-enormous-chronicles.trycloudflare.com/auth/shopify/callback",
-  "https://dialogue-heights-enormous-chronicles.trycloudflare.com/api/auth/callback"
+  "https://char-wiki-noise-what.trycloudflare.com/auth/callback",
+  "https://char-wiki-noise-what.trycloudflare.com/auth/shopify/callback",
+  "https://char-wiki-noise-what.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
