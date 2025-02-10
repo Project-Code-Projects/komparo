@@ -1,4 +1,4 @@
-import { Layout, Text, InlineStack, Button } from "@shopify/polaris"
+import { Layout, Text, InlineStack, Button, Select } from "@shopify/polaris"
 import { useLoaderData } from "@remix-run/react"
 import { loader } from "../services/fetch.products.js"
 import "../styles/komparo.css"
@@ -24,6 +24,9 @@ export default function KomparoPage() {
   const [newPrice, setNewPrice] = useState("");
   const [toasterMessage, setToasterMessage] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
+  const [platform, setPlatform] = useState('all');
+  const [price, setPrice] = useState('default');
+  const [showSR, setShowSR] = useState(false);
 
   async function updatePrice() {
     if (!newPrice) return alert("Please enter a price.");
@@ -62,7 +65,7 @@ export default function KomparoPage() {
   useEffect(() => {
     setCardItems(products.slice((0 * 9), (0 * 9) + 9))
   }, [])
-  
+
   function fixingHeights() {
     setTimeout(() => {
       const elementsSelected = document.getElementsByClassName('scrapped-title');
@@ -146,6 +149,18 @@ export default function KomparoPage() {
     }
   };
 
+  const options = [
+    { label: 'All', value: 'all' },
+    { label: 'Alibaba', value: 'alibaba' },
+    { label: 'Amazon', value: 'amazon' }
+  ];
+
+  const optionsFirst = [
+    { label: 'Default', value: 'default' },
+    { label: 'Low to High', value: 'lth' },
+    { label: 'High to Low', value: 'htl' }
+  ];
+
   return (
     <main style={{ padding: '60px', paddingTop: '80px', backgroundColor: '#3D3D3D' }}>
       <div className="back-ground">
@@ -182,82 +197,71 @@ export default function KomparoPage() {
                           <section className="sc-2">
 
                             <div className="image-slider-container">
-                              <section>
-                              <input type="radio" id="all" name="all" value="All" onChange={() => {
-                                setTimeout(() => {
-                                  document.getElementById('alibaba').checked = false;
-                                document.getElementById('amazon').checked = false;
-                                }, 500);
-                
-                                setScrappedProducts(fetchedData);
-                                fixingHeights();
-                              }} checked /> <label htmlFor="all">All</label>
-                              <input type="radio" id="alibaba" name="alibaba" value="Alibaba" onChange={() => {
-                                setTimeout(() => {
-                                  document.getElementById('all').checked = false;
-                                  document.getElementById('amazon').checked = false;
-                                }, 500);
-                                
-                                setScrappedProducts(fetchedData.filter(x => x.platform == 'alibaba'));
-                                fixingHeights();
-                              }} /> <label htmlFor="alibaba">Alibaba</label>
-                              <input type="radio" id="amazon" name="amazon" value="Amazon" onChange={() => {
-                                setTimeout(() => {
-                                  document.getElementById('alibaba').checked = false;
-                                  document.getElementById('all').checked = false;
-                                }, 500);
-                                
-                                setScrappedProducts(fetchedData.filter(x => x.platform == 'amazon'));
-                                fixingHeights();
-                              }} /> <label htmlFor="amazon" style={{marginRight : '20px'}}>Amazon</label>
-                                
-                                <input type="radio" id="default" name="default" value="default" onChange={() => {
-                                setTimeout(() => {
-                                  document.getElementById('htl').checked = false;
-                                document.getElementById('lth').checked = false;
-                                }, 500);
-                
-                                setScrappedProducts(fetchedData);
-                                fixingHeights();
-                              }} checked /> <label htmlFor="default">Default</label>
-                              <input type="radio" id="htl" name="htl" value="htl" onChange={() => {
-                                setTimeout(() => {
-                                  document.getElementById('default').checked = false;
-                                  document.getElementById('lth').checked = false;
-                                }, 500);
-                                
-                                const arr = fetchedData.map(x => x);
+                              <section className="filtering-bar">
+                                <Select
+                                  label="Sort by platform : "
+                                  labelInline
+                                  options={options}
+                                  onChange={(event) => {
+                                    setPlatform(event);
+                                    if (event == 'all') {
+                                      setScrappedProducts(fetchedData);
+                                  fixingHeights();
+                                    }
+                                    else if (event == 'alibaba') {
+                                      setScrappedProducts(fetchedData.filter(x => x.platform == 'alibaba'));
+                                  fixingHeights();
+                                    }
+                                    else {
+                                      setScrappedProducts(fetchedData.filter(x => x.platform == 'amazon'));
+                                      fixingHeights();
+                                    }
+                                  }}
+                                  value={platform}
+                                />
+                                <Select
+                                  label="Sort by price : "
+                                  labelInline
+                                  options={optionsFirst}
+                                  onChange={(event) => {
+                                    setPrice(event);
+                                    if (event == 'default') {
+                                      setScrappedProducts(fetchedData);
+                                  fixingHeights();
+                                    }
+                                    else if (event == 'lth') {
+                                      const arr = fetchedData.map(x => x);
                                   arr.sort(function (a, b) { return a.price - b.price });
                                   setScrappedProducts(arr);
-                                fixingHeights();
-                              }} /> <label htmlFor="htl">Low to High</label>
-                              <input type="radio" id="lth" name="lth" value="lth" onChange={() => {
-                                setTimeout(() => {
-                                  document.getElementById('default').checked = false;
-                                  document.getElementById('htl').checked = false;
-                                }, 500);
-                                
-                                const arr = fetchedData.map(x => x);
+                                  fixingHeights();
+                                    }
+                                    else {
+                                      const arr = fetchedData.map(x => x);
                                   arr.sort(function (a, b) { return b.price - a.price });
                                   setScrappedProducts(arr);
-                                fixingHeights();
-                              }} /> <label htmlFor="lth">High to Low</label>
-
-                                <br />
-                                <form className="price-filtering-form" onSubmit={(event) => {
-                                  event.preventDefault();
-                                  let maxVal = Number(event.target.max.value); let minVal = Number(event.target.min.value);
-                                  if (maxVal == 0) {maxVal = Infinity}
-                                  // console.log(maxVal, minVal);
-                                  setScrappedProducts(fetchedData.filter(x => x.price <= maxVal && x.price >= minVal));
                                   fixingHeights();
-                                }}>
-                                  <label htmlFor="min">Min :</label>
-                                  <input id="min" type="number" className="pff-input" name="min" />
-                                  <label htmlFor="max">Max :</label>
-                                  <input id="max" type="number" className="pff-input" name="max" />
-                                  <button type="submit" className="">Search</button>
-                                </form>
+                                      fixingHeights();
+                                    }
+                                  }}
+                                  value={price}
+                                />
+                                <p className="price-filtering-form">
+                                  <input id="min" type="number" className="pff-input" name="min" placeholder="Min" />
+                                  <span style={{margin: '0 5px'}}>-</span>
+                                  <input id="max" type="number" className="pff-input" name="max" placeholder="Max" style={{marginRight: '5px'}} />
+                                  {showSR ? <button type="reset" className="" onClick={() => {
+                                    setShowSR(false); setScrappedProducts(fetchedData);
+                                    document.getElementById('max').value = '';
+                                    document.getElementById('min').value = '';
+                                  }}>Reset</button>  : <button type="submit" className="" onClick={() => {
+                                    setShowSR(true);
+                                    let maxVal = Number(document.getElementById('max').value); let minVal = Number(document.getElementById('min').value); 
+                                    if (maxVal == 0) { maxVal = Infinity }
+                                    // console.log(maxVal, minVal);
+                                    setScrappedProducts(fetchedData.filter(x => x.price <= maxVal && x.price >= minVal));
+                                    fixingHeights();
+                                  }}>Search by price</button> }
+                                </p>
                               </section>
                               {loading && (
                                 <Slider {...settingsNew}>
