@@ -48,7 +48,7 @@ export default function KomparoPage() {
 
         const response = await fetchScrappedProducts(scannedData.title);
         const fetchData = response.data;
-
+        console.log("STATUS", response.status);
         if (response.status === 200) {
           const unifiedArr = [];
           fetchData.alibaba.forEach(x => {
@@ -67,6 +67,7 @@ export default function KomparoPage() {
             for (var y of elementsSelected) { y.style.height = calculatedHeight + 'px'; }
           }, 1000);
         } else if (response.status === 202) setPendingMessage(fetchData.message);
+
       } catch (error) {
         setPendingMessage(error.message);
       }
@@ -349,7 +350,8 @@ export default function KomparoPage() {
                       <img className="" src="/Polygon 36.png" alt="Previous page" />
                     </button>
                     {arr.map(x =>
-                      <Button
+                      <button
+                        type="button"
                         key={x} 
                         className={`pagination-button ${currentPage === x - 1 ? 'active' : ''}`}
                         onClick={() => {
@@ -358,16 +360,16 @@ export default function KomparoPage() {
                         }}
                       >
                         {x}
-                      </Button>
+                      </button>
                     )}
-                    <Button
+                    <button button="type"
                       className="pagination-arrow"
                       onClick={handleNextPage}
                       disabled={currentPage === arr.length - 1}
                       style={{ borderTopRightRadius: '12px', borderBottomRightRadius: '12px' }}
                     >
                       <img className="" src="/Polygon 37.png" alt="Next page" />
-                    </Button>
+                    </button>
                   </div>
                 </>
               ) : (
