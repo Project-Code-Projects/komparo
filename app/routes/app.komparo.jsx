@@ -21,8 +21,6 @@ export default function KomparoPage() {
   const products = data?.products || [];
   const [fetchedData, setFetchedData] = useState([]);
   const [scrappedProducts, setScrappedProducts] = useState([]);
-//   const [alibabaProducts, setAlibabaProducts] = useState([]);
-//   const [amazonProducts, setAmazonProducts] = useState([]);
   const [newPrice, setNewPrice] = useState("");
   const [toasterMessage, setToasterMessage] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -64,19 +62,30 @@ export default function KomparoPage() {
   useEffect(() => {
     setCardItems(products.slice((0 * 9), (0 * 9) + 9))
   }, [])
-
+  
+  function fixingHeights() {
+    setTimeout(() => {
+      const elementsSelected = document.getElementsByClassName('scrapped-title');
+      const heightsArr = [];
+      for (var x of elementsSelected) { heightsArr.push(x.clientHeight); }
+      // console.log(heightsArr); console.log(Math.max.apply(null, heightsArr));
+      const calculatedHeight = Math.max.apply(null, heightsArr);
+      for (var x of elementsSelected) { x.style.height = calculatedHeight + 'px'; }
+    }, 1000);
+  }
 
   useEffect(() => {
     const getProducts = async () => {
       try {
-        // Mock Data
-        
-        // const fetchData = await fetch('/scrapedData.json')
-        // .then(res => res.json())
-        // .then(data => data);
 
-        const fetchData = await fetchScrappedProducts(scannedData.title)
-         
+        // Mock Data
+
+        const fetchData = await fetch('/scrapedData.json')
+          .then(res => res.json())
+          .then(data => data);
+
+        // const fetchData = await fetchScrappedProducts(scannedData.title);
+
         const unifiedArr = [];
         fetchData.alibaba.forEach(x => {
           x.platform = 'alibaba'; unifiedArr.push(x);
@@ -84,35 +93,24 @@ export default function KomparoPage() {
         fetchData.amazon.forEach(x => {
           x.platform = 'amazon'; unifiedArr.push(x);
         });
-        // console.log(unifiedArr);
-        setFetchedData(unifiedArr);
-        setScrappedProducts(unifiedArr);
-        setTimeout(() => {
-          const elementsSelected = document.getElementsByClassName('scrapped-title');
-          const heightsArr = [];
-          for (var x of elementsSelected) { heightsArr.push(x.clientHeight); }
-          // console.log(heightsArr); console.log(Math.max.apply(null, heightsArr));
-          const calculatedHeight = Math.max.apply(null, heightsArr);
-          for (var x of elementsSelected) { x.style.height = calculatedHeight + 'px'; }
-        }, 1000);
+        const filteredPrices = [];
+        unifiedArr.forEach(x => {
+          if (!x.price.includes("-")) { x.price = Number(x.price.slice(1)); filteredPrices.push(x); }
+        });
+        setFetchedData(filteredPrices);
+        setScrappedProducts(filteredPrices);
+        fixingHeights();
       } catch (error) {
         console.log(error.message);
       }
     };
 
     if (scannedData?.title) {
-        getProducts();
+      getProducts();
     }
   }, [scannedData?.title]);
   // Slider Logic
-    
-  const settings = {
-    dots: true,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 3
-  };
+
   const settingsNew = {
     dots: true,
     infinite: false,
@@ -123,7 +121,7 @@ export default function KomparoPage() {
   setTimeout(() => {
     setLoading(true);
   }, 500);
-    
+
   // Pagination logic 
 
   function paginationHandler(x) {
@@ -141,7 +139,7 @@ export default function KomparoPage() {
       setCurrentPage(currentPage - 1);
     }
   };
-  
+
   const handleNextPage = () => {
     if (currentPage < arr.length - 1) {
       paginationHandler(currentPage + 1);
@@ -190,20 +188,35 @@ export default function KomparoPage() {
                                 </Slider>
                               }
                             </div> */}
-                              
+
                             {/* Slider Logic */}
 
                             <div className="image-slider-container">
                               <p>
                                 <button type="button" onClick={() => {
                                   setScrappedProducts(fetchedData.filter(x => x.platform == 'alibaba'));
+                                  fixingHeights();
                                 }}>Alibaba</button>
                                 <button type="button" onClick={() => {
                                   setScrappedProducts(fetchedData.filter(x => x.platform == 'amazon'));
+                                  fixingHeights();
                                 }}>Amazon</button>
                                 <button type="button" onClick={() => {
                                   setScrappedProducts(fetchedData);
+                                  fixingHeights();
                                 }}>All</button>
+                                <button style={{ marginLeft: '30px' }} type="button" onClick={() => {
+                                  const arr = fetchedData.map(x => x);
+                                  arr.sort(function (a, b) { return a.price - b.price });
+                                  setScrappedProducts(arr);
+                                  fixingHeights();
+                                }}>L-H</button>
+                                <button type="button" onClick={() => {
+                                  const arr = fetchedData.map(x => x);
+                                  arr.sort(function (a, b) { return b.price - a.price });
+                                  setScrappedProducts(arr);
+                                  fixingHeights();
+                                }}>H-L</button>
                               </p>
                               {loading && (
                                 <Slider {...settingsNew}>
@@ -223,8 +236,8 @@ export default function KomparoPage() {
                                         </div>
                                       )}
                                       {product.platform == 'alibaba' ? <AlibabaLogo /> : <AmazonLogo />}
-                                      
-                                      <h5 className="scrapped-price">{product.price}</h5>
+
+                                      <h5 className="scrapped-price">${product.price}</h5>
                                     </article>
                                   ))}
                                 </Slider>
@@ -234,7 +247,7 @@ export default function KomparoPage() {
                             <hr style={{ width: '95%', margin: '20px auto' }} />
 
                             {/* Price Update Form */}
-                          
+
                             <form
                               style={{ textAlign: "right", padding: "30px" }}
                               onSubmit={(e) => {
@@ -256,7 +269,7 @@ export default function KomparoPage() {
                                   Current Price &nbsp; &nbsp;$
                                 </span>
                                 <span className="form-default">
-                                {scannedData?.price && Number(scannedData.price).toFixed(2)}
+                                  {scannedData?.price && Number(scannedData.price).toFixed(2)}
                                 </span>
                               </p>
                               <p
@@ -309,7 +322,7 @@ export default function KomparoPage() {
                           </section>
 
                           {/* Close Button */}
-                          
+
                           <p style={{ textAlign: 'center', marginTop: '30px' }}>
                             <Button variant="primary"
                               onClick={() => {
@@ -329,10 +342,10 @@ export default function KomparoPage() {
                   </div>
 
                   {/* Pagination */}
-                  
+
                   <div className="pagination-container">
-                    <button 
-                      className="pagination-arrow" 
+                    <button
+                      className="pagination-arrow"
                       onClick={handlePrevPage}
                       disabled={currentPage === 0}
                       style={{ borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px' }}
@@ -340,8 +353,8 @@ export default function KomparoPage() {
                       <img className="" src="/Polygon 36.png" alt="Previous page" />
                     </button>
                     {arr.map(x =>
-                      <button 
-                        key={x} 
+                      <button
+                        key={x}
                         className={`pagination-button ${currentPage === x - 1 ? 'active' : ''}`}
                         onClick={() => {
                           paginationHandler(x - 1);
@@ -351,7 +364,7 @@ export default function KomparoPage() {
                         {x}
                       </button>
                     )}
-                    <button 
+                    <button
                       className="pagination-arrow"
                       onClick={handleNextPage}
                       disabled={currentPage === arr.length - 1}
