@@ -68,7 +68,6 @@ export default function KomparoPage() {
       const elementsSelected = document.getElementsByClassName('scrapped-title');
       const heightsArr = [];
       for (var x of elementsSelected) { heightsArr.push(x.clientHeight); }
-      // console.log(heightsArr); console.log(Math.max.apply(null, heightsArr));
       const calculatedHeight = Math.max.apply(null, heightsArr);
       for (var x of elementsSelected) { x.style.height = calculatedHeight + 'px'; }
     }, 1000);
@@ -181,43 +180,85 @@ export default function KomparoPage() {
                             </article>
                           </section>
                           <section className="sc-2">
-                            {/* <div className="slider-container">
-                              {
-                                loading && 
-                                <Slider {...settings}>
-                                </Slider>
-                              }
-                            </div> */}
-
-                            {/* Slider Logic */}
 
                             <div className="image-slider-container">
-                              <p>
-                                <button type="button" onClick={() => {
-                                  setScrappedProducts(fetchedData.filter(x => x.platform == 'alibaba'));
-                                  fixingHeights();
-                                }}>Alibaba</button>
-                                <button type="button" onClick={() => {
-                                  setScrappedProducts(fetchedData.filter(x => x.platform == 'amazon'));
-                                  fixingHeights();
-                                }}>Amazon</button>
-                                <button type="button" onClick={() => {
-                                  setScrappedProducts(fetchedData);
-                                  fixingHeights();
-                                }}>All</button>
-                                <button style={{ marginLeft: '30px' }} type="button" onClick={() => {
-                                  const arr = fetchedData.map(x => x);
+                              <section>
+                              <input type="radio" id="all" name="all" value="All" onChange={() => {
+                                setTimeout(() => {
+                                  document.getElementById('alibaba').checked = false;
+                                document.getElementById('amazon').checked = false;
+                                }, 500);
+                
+                                setScrappedProducts(fetchedData);
+                                fixingHeights();
+                              }} checked /> <label htmlFor="all">All</label>
+                              <input type="radio" id="alibaba" name="alibaba" value="Alibaba" onChange={() => {
+                                setTimeout(() => {
+                                  document.getElementById('all').checked = false;
+                                  document.getElementById('amazon').checked = false;
+                                }, 500);
+                                
+                                setScrappedProducts(fetchedData.filter(x => x.platform == 'alibaba'));
+                                fixingHeights();
+                              }} /> <label htmlFor="alibaba">Alibaba</label>
+                              <input type="radio" id="amazon" name="amazon" value="Amazon" onChange={() => {
+                                setTimeout(() => {
+                                  document.getElementById('alibaba').checked = false;
+                                  document.getElementById('all').checked = false;
+                                }, 500);
+                                
+                                setScrappedProducts(fetchedData.filter(x => x.platform == 'amazon'));
+                                fixingHeights();
+                              }} /> <label htmlFor="amazon" style={{marginRight : '20px'}}>Amazon</label>
+                                
+                                <input type="radio" id="default" name="default" value="default" onChange={() => {
+                                setTimeout(() => {
+                                  document.getElementById('htl').checked = false;
+                                document.getElementById('lth').checked = false;
+                                }, 500);
+                
+                                setScrappedProducts(fetchedData);
+                                fixingHeights();
+                              }} checked /> <label htmlFor="default">Default</label>
+                              <input type="radio" id="htl" name="htl" value="htl" onChange={() => {
+                                setTimeout(() => {
+                                  document.getElementById('default').checked = false;
+                                  document.getElementById('lth').checked = false;
+                                }, 500);
+                                
+                                const arr = fetchedData.map(x => x);
                                   arr.sort(function (a, b) { return a.price - b.price });
                                   setScrappedProducts(arr);
-                                  fixingHeights();
-                                }}>L-H</button>
-                                <button type="button" onClick={() => {
-                                  const arr = fetchedData.map(x => x);
+                                fixingHeights();
+                              }} /> <label htmlFor="htl">Low to High</label>
+                              <input type="radio" id="lth" name="lth" value="lth" onChange={() => {
+                                setTimeout(() => {
+                                  document.getElementById('default').checked = false;
+                                  document.getElementById('htl').checked = false;
+                                }, 500);
+                                
+                                const arr = fetchedData.map(x => x);
                                   arr.sort(function (a, b) { return b.price - a.price });
                                   setScrappedProducts(arr);
+                                fixingHeights();
+                              }} /> <label htmlFor="lth">High to Low</label>
+
+                                <br />
+                                <form className="price-filtering-form" onSubmit={(event) => {
+                                  event.preventDefault();
+                                  let maxVal = Number(event.target.max.value); let minVal = Number(event.target.min.value);
+                                  if (maxVal == 0) {maxVal = Infinity}
+                                  // console.log(maxVal, minVal);
+                                  setScrappedProducts(fetchedData.filter(x => x.price <= maxVal && x.price >= minVal));
                                   fixingHeights();
-                                }}>H-L</button>
-                              </p>
+                                }}>
+                                  <label htmlFor="min">Min :</label>
+                                  <input id="min" type="number" className="pff-input" name="min" />
+                                  <label htmlFor="max">Max :</label>
+                                  <input id="max" type="number" className="pff-input" name="max" />
+                                  <button type="submit" className="">Search</button>
+                                </form>
+                              </section>
                               {loading && (
                                 <Slider {...settingsNew}>
                                   {scrappedProducts.map((product, index) => (
@@ -328,8 +369,6 @@ export default function KomparoPage() {
                               onClick={() => {
                                 setShowModal(false);
                                 setScannedData(null);
-                                // setAlibabaProducts([]);
-                                // setAmazonProducts([]);
                                 setScrappedProducts([]);
                                 setNewPrice("");
                               }}>
@@ -392,7 +431,6 @@ function ProductCard({ product, setShowModal, setScannedData }) {
   function scanHandler(data) {
     setScannedData(data);
     setShowModal(true);
-    // console.log(data);
   }
 
   return (
