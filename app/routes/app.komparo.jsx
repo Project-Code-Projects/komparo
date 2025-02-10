@@ -10,7 +10,7 @@ import { Rating } from "../components/rating";
 import { AlibabaLogo, AmazonLogo } from '../components/logo.jsx';
 import { fetchScrappedProducts } from '../services/fetch.scrapped.products';
 import { Toaster } from "../components/toaster.jsx";
-export { loader };
+export { loader }
 
 export default function KomparoPage() {
   const [scannedData, setScannedData] = useState(null);
@@ -19,8 +19,10 @@ export default function KomparoPage() {
   const [cardItems, setCardItems] = useState([]);
   const data = useLoaderData();
   const products = data?.products || [];
-  const [alibabaProducts, setAlibabaProducts] = useState([]);
-  const [amazonProducts, setAmazonProducts] = useState([]);
+  const [fetchedData, setFetchedData] = useState([]);
+  const [scrappedProducts, setScrappedProducts] = useState([]);
+//   const [alibabaProducts, setAlibabaProducts] = useState([]);
+//   const [amazonProducts, setAmazonProducts] = useState([]);
   const [newPrice, setNewPrice] = useState("");
   const [toasterMessage, setToasterMessage] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -63,28 +65,47 @@ export default function KomparoPage() {
     setCardItems(products.slice((0 * 9), (0 * 9) + 9))
   }, [])
 
+
   useEffect(() => {
     const getProducts = async () => {
       try {
-        const data = await fetchScrappedProducts(scannedData.title);
-        setAlibabaProducts(data.alibaba || []);
-        setAmazonProducts(data.amazon || []);
-        } catch (error) {
-            console.log(error.message);
-        }
+        // Mock Data
+        
+        // const fetchData = await fetch('/scrapedData.json')
+        // .then(res => res.json())
+        // .then(data => data);
+
+        const fetchData = await fetchScrappedProducts(scannedData.title)
+         
+        const unifiedArr = [];
+        fetchData.alibaba.forEach(x => {
+          x.platform = 'alibaba'; unifiedArr.push(x);
+        });
+        fetchData.amazon.forEach(x => {
+          x.platform = 'amazon'; unifiedArr.push(x);
+        });
+        // console.log(unifiedArr);
+        setFetchedData(unifiedArr);
+        setScrappedProducts(unifiedArr);
+        setTimeout(() => {
+          const elementsSelected = document.getElementsByClassName('scrapped-title');
+          const heightsArr = [];
+          for (var x of elementsSelected) { heightsArr.push(x.clientHeight); }
+          // console.log(heightsArr); console.log(Math.max.apply(null, heightsArr));
+          const calculatedHeight = Math.max.apply(null, heightsArr);
+          for (var x of elementsSelected) { x.style.height = calculatedHeight + 'px'; }
+        }, 1000);
+      } catch (error) {
+        console.log(error.message);
+      }
     };
 
     if (scannedData?.title) {
         getProducts();
     }
   }, [scannedData?.title]);
-  
-
-  const arr = [];
-  for (let i = 1; i <= Math.ceil(products.length / 9); i++) {
-    arr.push(i);
-  }
-
+  // Slider Logic
+    
   const settings = {
     dots: true,
     infinite: false,
@@ -102,12 +123,16 @@ export default function KomparoPage() {
   setTimeout(() => {
     setLoading(true);
   }, 500);
-
-
+    
   // Pagination logic 
 
   function paginationHandler(x) {
     setCardItems(products.slice((x * 9), (x * 9) + 9));
+  }
+
+  const arr = [];
+  for (let i = 1; i <= Math.ceil(products.length / 9); i++) {
+    arr.push(i);
   }
 
   const handlePrevPage = () => {
@@ -123,28 +148,6 @@ export default function KomparoPage() {
       setCurrentPage(currentPage + 1);
     }
   };
-
-
-  // console.log(scannedData?.description?.length);
-
-  // const modal = document.getElementById("myModal");
-  // const closeButton = document.getElementById("closeBtn");
-  // // Function to close modal
-  // function closeModal() {
-  //   modal.classList.add("hidden");
-  // }
-  // // Click on close button
-  // closeButton.addEventListener("click", closeModal);
-  // // Click outside the modal content
-  // modal.addEventListener("click", function (event) {
-  //   if (event.target === modal) {
-  //     closeModal();
-  //   }
-  // });
-  // // Example: Open the modal (you can trigger this with a button)
-  // function openModal() {
-  //   modal.classList.remove("hidden");
-  // }
 
   return (
     <main style={{ padding: '60px', paddingTop: '80px', backgroundColor: '#3D3D3D' }}>
@@ -172,20 +175,13 @@ export default function KomparoPage() {
                           <section className="sc-1">
                             <img src={scannedData?.imageUrl} className="image-scan" alt={scannedData?.title || 'Product image'} />
                             <article className="card-body">
-                              <h3 className="scan-title">
-                                {scannedData?.title}
-                              </h3>
-                              <h4 className="price" style={{ fontSize: '22px' }}>
-                                ${scannedData?.price && Number(scannedData.price).toFixed(2)}
-                              </h4>
+                              <h3 className="scan-title">{scannedData?.title}</h3>
+                              <h4 className="price" style={{ fontSize: '22px' }}>${scannedData?.price}</h4>
                               <p className="scan-desc" style={{ padding: '25px', backgroundColor: 'white', borderRadius: '20px', marginTop: '20px' }}>
                                 {scannedData?.description && scannedData.description.length != 0 ? scannedData.description : 'No description provided!'}
                               </p>
                             </article>
                           </section>
-
-                          {/* Scrapped Product Display */}
-
                           <section className="sc-2">
                             {/* <div className="slider-container">
                               {
@@ -194,56 +190,47 @@ export default function KomparoPage() {
                                 </Slider>
                               }
                             </div> */}
-                             <div className="image-slider-container">
-                              {loading && (alibabaProducts.length > 0 || amazonProducts.length > 0) && (
-                                  <Slider {...settingsNew}>
-                                      {alibabaProducts.map((product, index) => (
-                                          <article key={`alibaba-${index}`} className="scrapped-data-card">
-                                              <img 
-                                                  src={product.image || "https://via.placeholder.com/150"} 
-                                                  className="scrapped-img" 
-                                                  alt={product.title} 
-                                              />
-                                              <h4 className="scrapped-title">{product.title}</h4>
+                              
+                            {/* Slider Logic */}
 
-                                              {product.rating && (
-                                                  <div className="scrapped-rating">
-                                                      <InlineStack gap="100" align="start">
-                                                          <Rating rating={parseFloat(product.rating)} />
-                                                      </InlineStack>
-                                                  </div>
-                                              )}
-
-                                              <AlibabaLogo/>
-                                              <h5 className="scrapped-price">{product.price}</h5>
-                                          </article>
-                                      ))}
-
-                                      {amazonProducts.map((product, index) => (
-                                          <article key={`amazon-${index}`} className="scrapped-data-card">
-                                              <img 
-                                                  src={product.image || "https://via.placeholder.com/150"} 
-                                                  className="scrapped-img" 
-                                                  alt={product.title} 
-                                              />
-                                              <h4 className="scrapped-title">{product.title}</h4>
-
-                                              {product.rating && (
-                                                  <div className="scrapped-rating">
-                                                      <InlineStack gap="100" align="start">
-                                                          <Rating rating={parseFloat(product.rating)} />
-                                                      </InlineStack>
-                                                  </div>
-                                              )}
-
-                                              <AmazonLogo/>
-                                              <h5 className="scrapped-price">{product.price}</h5>
-                                          </article>
-                                      ))}
-                                  </Slider>
+                            <div className="image-slider-container">
+                              <p>
+                                <button type="button" onClick={() => {
+                                  setScrappedProducts(fetchedData.filter(x => x.platform == 'alibaba'));
+                                }}>Alibaba</button>
+                                <button type="button" onClick={() => {
+                                  setScrappedProducts(fetchedData.filter(x => x.platform == 'amazon'));
+                                }}>Amazon</button>
+                                <button type="button" onClick={() => {
+                                  setScrappedProducts(fetchedData);
+                                }}>All</button>
+                              </p>
+                              {loading && (
+                                <Slider {...settingsNew}>
+                                  {scrappedProducts.map((product, index) => (
+                                    <article key={product.platform == 'alibaba' ? `alibaba-${index}` : `amazon-${index}`} className="scrapped-data-card">
+                                      <img
+                                        src={product.image || "https://via.placeholder.com/150"}
+                                        className="scrapped-img"
+                                        alt={product.title}
+                                      />
+                                      <h4 className="scrapped-title">{product.title}</h4>
+                                      {product.rating && (
+                                        <div className="scrapped-rating">
+                                          <InlineStack gap="100" align="start">
+                                            <Rating rating={parseFloat(product.rating)} />
+                                          </InlineStack>
+                                        </div>
+                                      )}
+                                      {product.platform == 'alibaba' ? <AlibabaLogo /> : <AmazonLogo />}
+                                      
+                                      <h5 className="scrapped-price">{product.price}</h5>
+                                    </article>
+                                  ))}
+                                </Slider>
                               )}
                             </div>
-                            
+
                             <hr style={{ width: '95%', margin: '20px auto' }} />
 
                             {/* Price Update Form */}
@@ -320,13 +307,17 @@ export default function KomparoPage() {
                               </button>
                             </form>
                           </section>
+
+                          {/* Close Button */}
+                          
                           <p style={{ textAlign: 'center', marginTop: '30px' }}>
                             <Button variant="primary"
                               onClick={() => {
                                 setShowModal(false);
                                 setScannedData(null);
-                                setAlibabaProducts([]);
-                                setAmazonProducts([]);
+                                // setAlibabaProducts([]);
+                                // setAmazonProducts([]);
+                                setScrappedProducts([]);
                                 setNewPrice("");
                               }}>
                               Close
