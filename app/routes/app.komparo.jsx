@@ -1,4 +1,4 @@
-import { Layout, Text, InlineStack } from "@shopify/polaris"
+import { Layout, Text, InlineStack, Button } from "@shopify/polaris"
 import { useLoaderData } from "@remix-run/react"
 import { loader } from "../services/fetch.products.js"
 import "../styles/komparo.css"
@@ -9,6 +9,7 @@ import Slider from "react-slick";
 import { Rating } from "../components/rating";
 import { AlibabaLogo, AmazonLogo } from '../components/logo.jsx';
 import { fetchScrappedProducts } from '../services/fetch.scrapped.products';
+import { Toaster } from "../components/toaster.jsx";
 export { loader }
 
 export default function KomparoPage() {
@@ -20,22 +21,62 @@ export default function KomparoPage() {
   const products = data?.products || [];
   const [fetchedData, setFetchedData] = useState([]);
   const [scrappedProducts, setScrappedProducts] = useState([]);
+//   const [alibabaProducts, setAlibabaProducts] = useState([]);
+//   const [amazonProducts, setAmazonProducts] = useState([]);
+  const [newPrice, setNewPrice] = useState("");
+  const [toasterMessage, setToasterMessage] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  async function updatePrice() {
+    if (!newPrice) return alert("Please enter a price.");
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:3001/api/updatePrice", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId: scannedData.id,
+          newPrice: parseFloat(newPrice),
+        }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        setToasterMessage("Price updated successfully!")
+        setScannedData((prevData) => ({
+          ...prevData,
+          price: parseFloat(newPrice),
+        }));
+        setNewPrice("");
+        document.querySelector("input[name='price']").value = "";
+      } else {
+        throw new Error(result.error || "Failed to update price.");
+      }
+    } catch (error) {
+      console.error("Error updating price:", error);
+      alert("Failed to update price.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
     setCardItems(products.slice((0 * 9), (0 * 9) + 9))
   }, [])
-  const arr = [];
-  for (let i = 1; i <= Math.ceil(products.length / 9); i++) {
-    arr.push(i);
-  }
+
 
   useEffect(() => {
     const getProducts = async () => {
       try {
-        // const fetchData = await fetchScrappedProducts(scannedData.title);
-        const fetchData = await fetch('/scrapedData.json')
-          .then(res => res.json())
-          .then(data => data);
+        // Mock Data
+        
+        // const fetchData = await fetch('/scrapedData.json')
+        // .then(res => res.json())
+        // .then(data => data);
+
+        const fetchData = await fetchScrappedProducts(scannedData.title)
+         
         const unifiedArr = [];
         fetchData.alibaba.forEach(x => {
           x.platform = 'alibaba'; unifiedArr.push(x);
@@ -53,21 +94,25 @@ export default function KomparoPage() {
           // console.log(heightsArr); console.log(Math.max.apply(null, heightsArr));
           const calculatedHeight = Math.max.apply(null, heightsArr);
           for (var x of elementsSelected) { x.style.height = calculatedHeight + 'px'; }
-        }, 500);
+        }, 1000);
       } catch (error) {
         console.log(error.message);
       }
     };
 
     if (scannedData?.title) {
-      getProducts();
+        getProducts();
     }
   }, [scannedData?.title]);
-  // console.log(scrappedProducts);
-
-  function paginationHandler(x) {
-    setCardItems(products.slice((x * 9), (x * 9) + 9));
-  }
+  // Slider Logic
+    
+  const settings = {
+    dots: true,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 3
+  };
   const settingsNew = {
     dots: true,
     infinite: false,
@@ -78,6 +123,31 @@ export default function KomparoPage() {
   setTimeout(() => {
     setLoading(true);
   }, 500);
+    
+  // Pagination logic 
+
+  function paginationHandler(x) {
+    setCardItems(products.slice((x * 9), (x * 9) + 9));
+  }
+
+  const arr = [];
+  for (let i = 1; i <= Math.ceil(products.length / 9); i++) {
+    arr.push(i);
+  }
+
+  const handlePrevPage = () => {
+    if (currentPage > 0) {
+      paginationHandler(currentPage - 1);
+      setCurrentPage(currentPage - 1);
+    }
+  };
+  
+  const handleNextPage = () => {
+    if (currentPage < arr.length - 1) {
+      paginationHandler(currentPage + 1);
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
   return (
     <main style={{ padding: '60px', paddingTop: '80px', backgroundColor: '#3D3D3D' }}>
@@ -113,6 +183,16 @@ export default function KomparoPage() {
                             </article>
                           </section>
                           <section className="sc-2">
+                            {/* <div className="slider-container">
+                              {
+                                loading && 
+                                <Slider {...settings}>
+                                </Slider>
+                              }
+                            </div> */}
+                              
+                            {/* Slider Logic */}
+
                             <div className="image-slider-container">
                               <p>
                                 <button type="button" onClick={() => {
@@ -121,16 +201,9 @@ export default function KomparoPage() {
                                 <button type="button" onClick={() => {
                                   setScrappedProducts(fetchedData.filter(x => x.platform == 'amazon'));
                                 }}>Amazon</button>
-                                <button type="button" style={{ marginRight: '30px' }} onClick={() => {
+                                <button type="button" onClick={() => {
                                   setScrappedProducts(fetchedData);
                                 }}>All</button>
-                                <button type="button" onClick={() => {
-                                  // scrappedProducts.sort(function(a, b){return a - b});
-                                  console.log(scrappedProducts);
-                                }}>L-H</button>
-                                <button type="button" onClick={() => {
-
-                                }}>H-L</button>
                               </p>
                               {loading && (
                                 <Slider {...settingsNew}>
@@ -142,7 +215,6 @@ export default function KomparoPage() {
                                         alt={product.title}
                                       />
                                       <h4 className="scrapped-title">{product.title}</h4>
-
                                       {product.rating && (
                                         <div className="scrapped-rating">
                                           <InlineStack gap="100" align="start">
@@ -151,39 +223,142 @@ export default function KomparoPage() {
                                         </div>
                                       )}
                                       {product.platform == 'alibaba' ? <AlibabaLogo /> : <AmazonLogo />}
-
+                                      
                                       <h5 className="scrapped-price">{product.price}</h5>
                                     </article>
                                   ))}
                                 </Slider>
                               )}
                             </div>
+
                             <hr style={{ width: '95%', margin: '20px auto' }} />
-                            <form style={{ textAlign: 'right', padding: '30px' }} onSubmit={(e) => {
-                              e.preventDefault();
-                              console.log(e.target.price.value);
-                            }}>
-                              <p style={{ fontSize: '18px', marginBottom: '25px', textAlign: 'left' }}><span className="btn" style={{ fontWeight: 'bold' }}>Current Price &nbsp; &nbsp;$</span><span className="form-input-default" style={{ fontWeight: '600', marginLeft: '8px', padding: '10px', paddingRight: '40px', borderRadius: '10px' }}>{scannedData?.price}</span></p>
-                              <p style={{ fontSize: '18px', marginLeft: '25px', textAlign: 'left' }}><span className="btn" style={{ fontWeight: 'bold' }}>New Price &nbsp; &nbsp;$</span> <input className="form-input-default" style={{ fontWeight: '600', width: '98px', marginLeft: '8px', border: 'none', padding: '10px', borderRadius: '10px', fontSize: '18px' }} name="price" type="number" step="0.01" /></p>
-                              <button style={{ color: "white", backgroundColor: '#54BAB9', border: 'none', padding: '8px 20px', borderRadius: '22px', fontSize: '18px', cursor: 'pointer' }} type="submit" className="btn">Update</button>
+
+                            {/* Price Update Form */}
+                          
+                            <form
+                              style={{ textAlign: "right", padding: "30px" }}
+                              onSubmit={(e) => {
+                                e.preventDefault();
+                                console.log(e.target.price.value);
+                              }}
+                            >
+                              <p
+                                style={{
+                                  fontSize: "18px",
+                                  marginBottom: "25px",
+                                  textAlign: "left",
+                                }}
+                              >
+                                <span
+                                  className="btn"
+                                  style={{ fontWeight: "bold" }}
+                                >
+                                  Current Price &nbsp; &nbsp;$
+                                </span>
+                                <span className="form-default">
+                                {scannedData?.price && Number(scannedData.price).toFixed(2)}
+                                </span>
+                              </p>
+                              <p
+                                style={{
+                                  fontSize: "18px",
+                                  marginLeft: "25px",
+                                  textAlign: "left",
+                                }}
+                              >
+                                <span
+                                  className="btn"
+                                  style={{ fontWeight: "bold" }}
+                                >
+                                  New Price &nbsp; &nbsp;$
+                                </span>{" "}
+                                <input
+                                  className="form-input-default"
+                                  style={{
+                                    fontWeight: "600",
+                                    width: "98px",
+                                    marginLeft: "8px",
+                                    border: "none",
+                                    padding: "10px",
+                                    borderRadius: "10px",
+                                    fontSize: "18px",
+                                  }}
+                                  onChange={(e) => setNewPrice(e.target.value)}
+                                  name="price"
+                                  type="number"
+                                  step="0.01"
+                                />
+                              </p>
+                              <button
+                                style={{
+                                  color: "white",
+                                  backgroundColor: "#54BAB9",
+                                  border: "none",
+                                  padding: "8px 20px",
+                                  borderRadius: "22px",
+                                  fontSize: "18px",
+                                  cursor: "pointer",
+                                }}
+                                type="submit"
+                                className="btn"
+                                onClick={updatePrice}
+                              >
+                                Update
+                              </button>
                             </form>
                           </section>
+
+                          {/* Close Button */}
+                          
                           <p style={{ textAlign: 'center', marginTop: '30px' }}>
-                            <button type="button" className="" onClick={() => {
-                              setShowModal(false); setScannedData(null); setFetchedData([]); setScrappedProducts([]);
-                            }}>Close</button>
+                            <Button variant="primary"
+                              onClick={() => {
+                                setShowModal(false);
+                                setScannedData(null);
+                                // setAlibabaProducts([]);
+                                // setAmazonProducts([]);
+                                setScrappedProducts([]);
+                                setNewPrice("");
+                              }}>
+                              Close
+                            </Button>
                           </p>
                         </div>
                       </div>
                     </div>
                   </div>
 
+                  {/* Pagination */}
+                  
                   <div className="pagination-container">
-                    <button className="pagination-arrow" style={{ borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px' }}><img className="" src="/Polygon 36.png" /></button>
-                    {arr.map(x => <button key={x} className="pagination-button" onClick={() => paginationHandler(x - 1)}>
-                      {x}
-                    </button>)}
-                    <button className="pagination-arrow" style={{ borderTopRightRadius: '12px', borderBottomRightRadius: '12px' }}><img className="" src="/Polygon 37.png" /></button>
+                    <button 
+                      className="pagination-arrow" 
+                      onClick={handlePrevPage}
+                      disabled={currentPage === 0}
+                      style={{ borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px' }}
+                    >
+                      <img className="" src="/Polygon 36.png" alt="Previous page" />
+                    </button>
+                    {arr.map(x =>
+                      <button 
+                        key={x} 
+                        className={`pagination-button ${currentPage === x - 1 ? 'active' : ''}`}
+                        onClick={() => {
+                          paginationHandler(x - 1);
+                          setCurrentPage(x - 1);
+                        }}
+                      >
+                        {x}
+                      </button>
+                    )}
+                    <button 
+                      className="pagination-arrow"
+                      onClick={handleNextPage}
+                      disabled={currentPage === arr.length - 1}
+                      style={{ borderTopRightRadius: '12px', borderBottomRightRadius: '12px' }}
+                    >
+                      <img className="" src="/Polygon 37.png" alt="Next page" />
+                    </button>
                   </div>
                 </>
               ) : (
@@ -192,10 +367,12 @@ export default function KomparoPage() {
             </div>
           </Layout.Section>
         </Layout>
+        {toasterMessage && <Toaster toasterMessage={toasterMessage} setToasterMessage={setToasterMessage} />}
       </div>
     </main>
   )
 }
+
 
 function ProductCard({ product, setShowModal, setScannedData }) {
 
@@ -204,6 +381,7 @@ function ProductCard({ product, setShowModal, setScannedData }) {
     setShowModal(true);
     // console.log(data);
   }
+
   return (
     <div className="card" onClick={() => scanHandler(product)}>
       <img src={product.imageUrl || "/placeholder.svg"} alt={product.title} className="image" />
@@ -212,7 +390,7 @@ function ProductCard({ product, setShowModal, setScannedData }) {
           {product.title}
         </h5>
         <p className="price">
-          ${product.price}
+          ${Number(product.price).toFixed(2)}
         </p>
       </div>
     </div>
