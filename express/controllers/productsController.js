@@ -12,7 +12,7 @@ export const getScrapedProducts = async (req, res) => {
         }
 
         // !important: Trim extra whitespace and newlines
-
+        query = query.trim();
 
         const comparator = await prisma.comparator.findUnique({
             where: { query }
@@ -24,7 +24,7 @@ export const getScrapedProducts = async (req, res) => {
 
         if (comparator.status === "pending") {
             return res.status(202).json({
-                message: "Data is still being processed. Please check back in a few hours."
+                message: "Data is still being processed. Please check back in a few hours..."
             });
         }
 
