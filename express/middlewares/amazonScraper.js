@@ -105,10 +105,6 @@ export async function scrapeAmazonProducts(
   console.log("Max price:", maxPrice);
   console.log("Max pages:", maxPages);
 
-  if (!searchQuery) {
-    return res.status(400).json({ error: "Search query is required" });
-  }
-
   let driver;
 
   try {
@@ -174,10 +170,6 @@ export async function scrapeAmazonProducts(
     //return res.status(200).json({ url: amazonUrl });
   } catch (error) {
     console.error("Scraping error:", error);
-    return res.status(500).json({
-      error: "An error occurred while scraping products",
-      details: error.message,
-    });
   } finally {
     if (driver) {
       console.log("Quitting driver...");
