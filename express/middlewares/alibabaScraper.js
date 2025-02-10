@@ -135,8 +135,11 @@ export async function scrapePage(driver) {
         };
 
         if (isValidProduct(productData)) {
-          productData.price = productData.price.trim();
+          // productData.price = productData.price.trim();
+          productData.price = productData.price.replace(/\$/g, "").trim();
+          console.log("price:", productData.price);
           productData.scrapedAt = new Date().toISOString();
+          console.log("Scraped Product:", JSON.stringify(productData, null, 2));
           productDataList.push(productData);
         }
       } catch (e) {
@@ -161,10 +164,6 @@ export async function scrapeAlibabaProducts(
   console.log("Search query:", searchQuery);
   console.log("Max price:", maxPrice);
   console.log("Max pages:", maxPages);
-
-  if (!searchQuery) {
-    return "Search query not found.";
-  }
 
   let driver;
 
@@ -221,6 +220,7 @@ export async function scrapeAlibabaProducts(
       filePath,
       "Alibaba",
     );
+
     const alibabaUrl = await uploadCsv(csvFilePath);
     console.log("alibaba: ", alibabaUrl);
     return alibabaUrl;
@@ -233,3 +233,5 @@ export async function scrapeAlibabaProducts(
     }
   }
 }
+
+// scrapeAlibabaProducts("The Collection Snowboard: Oxygen");

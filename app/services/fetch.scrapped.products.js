@@ -10,20 +10,11 @@ export const fetchScrappedProducts = async (query) => {
 
         const response = await axios.get(`http://localhost:3001/api/products?query=${query}`);
 
-        // Scrapped
-        if (response.status === 200) {
-            console.log("Products fetched successfully:", response.data);
-            return response.data;
-        }
+        console.log("Products fetched successfully:", response.data);
 
-        // Pending
-        if (response.status === 202) {
-            console.log(response.data.message);
-            return response.data.message;
-        }
-
+        return response;
     } catch (error) {
         console.error(`${error.message}: Error retrieving scrapped products.`);
-        throw new Error(error.response?.data?.message || 'Failed to fetch scrapped products.');
+        throw new Error(error.response?.data?.message || 'Failed to fetch matching products. Please try again later.');
     }
 };

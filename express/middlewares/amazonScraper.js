@@ -105,10 +105,6 @@ export async function scrapeAmazonProducts(
   console.log("Max price:", maxPrice);
   console.log("Max pages:", maxPages);
 
-  if (!searchQuery) {
-    return "Search Query not found.";
-  }
-
   let driver;
 
   try {
