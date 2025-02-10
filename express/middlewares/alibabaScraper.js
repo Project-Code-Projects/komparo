@@ -163,7 +163,7 @@ export async function scrapeAlibabaProducts(
   console.log("Max pages:", maxPages);
 
   if (!searchQuery) {
-    return res.status(400).json({ error: "Search query is required" });
+    return "Search query not found.";
   }
 
   let driver;
@@ -226,10 +226,6 @@ export async function scrapeAlibabaProducts(
     return alibabaUrl;
   } catch (error) {
     console.error("Scraping error:", error);
-    return res.status(500).json({
-      error: "An error occurred while scraping products",
-      details: error.message,
-    });
   } finally {
     if (driver) {
       console.log("Quitting driver...");
