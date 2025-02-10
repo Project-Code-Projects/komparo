@@ -15,6 +15,6 @@ export const fetchScrappedProducts = async (query) => {
         return response;
     } catch (error) {
         console.error(`${error.message}: Error retrieving scrapped products.`);
-        throw new Error(error.response?.data?.message || 'Failed to fetch scrapped products.');
+        throw new Error(error.response?.data?.message || 'Failed to fetch matching products.');
     }
 };

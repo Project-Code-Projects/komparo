@@ -57,30 +57,25 @@ export default function KomparoPage() {
           fetchData.amazon.forEach(x => {
             x.platform = 'amazon'; unifiedArr.push(x);
           });
-          // console.log(unifiedArr);
           setFetchedData(unifiedArr);
           setScrappedProducts(unifiedArr);
           setTimeout(() => {
             const elementsSelected = document.getElementsByClassName('scrapped-title');
             const heightsArr = [];
             for (var x of elementsSelected) { heightsArr.push(x.clientHeight); }
-            // console.log(heightsArr); console.log(Math.max.apply(null, heightsArr));
             const calculatedHeight = Math.max.apply(null, heightsArr);
-            for (var x of elementsSelected) { x.style.height = calculatedHeight + 'px'; }
+            for (var y of elementsSelected) { y.style.height = calculatedHeight + 'px'; }
           }, 1000);
         } else if (response.status === 202) setPendingMessage(fetchData.message);
-
-        console.log("Pending Message:", pendingMessage);
-
       } catch (error) {
-        console.log(error.message);
+        setPendingMessage(error.message);
       }
     };
 
     if (scannedData?.title) {
         getProducts();
     }
-  }, [scannedData?.title]);
+  }, [scannedData?.title, pendingMessage]);
 
   // Price Update Logic
 
@@ -121,14 +116,6 @@ export default function KomparoPage() {
   // Slider Logic
     
   const settings = {
-    dots: true,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 3
-  };
-
-  const settingsNew = {
     dots: true,
     infinite: false,
     speed: 500,
@@ -200,133 +187,136 @@ export default function KomparoPage() {
                               </p>
                             </article>
                           </section>
+
+                          {/* Pending Message Logic */}
+
                           <section className="sc-2">
                             {pendingMessage ?
                               <Text variant="bodyLg">
                                 {pendingMessage}
-                              </Text>
-                               : (
+                              </Text> : (
                               <>
-                              {/* Slider Logic */}
+                                  
+                                {/* Slider Logic */}
 
-                              <div className="image-slider-container">
-                                <InlineStack>
-                                  <Button onClick={() => {
-                                    setScrappedProducts(fetchedData.filter(x => x.platform == 'alibaba'));
-                                  }}>Alibaba</Button>
-                                  <Button onClick={() => {
-                                    setScrappedProducts(fetchedData.filter(x => x.platform == 'amazon'));
-                                  }}>Amazon</Button>
-                                  <Button onClick={() => {
-                                    setScrappedProducts(fetchedData);
-                                  }}>All</Button>
-                                </InlineStack>
-                                
-                                {loading && (
-                                  <Slider {...settingsNew}>
-                                    {
-                                      scrappedProducts.map((product, index) => (
-                                        <article key={product.platform == 'alibaba' ? `alibaba-${index}` : `amazon-${index}`} className="scrapped-data-card">
-                                          <img
-                                            src={product.image || "https://via.placeholder.com/150"}
-                                            className="scrapped-img"
-                                            alt={product.title}
-                                          />
-                                          <h4 className="scrapped-title">{product.title}</h4>
-                                          {product.rating && (
-                                            <div className="scrapped-rating">
-                                              <InlineStack gap="100" align="start">
-                                                <Rating rating={parseFloat(product.rating)} />
-                                              </InlineStack>
-                                            </div>
-                                          )}
-                                          {product.platform == 'alibaba' ? <AlibabaLogo /> : <AmazonLogo />}
-                                          
-                                          <h5 className="scrapped-price">{product.price}</h5>
-                                        </article>
-                                      ))}
-                                  </Slider>
-                                )}
-                              </div>
+                                <div className="image-slider-container">
+                                  <InlineStack>
+                                    <Button onClick={() => {
+                                      setScrappedProducts(fetchedData.filter(x => x.platform == 'alibaba'));
+                                    }}>Alibaba</Button>
+                                    <Button onClick={() => {
+                                      setScrappedProducts(fetchedData.filter(x => x.platform == 'amazon'));
+                                    }}>Amazon</Button>
+                                    <Button onClick={() => {
+                                      setScrappedProducts(fetchedData);
+                                    }}>All</Button>
+                                  </InlineStack>
+                                  
+                                  {loading && (
+                                    <Slider {...settings}>
+                                      {
+                                        scrappedProducts.map((product, index) => (
+                                          <article key={product.platform == 'alibaba' ? `alibaba-${index}` : `amazon-${index}`} className="scrapped-data-card">
+                                            <img
+                                              src={product.image || "https://via.placeholder.com/150"}
+                                              className="scrapped-img"
+                                              alt={product.title}
+                                            />
+                                            <h4 className="scrapped-title">{product.title}</h4>
+                                            {product.rating && (
+                                              <div className="scrapped-rating">
+                                                <InlineStack gap="100" align="start">
+                                                  <Rating rating={parseFloat(product.rating)} />
+                                                </InlineStack>
+                                              </div>
+                                            )}
+                                            {product.platform == 'alibaba' ? <AlibabaLogo /> : <AmazonLogo />}
+                                            
+                                            <h5 className="scrapped-price">{product.price}</h5>
+                                          </article>
+                                        ))}
+                                    </Slider>
+                                  )}
+                                </div>
 
-                              <Divider borderColor="border-inverse" />
+                                <Divider borderColor="border-inverse" />
 
-                              {/* Price Update Form */}
-                          
-                              <form
-                                style={{ textAlign: "right", padding: "30px" }}
-                                onSubmit={(e) => {
-                                  e.preventDefault();
-                                  console.log(e.target.price.value);
-                                }}
-                              >
-                                <p
-                                  style={{
-                                    fontSize: "18px",
-                                    marginBottom: "25px",
-                                    textAlign: "left",
+                                {/* Price Update Form */}
+                            
+                                <form
+                                  style={{ textAlign: "right", padding: "30px" }}
+                                  onSubmit={(e) => {
+                                    e.preventDefault();
+                                    console.log(e.target.price.value);
                                   }}
                                 >
-                                  <span
-                                    className="btn"
-                                    style={{ fontWeight: "bold" }}
-                                  >
-                                    Current Price &nbsp; &nbsp;$
-                                  </span>
-                                  <span className="form-default">
-                                    {scannedData?.price && Number(scannedData.price).toFixed(2)}
-                                  </span>
-                                </p>
-                                <p
-                                  style={{
-                                    fontSize: "18px",
-                                    marginLeft: "25px",
-                                    textAlign: "left",
-                                  }}
-                                >
-                                  <span
-                                    className="btn"
-                                    style={{ fontWeight: "bold" }}
-                                  >
-                                    New Price &nbsp; &nbsp;$
-                                  </span>{" "}
-                                  <input
-                                    className="form-input-default"
+                                  <p
                                     style={{
-                                      fontWeight: "600",
-                                      width: "98px",
-                                      marginLeft: "8px",
-                                      border: "none",
-                                      padding: "10px",
-                                      borderRadius: "10px",
                                       fontSize: "18px",
+                                      marginBottom: "25px",
+                                      textAlign: "left",
                                     }}
-                                    onChange={(e) => setNewPrice(e.target.value)}
-                                    name="price"
-                                    type="number"
-                                    step="0.01"
-                                  />
-                                </p>
-                                <button
-                                  style={{
-                                    color: "white",
-                                    backgroundColor: "#54BAB9",
-                                    border: "none",
-                                    padding: "8px 20px",
-                                    borderRadius: "22px",
-                                    fontSize: "18px",
-                                    cursor: "pointer",
-                                  }}
-                                  type="submit"
-                                  className="btn"
-                                  onClick={updatePrice}
-                                >
-                                  Update
-                                </button>
-                              </form>
+                                  >
+                                    <span
+                                      className="btn"
+                                      style={{ fontWeight: "bold" }}
+                                    >
+                                      Current Price &nbsp; &nbsp;$
+                                    </span>
+                                    <span className="form-default">
+                                      {scannedData?.price && Number(scannedData.price).toFixed(2)}
+                                    </span>
+                                  </p>
+                                  <p
+                                    style={{
+                                      fontSize: "18px",
+                                      marginLeft: "25px",
+                                      textAlign: "left",
+                                    }}
+                                  >
+                                    <span
+                                      className="btn"
+                                      style={{ fontWeight: "bold" }}
+                                    >
+                                      New Price &nbsp; &nbsp;$
+                                    </span>{" "}
+                                    <input
+                                      className="form-input-default"
+                                      style={{
+                                        fontWeight: "600",
+                                        width: "98px",
+                                        marginLeft: "8px",
+                                        border: "none",
+                                        padding: "10px",
+                                        borderRadius: "10px",
+                                        fontSize: "18px",
+                                      }}
+                                      onChange={(e) => setNewPrice(e.target.value)}
+                                      name="price"
+                                      type="number"
+                                      step="0.01"
+                                    />
+                                  </p>
+                                  <button
+                                    style={{
+                                      color: "white",
+                                      backgroundColor: "#54BAB9",
+                                      border: "none",
+                                      padding: "8px 20px",
+                                      borderRadius: "22px",
+                                      fontSize: "18px",
+                                      cursor: "pointer",
+                                    }}
+                                    type="submit"
+                                    className="btn"
+                                    onClick={updatePrice}
+                                  >
+                                    Update
+                                  </button>
+                                </form>
                            </>
                           )}
-                                </section>
+                          </section>
                                 
                           {/* Close Button */}
                           
