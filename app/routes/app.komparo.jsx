@@ -27,6 +27,9 @@ export default function KomparoPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [platform, setPlatform] = useState('all');
   const [price, setPrice] = useState('default');
+  const [priceResetData, setPriceResetData] = useState([]);
+  const [priceDefaultData, setPriceDefaultData] = useState([]);
+  const [noPriceMatched, setNoPriceMatched] = useState(false);
 
   // Page Population Logic
 
@@ -42,9 +45,9 @@ export default function KomparoPage() {
         // Mock Data
 
         const fetchData = await fetch('/scrapedData.json')
-        .then(res => res.json())
-        .then(data => data);
-        const response = {status: 200};
+          .then(res => res.json())
+          .then(data => data);
+        const response = { status: 200 };
 
         // const response = await fetchScrappedProducts(scannedData.title);
         // const fetchData = response.data;
@@ -55,14 +58,14 @@ export default function KomparoPage() {
             fetchData.alibaba.forEach(x => {
               x.platform = 'alibaba'; unifiedArr.push(x);
             });
-           }
-          
-          if (fetchData.amazon) { 
+          }
+
+          if (fetchData.amazon) {
             fetchData.amazon.forEach(x => {
               x.platform = 'amazon'; unifiedArr.push(x);
             });
           }
-          
+
           const filteredPrices = [];
           unifiedArr.forEach(x => {
             if (!x.price.includes("-")) { x.price = Number(x.price); filteredPrices.push(x); }
@@ -79,7 +82,7 @@ export default function KomparoPage() {
     };
 
     if (scannedData?.title) {
-        getProducts();
+      getProducts();
     }
   }, [scannedData?.title, pendingMessage]);
 
@@ -130,7 +133,7 @@ export default function KomparoPage() {
   }
 
   // Slider Logic
-    
+
   const settings = {
     dots: true,
     infinite: false,
@@ -154,15 +157,15 @@ export default function KomparoPage() {
     arr.push(i);
   }
 
-  async function handlePrevPage () {
+  async function handlePrevPage() {
     if (currentPage > 0) {
       paginationHandler(currentPage - 1);
       setCurrentPage(currentPage - 1);
     }
   };
 
-  
-  async function handleNextPage () {
+
+  async function handleNextPage() {
     if (currentPage < arr.length - 1) {
       paginationHandler(currentPage + 1);
       setCurrentPage(currentPage + 1);
@@ -224,185 +227,226 @@ export default function KomparoPage() {
                               <Text variant="bodyLg">
                                 {pendingMessage}
                               </Text> : (
-                              <>
-                                  
-                                {/* Slider Logic */}
+                                <>
 
-                              <div className="image-slider-container">
-                              <section className="filtering-bar">
-                              <p className="price-filtering-form">
-                                  <input id="min" type="number" className="pff-input" min="0" name="min" placeholder="Min" />
-                                  <span style={{margin: '0 5px'}}>-</span>
-                                  <input id="max" type="number" className="pff-input" min="0" name="max" placeholder="Max" style={{marginRight: '5px'}} />
-                                  <button type="submit" className="" onClick={() => {
-                                    let maxVal = Number(document.getElementById('max').value); let minVal = Number(document.getElementById('min').value); 
-                                    if (maxVal == 0) { maxVal = Infinity }
-                                    setScrappedProducts(fetchedData.filter(x => x.price <= maxVal && x.price >= minVal));
-                                    fixingHeights();
-                                  }} style={{marginRight: '5px'}}>Search by price</button>
-                                  <button type="reset" className="" onClick={() => {
-                                    setScrappedProducts(fetchedData);
-                                    document.getElementById('max').value = '';
-                                    document.getElementById('min').value = '';
-                                    fixingHeights();
-                                  }}>Reset</button> 
-                                </p>
-                                <Select
-                                  label=""
-                                  labelInline
-                                  options={options}
-                                  onChange={(event) => {
-                                    setPlatform(event);
-                                    if (event == 'all') {
-                                      setScrappedProducts(fetchedData);
-                                  fixingHeights();
-                                    }
-                                    else if (event == 'alibaba') {
-                                      setScrappedProducts(fetchedData.filter(x => x.platform == 'alibaba'));
-                                  fixingHeights();
-                                    }
-                                    else {
-                                      setScrappedProducts(fetchedData.filter(x => x.platform == 'amazon'));
-                                      fixingHeights();
-                                    }
-                                  }}
-                                  value={platform}
-                                />
-                                <Select
-                                  label="Sort by price : "
-                                  labelInline
-                                  options={optionsFirst}
-                                  onChange={(event) => {
-                                    setPrice(event);
-                                    if (event == 'default') {
-                                      setScrappedProducts(fetchedData);
-                                  fixingHeights();
-                                    }
-                                    else if (event == 'lth') {
-                                      const arr = fetchedData.map(x => x);
-                                  arr.sort(function (a, b) { return a.price - b.price });
-                                  setScrappedProducts(arr);
-                                  fixingHeights();
-                                    }
-                                    else {
-                                      const arr = fetchedData.map(x => x);
-                                  arr.sort(function (a, b) { return b.price - a.price });
-                                  setScrappedProducts(arr);
-                                  fixingHeights();
-                                      fixingHeights();
-                                    }
-                                  }}
-                                  value={price}
-                                />
-                              </section>
-                              {loading && (
-                                <Slider {...settings}>
-                                  {scrappedProducts.map((product, index) => (
-                                    <article key={product.platform == 'alibaba' ? `alibaba-${index}` : `amazon-${index}`} className="scrapped-data-card">
-                                      <img
-                                        src={product.image || "https://via.placeholder.com/150"}
-                                        className="scrapped-img"
-                                        alt={product.title}
-                                      />
-                                      <h4 className="scrapped-title">{product.title}</h4>
-                                          <div className="scrapped-rating">
-                                          {((!isNaN(product.rating)) && (Number(product.rating) > 0)) ? 
-                                            <InlineStack gap="100" align="start">
-                                            <Rating rating={Number(product.rating)} />
-                                          </InlineStack>
-                                          :
-                                          <p style={{color: 'lightgray'}}><i>No rating found!</i></p>
+                                  {/* Slider Logic */}
+
+                                  <div className="image-slider-container">
+                                    <section className="filtering-bar">
+                                      <p className="price-filtering-form">
+                                        <input id="min" type="number" className="pff-input" min="0" name="min" placeholder="Min" />
+                                        <span style={{ margin: '0 5px' }}>-</span>
+                                        <input id="max" type="number" className="pff-input" min="0" name="max" placeholder="Max" style={{ marginRight: '5px' }} />
+                                        <button type="submit" className="" onClick={() => {
+                                          let maxVal = Number(document.getElementById('max').value); let minVal = Number(document.getElementById('min').value);
+                                          if (maxVal == 0) { maxVal = Infinity }
+                                          if (priceResetData.length > 0) {
+                                            const arr = priceResetData.filter(x => x.price <= maxVal && x.price >= minVal);
+                                            if (arr.length > 0) { setNoPriceMatched(false) } else { setNoPriceMatched(true) }
+                                            setScrappedProducts(arr);
+                                          } else {
+                                            setPriceResetData(scrappedProducts);
+                                            const arr = scrappedProducts.filter(x => x.price <= maxVal && x.price >= minVal);
+                                            if (arr.length > 0) { setNoPriceMatched(false) } else { setNoPriceMatched(true) }
+                                            setScrappedProducts(arr);
                                           }
-                                        </div>
-                                      {product.platform == 'alibaba' ? <AlibabaLogo /> : <AmazonLogo />}
 
-                                      <h5 className="scrapped-price">${product.price}</h5>
-                                    </article>
-                                  ))}
-                                </Slider>
-                              )}
-                            </div>
+                                          fixingHeights();
+                                        }} style={{ marginRight: '5px' }}>Search by price</button>
+                                        <button type="reset" className="" onClick={() => {
+                                          if (priceResetData.length > 0) {
+                                            setScrappedProducts(priceResetData);
+                                            setPriceResetData([]);
+                                            setNoPriceMatched(false);
+                                            document.getElementById('max').value = '';
+                                            document.getElementById('min').value = '';
+                                            fixingHeights();
+                                          }
+                                        }}>Reset</button>
+                                      </p>
+                                      <Select
+                                        label=""
+                                        labelInline
+                                        options={options}
+                                        onChange={(event) => {
+                                          setPlatform(event);
+                                          if (event == 'all') {
+                                            setPrice('default');
+                                            setPriceResetData([]);
+                                            setPriceDefaultData([]);
+                                            setNoPriceMatched(false);
+                                            document.getElementById('max').value = '';
+                                            document.getElementById('min').value = '';
+                                            setScrappedProducts(fetchedData);
+                                            fixingHeights();
+                                          }
+                                          else if (event == 'alibaba') {
+                                            setPrice('default');
+                                            setPriceResetData([]);
+                                            setPriceDefaultData([]);
+                                            setNoPriceMatched(false);
+                                            document.getElementById('max').value = '';
+                                            document.getElementById('min').value = '';
+                                            setScrappedProducts(fetchedData.filter(x => x.platform == 'alibaba'));
+                                            fixingHeights();
+                                          }
+                                          else {
+                                            setPrice('default');
+                                            setPriceResetData([]);
+                                            setPriceDefaultData([]);
+                                            setNoPriceMatched(false);
+                                            document.getElementById('max').value = '';
+                                            document.getElementById('min').value = '';
+                                            setScrappedProducts(fetchedData.filter(x => x.platform == 'amazon'));
+                                            fixingHeights();
+                                          }
+                                        }}
+                                        value={platform}
+                                      />
+                                      <Select
+                                        label="Sort by price : "
+                                        labelInline
+                                        options={optionsFirst}
+                                        onChange={(event) => {
+                                          setPrice(event);
+                                          if (event == 'default') {
+                                            setScrappedProducts(priceDefaultData);
+                                            fixingHeights();
+                                          }
+                                          else if (event == 'lth') {
+                                            if (priceDefaultData.length == 0) {setPriceDefaultData(scrappedProducts)}
+                                            const arr = scrappedProducts.map(x => x);
+                                            arr.sort(function (a, b) { return a.price - b.price });
+                                            setScrappedProducts(arr);
+                                            fixingHeights();
+                                          }
+                                          else {
+                                            if (priceDefaultData.length == 0) {setPriceDefaultData(scrappedProducts)}
+                                            const arr = scrappedProducts.map(x => x);
+                                            arr.sort(function (a, b) { return b.price - a.price });
+                                            setScrappedProducts(arr);
+                                            fixingHeights();
+                                            fixingHeights();
+                                          }
+                                        }}
+                                        value={price}
+                                      />
+                                    </section>
+                                    {loading &&
+                                      <>
+                                        {
+                                          noPriceMatched ?
+                                            <p style={{ textAlign: 'center', marginTop: '30px' }}>No Price Matched!</p>
+                                            :
+                                            < Slider {...settings}>
+                                              {scrappedProducts.map((product, index) => (
+                                                <article key={product.platform == 'alibaba' ? `alibaba-${index}` : `amazon-${index}`} className="scrapped-data-card">
+                                                  <img
+                                                    src={product.image || "https://via.placeholder.com/150"}
+                                                    className="scrapped-img"
+                                                    alt={product.title}
+                                                  />
+                                                  <h4 className="scrapped-title">{product.title}</h4>
+                                                  <div className="scrapped-rating">
+                                                    {((!isNaN(product.rating)) && (Number(product.rating) > 0)) ?
+                                                      <InlineStack gap="100" align="start">
+                                                        <Rating rating={Number(product.rating)} />
+                                                      </InlineStack>
+                                                      :
+                                                      <p style={{ color: 'lightgray' }}><i>No rating found!</i></p>
+                                                    }
+                                                  </div>
+                                                  {product.platform == 'alibaba' ? <AlibabaLogo /> : <AmazonLogo />}
 
-                                <Divider borderColor="border-inverse" />
+                                                  <h5 className="scrapped-price">${product.price}</h5>
+                                                </article>
+                                              ))}
+                                            </Slider>
+                                        }
+                                      </>
+                                    }
+                                  </div>
 
-                                {/* Price Update Form */}
-                            
-                                <form
-                                  style={{ textAlign: "right", padding: "30px" }}
-                                  onSubmit={(e) => {
-                                    e.preventDefault();
-                                    console.log(e.target.price.value);
-                                  }}
-                                >
-                                  <p
-                                    style={{
-                                      fontSize: "18px",
-                                      marginBottom: "25px",
-                                      textAlign: "left",
+                                  <Divider borderColor="border-inverse" />
+
+                                  {/* Price Update Form */}
+
+                                  <form
+                                    style={{ textAlign: "right", padding: "30px" }}
+                                    onSubmit={(e) => {
+                                      e.preventDefault();
+                                      console.log(e.target.price.value);
                                     }}
                                   >
-                                    <span
-                                      className="btn"
-                                      style={{ fontWeight: "bold" }}
-                                    >
-                                      Current Price &nbsp; &nbsp;$
-                                    </span>
-                                    <span className="form-default">
-                                      {scannedData?.price && Number(scannedData.price).toFixed(2)}
-                                    </span>
-                                  </p>
-                                  <p
-                                    style={{
-                                      fontSize: "18px",
-                                      marginLeft: "25px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    <span
-                                      className="btn"
-                                      style={{ fontWeight: "bold" }}
-                                    >
-                                      New Price &nbsp; &nbsp;$
-                                    </span>{" "}
-                                    <input
-                                      className="form-input-default"
+                                    <p
                                       style={{
-                                        fontWeight: "600",
-                                        width: "98px",
-                                        marginLeft: "8px",
-                                        border: "none",
-                                        padding: "10px",
-                                        borderRadius: "10px",
                                         fontSize: "18px",
+                                        marginBottom: "25px",
+                                        textAlign: "left",
                                       }}
-                                      onChange={(e) => setNewPrice(e.target.value)}
-                                      name="price"
-                                      type="number"
-                                      min="0"
-                                      step="0.01"
-                                    />
-                                  </p>
-                                  <button
-                                    style={{
-                                      color: "white",
-                                      backgroundColor: "#54BAB9",
-                                      border: "none",
-                                      padding: "8px 20px",
-                                      borderRadius: "22px",
-                                      fontSize: "18px",
-                                      cursor: "pointer",
-                                    }}
-                                    type="submit"
-                                    className="btn"
-                                    onClick={updatePrice}
-                                  >
-                                    Update
-                                  </button>
-                                </form>
-                           </>
-                          )}
+                                    >
+                                      <span
+                                        className="btn"
+                                        style={{ fontWeight: "bold" }}
+                                      >
+                                        Current Price &nbsp; &nbsp;$
+                                      </span>
+                                      <span className="form-default">
+                                        {scannedData?.price && Number(scannedData.price).toFixed(2)}
+                                      </span>
+                                    </p>
+                                    <p
+                                      style={{
+                                        fontSize: "18px",
+                                        marginLeft: "25px",
+                                        textAlign: "left",
+                                      }}
+                                    >
+                                      <span
+                                        className="btn"
+                                        style={{ fontWeight: "bold" }}
+                                      >
+                                        New Price &nbsp; &nbsp;$
+                                      </span>{" "}
+                                      <input
+                                        className="form-input-default"
+                                        style={{
+                                          fontWeight: "600",
+                                          width: "98px",
+                                          marginLeft: "8px",
+                                          border: "none",
+                                          padding: "10px",
+                                          borderRadius: "10px",
+                                          fontSize: "18px",
+                                        }}
+                                        onChange={(e) => setNewPrice(e.target.value)}
+                                        name="price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                      />
+                                    </p>
+                                    <button
+                                      style={{
+                                        color: "white",
+                                        backgroundColor: "#54BAB9",
+                                        border: "none",
+                                        padding: "8px 20px",
+                                        borderRadius: "22px",
+                                        fontSize: "18px",
+                                        cursor: "pointer",
+                                      }}
+                                      type="submit"
+                                      className="btn"
+                                      onClick={updatePrice}
+                                    >
+                                      Update
+                                    </button>
+                                  </form>
+                                </>
+                              )}
                           </section>
-                                
+
                           {/* Close Button */}
 
                           <p style={{ textAlign: 'center', marginTop: '30px' }}>
@@ -410,7 +454,15 @@ export default function KomparoPage() {
                               onClick={() => {
                                 setShowModal(false);
                                 setScannedData(null);
+                                setFetchedData([]);
                                 setScrappedProducts([]);
+                                setPlatform('all');
+                                setPrice('default');
+                                setPriceResetData([]);
+                                setPriceDefaultData([]);
+                                setNoPriceMatched(false);
+                                document.getElementById('max').value = '';
+                                document.getElementById('min').value = '';
                                 setNewPrice("");
                                 setPendingMessage(null);
                               }}>
@@ -436,7 +488,7 @@ export default function KomparoPage() {
                     {arr.map(x =>
                       <button
                         type="button"
-                        key={x} 
+                        key={x}
                         className={`pagination-button ${currentPage === x - 1 ? 'active' : ''}`}
                         onClick={() => {
                           paginationHandler(x - 1);
@@ -465,7 +517,7 @@ export default function KomparoPage() {
         </Layout>
         {toasterMessage && <Toaster toasterMessage={toasterMessage} setToasterMessage={setToasterMessage} />}
       </div>
-    </main>
+    </main >
   )
 }
 
