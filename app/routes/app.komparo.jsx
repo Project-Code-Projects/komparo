@@ -1,4 +1,4 @@
-import { Layout, Text, InlineStack, Button, Divider, Banner, Icon } from "@shopify/polaris"
+import { Layout, Text, InlineStack, Button, Divider, Banner, Icon, Select } from "@shopify/polaris"
 import { useLoaderData } from "@remix-run/react"
 import { loader } from "../services/fetch.products.js"
 import "../styles/komparo.css"
@@ -8,7 +8,7 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { Rating } from "../components/rating";
 import { AlibabaLogo, AmazonLogo } from '../components/logo.jsx';
-import { fetchScrappedProducts } from '../services/fetch.scrapped.products';
+// import { fetchScrappedProducts } from '../services/fetch.scrapped.products';
 import { Toaster } from "../components/toaster.jsx";
 import {
   AlertCircleIcon
@@ -28,6 +28,9 @@ export default function KomparoPage() {
   const [toasterMessage, setToasterMessage] = useState(null);
   const [pendingMessage, setPendingMessage] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
+  const [platform, setPlatform] = useState('all');
+  const [price, setPrice] = useState('default');
+  const [showSR, setShowSR] = useState(false);
 
   // Page Population Logic
 
@@ -42,13 +45,14 @@ export default function KomparoPage() {
       try {
         // Mock Data
 
-        // const fetchData = await fetch('/scrapedData.json')
-        // .then(res => res.json())
-        // .then(data => data);
+        const fetchData = await fetch('/scrapedData.json')
+        .then(res => res.json())
+        .then(data => data);
+        const response = {status: 200};
 
-        const response = await fetchScrappedProducts(scannedData.title);
-        const fetchData = response.data;
-        console.log("STATUS", response.status);
+        // const response = await fetchScrappedProducts(scannedData.title);
+        // const fetchData = response.data;
+
         if (response.status === 200) {
           const unifiedArr = [];
           fetchData.alibaba.forEach(x => {
@@ -57,15 +61,14 @@ export default function KomparoPage() {
           fetchData.amazon.forEach(x => {
             x.platform = 'amazon'; unifiedArr.push(x);
           });
-          setFetchedData(unifiedArr);
-          setScrappedProducts(unifiedArr);
-          setTimeout(() => {
-            const elementsSelected = document.getElementsByClassName('scrapped-title');
-            const heightsArr = [];
-            for (var x of elementsSelected) { heightsArr.push(x.clientHeight); }
-            const calculatedHeight = Math.max.apply(null, heightsArr);
-            for (var y of elementsSelected) { y.style.height = calculatedHeight + 'px'; }
-          }, 1000);
+          const filteredPrices = [];
+          unifiedArr.forEach(x => {
+            if (!x.price.includes("-")) { x.price = Number(x.price); filteredPrices.push(x); }
+          });
+          // filteredPrices.forEach(x => console.log(Boolean((!isNaN(x.rating)) && (Number(x.rating) > 0)), x.rating));
+          setFetchedData(filteredPrices);
+          setScrappedProducts(filteredPrices);
+          fixingHeights();
         } else if (response.status === 202) setPendingMessage(fetchData.message);
 
       } catch (error) {
@@ -114,6 +117,57 @@ export default function KomparoPage() {
     }
   }
 
+  useEffect(() => {
+    setCardItems(products.slice((0 * 9), (0 * 9) + 9))
+  }, [])
+
+  function fixingHeights() {
+    setTimeout(() => {
+      const elementsSelected = document.getElementsByClassName('scrapped-title');
+      const heightsArr = [];
+      for (var x of elementsSelected) { heightsArr.push(x.clientHeight); }
+      const calculatedHeight = Math.max.apply(null, heightsArr);
+      for (var x of elementsSelected) { x.style.height = calculatedHeight + 'px'; }
+    }, 1000);
+  }
+
+  useEffect(() => {
+    const getProducts = async () => {
+      try {
+
+        // Mock Data
+
+        // const fetchData = await fetch('/scrapedData.json')
+          // .then(res => res.json())
+          // .then(data => data);
+
+        const fetchData = await fetchScrappedProducts(scannedData.title);
+
+        const unifiedArr = [];
+        fetchData.alibaba.forEach(x => {
+          x.platform = 'alibaba'; unifiedArr.push(x);
+        });
+        fetchData.amazon.forEach(x => {
+          x.platform = 'amazon'; unifiedArr.push(x);
+        });
+        const filteredPrices = [];
+        unifiedArr.forEach(x => {
+          if (!x.price.includes("-")) { x.price = Number(x.price); filteredPrices.push(x); }
+        });
+        // filteredPrices.forEach(x => console.log(Boolean((!isNaN(x.rating)) && (Number(x.rating) > 0)), x.rating));
+        setFetchedData(filteredPrices);
+        setScrappedProducts(filteredPrices);
+        fixingHeights();
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+
+    if (scannedData?.title) {
+      getProducts();
+    }
+  }, [scannedData?.title]);
+
   // Slider Logic
     
   const settings = {
@@ -127,7 +181,7 @@ export default function KomparoPage() {
   setTimeout(() => {
     setLoading(true);
   }, 500);
-    
+
   // Pagination logic 
 
   async function paginationHandler(x) {
@@ -145,6 +199,7 @@ export default function KomparoPage() {
       setCurrentPage(currentPage - 1);
     }
   };
+
   
   async function handleNextPage () {
     if (currentPage < arr.length - 1) {
@@ -152,6 +207,18 @@ export default function KomparoPage() {
       setCurrentPage(currentPage + 1);
     }
   };
+
+  const options = [
+    { label: 'All', value: 'all' },
+    { label: 'Alibaba', value: 'alibaba' },
+    { label: 'Amazon', value: 'amazon' }
+  ];
+
+  const optionsFirst = [
+    { label: 'Default', value: 'default' },
+    { label: 'Low to High', value: 'lth' },
+    { label: 'High to Low', value: 'htl' }
+  ];
 
   return (
     <main style={{ padding: '60px', paddingTop: '80px', backgroundColor: '#3D3D3D' }}>
@@ -200,45 +267,100 @@ export default function KomparoPage() {
                                   
                                 {/* Slider Logic */}
 
-                                <div className="image-slider-container">
-                                  <InlineStack>
-                                    <Button onClick={() => {
-                                      setScrappedProducts(fetchedData.filter(x => x.platform == 'alibaba'));
-                                    }}>Alibaba</Button>
-                                    <Button onClick={() => {
-                                      setScrappedProducts(fetchedData.filter(x => x.platform == 'amazon'));
-                                    }}>Amazon</Button>
-                                    <Button onClick={() => {
+                              <div className="image-slider-container">
+                              <section className="filtering-bar">
+                                <Select
+                                  label=""
+                                  labelInline
+                                  options={options}
+                                  onChange={(event) => {
+                                    setPlatform(event);
+                                    if (event == 'all') {
                                       setScrappedProducts(fetchedData);
-                                    }}>All</Button>
-                                  </InlineStack>
-                                  
-                                  {loading && (
-                                    <Slider {...settings}>
-                                      {
-                                        scrappedProducts.map((product, index) => (
-                                          <article key={product.platform == 'alibaba' ? `alibaba-${index}` : `amazon-${index}`} className="scrapped-data-card">
-                                            <img
-                                              src={product.image || "https://via.placeholder.com/150"}
-                                              className="scrapped-img"
-                                              alt={product.title}
-                                            />
-                                            <h4 className="scrapped-title">{product.title}</h4>
-                                            {product.rating && (
-                                              <div className="scrapped-rating">
-                                                <InlineStack gap="100" align="start">
-                                                  <Rating rating={parseFloat(product.rating)} />
-                                                </InlineStack>
-                                              </div>
-                                            )}
-                                            {product.platform == 'alibaba' ? <AlibabaLogo /> : <AmazonLogo />}
-                                            
-                                            <h5 className="scrapped-price">{product.price}</h5>
-                                          </article>
-                                        ))}
-                                    </Slider>
-                                  )}
-                                </div>
+                                  fixingHeights();
+                                    }
+                                    else if (event == 'alibaba') {
+                                      setScrappedProducts(fetchedData.filter(x => x.platform == 'alibaba'));
+                                  fixingHeights();
+                                    }
+                                    else {
+                                      setScrappedProducts(fetchedData.filter(x => x.platform == 'amazon'));
+                                      fixingHeights();
+                                    }
+                                  }}
+                                  value={platform}
+                                />
+                                <Select
+                                  label="Sort by price : "
+                                  labelInline
+                                  options={optionsFirst}
+                                  onChange={(event) => {
+                                    setPrice(event);
+                                    if (event == 'default') {
+                                      setScrappedProducts(fetchedData);
+                                  fixingHeights();
+                                    }
+                                    else if (event == 'lth') {
+                                      const arr = fetchedData.map(x => x);
+                                  arr.sort(function (a, b) { return a.price - b.price });
+                                  setScrappedProducts(arr);
+                                  fixingHeights();
+                                    }
+                                    else {
+                                      const arr = fetchedData.map(x => x);
+                                  arr.sort(function (a, b) { return b.price - a.price });
+                                  setScrappedProducts(arr);
+                                  fixingHeights();
+                                      fixingHeights();
+                                    }
+                                  }}
+                                  value={price}
+                                />
+                                <p className="price-filtering-form">
+                                  <input id="min" type="number" className="pff-input" name="min" placeholder="Min" />
+                                  <span style={{margin: '0 5px'}}>-</span>
+                                  <input id="max" type="number" className="pff-input" name="max" placeholder="Max" style={{marginRight: '5px'}} />
+                                  {showSR ? <button type="reset" className="" onClick={() => {
+                                    setShowSR(false); setScrappedProducts(fetchedData);
+                                    document.getElementById('max').value = '';
+                                    document.getElementById('min').value = '';
+                                  }}>Reset</button>  : <button type="submit" className="" onClick={() => {
+                                    setShowSR(true);
+                                    let maxVal = Number(document.getElementById('max').value); let minVal = Number(document.getElementById('min').value); 
+                                    if (maxVal == 0) { maxVal = Infinity }
+                                    // console.log(maxVal, minVal);
+                                    setScrappedProducts(fetchedData.filter(x => x.price <= maxVal && x.price >= minVal));
+                                    fixingHeights();
+                                  }}>Search by price</button> }
+                                </p>
+                              </section>
+                              {loading && (
+                                <Slider {...settings}>
+                                  {scrappedProducts.map((product, index) => (
+                                    <article key={product.platform == 'alibaba' ? `alibaba-${index}` : `amazon-${index}`} className="scrapped-data-card">
+                                      <img
+                                        src={product.image || "https://via.placeholder.com/150"}
+                                        className="scrapped-img"
+                                        alt={product.title}
+                                      />
+                                      <h4 className="scrapped-title">{product.title}</h4>
+                                          <div className="scrapped-rating">
+                                          {((!isNaN(product.rating)) && (Number(product.rating) > 0)) ? 
+                                            <InlineStack gap="100" align="start">
+                                            <Rating rating={Number(product.rating)} />
+                                          </InlineStack>
+                                          :
+                                          <p>No rating found!</p>
+                                          }
+                                        </div>
+                                      {product.platform == 'alibaba' ? <AlibabaLogo /> : <AmazonLogo />}
+
+                                      <h5 className="scrapped-price">${product.price}</h5>
+                                    </article>
+                                  ))}
+                                </Slider>
+                              )}
+                            </div>
 
                                 <Divider borderColor="border-inverse" />
 
@@ -320,7 +442,7 @@ export default function KomparoPage() {
                           </section>
                                 
                           {/* Close Button */}
-                          
+
                           <p style={{ textAlign: 'center', marginTop: '30px' }}>
                             <Button variant="primary"
                               onClick={() => {
@@ -339,10 +461,10 @@ export default function KomparoPage() {
                   </div>
 
                   {/* Pagination */}
-                  
+
                   <div className="pagination-container">
-                    <button 
-                      className="pagination-arrow" 
+                    <button
+                      className="pagination-arrow"
                       onClick={handlePrevPage}
                       disabled={currentPage === 0}
                       style={{ borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px' }}
@@ -362,6 +484,7 @@ export default function KomparoPage() {
                         {x}
                       </button>
                     )}
+
                     <button button="type"
                       className="pagination-arrow"
                       onClick={handleNextPage}
@@ -390,7 +513,6 @@ function ProductCard({ product, setShowModal, setScannedData }) {
   function scanHandler(data) {
     setScannedData(data);
     setShowModal(true);
-    // console.log(data);
   }
 
   return (
