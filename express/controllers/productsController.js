@@ -29,11 +29,17 @@ export const getScrapedProducts = async (req, res) => {
         console.log("Amazon URL:", amazon_url || "No Amazon URL available");
         console.log("Alibaba URL:", alibaba_url || "No Alibaba URL available");
 
-        console.log("Downloading from Alibaba URL:", alibaba_url);
-        const alibabaProducts = (await downloadCsv(alibaba_url)).slice(0, 3);
+        let amazonProducts;
+        let alibabaProducts;
 
-        console.log("Downloading from Amazon URL:", amazon_url);
-        const amazonProducts = (await downloadCsv(amazon_url)).slice(0, 3);
+        if (alibaba_url) {
+            console.log("Downloading from Alibaba URL:", alibaba_url);
+            alibabaProducts = (await downloadCsv(alibaba_url)).slice(0, 3);
+        }
+        if (amazon_url) {
+            console.log("Downloading from Amazon URL:", amazon_url);
+            amazonProducts = (await downloadCsv(amazon_url)).slice(0, 3);
+        }
 
         res.status(200).json({
             alibaba_url,

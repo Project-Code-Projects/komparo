@@ -1,10 +1,10 @@
-import { convertJsonToCsv } from "../utils/jsonToCsv.js";
+import { convertJsonToCsv } from "../jsonToCsv.js";
 import { Builder, By, until } from "selenium-webdriver";
 import { Options } from "selenium-webdriver/edge.js";
 import { promises as fs } from "fs";
 import { fileURLToPath } from "url";
 import path from "path";
-import { uploadCsv } from "../utils/cloudinaryUtils.js";
+import { uploadCsv } from "../cloudinaryUtils.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -158,7 +158,10 @@ export async function scrapeAlibabaProducts(
   maxPrice = 1000,
   maxPages = 1,
 ) {
+  console.log("---------------------------------------------------------------")
   console.log("Scraping Alibaba products...");
+  console.log("---------------------------------------------------------------")
+
   //const { searchQuery, maxPrice = 1000, maxPages = 1 } = req.body;
 
   console.log("Search query:", searchQuery);
@@ -210,7 +213,7 @@ export async function scrapeAlibabaProducts(
     // const fileName = `alibaba_results_${timestamp}.json`;
     const filePath = path.join(
       __dirname,
-      "../datasets/json/scraped_results.json",
+      "../../datasets/json/scrapped_results.json",
     );
 
     await fs.writeFile(filePath, JSON.stringify(allProducts, null, 2), "utf-8");
@@ -229,6 +232,7 @@ export async function scrapeAlibabaProducts(
   } finally {
     if (driver) {
       console.log("Quitting driver...");
+      console.log("[END]");
       await driver.quit();
     }
   }
