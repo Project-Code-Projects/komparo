@@ -8,11 +8,8 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { Rating } from "../components/rating";
 import { AlibabaLogo, AmazonLogo } from '../components/logo.jsx';
-// import { fetchScrappedProducts } from '../services/fetch.scrapped.products';
+import { fetchScrappedProducts } from '../services/fetch.scrapped.products';
 import { Toaster } from "../components/toaster.jsx";
-import {
-  AlertCircleIcon
-} from '@shopify/polaris-icons';
 export { loader }
 
 export default function KomparoPage() {
@@ -45,13 +42,13 @@ export default function KomparoPage() {
       try {
         // Mock Data
 
-        const fetchData = await fetch('/scrapedData.json')
-        .then(res => res.json())
-        .then(data => data);
-        const response = {status: 200};
+        // const fetchData = await fetch('/scrapedData.json')
+        // .then(res => res.json())
+        // .then(data => data);
+        // const response = {status: 200};
 
-        // const response = await fetchScrappedProducts(scannedData.title);
-        // const fetchData = response.data;
+        const response = await fetchScrappedProducts(scannedData.title);
+        const fetchData = response.data;
 
         if (response.status === 200) {
           const unifiedArr = [];
@@ -117,56 +114,15 @@ export default function KomparoPage() {
     }
   }
 
-  useEffect(() => {
-    setCardItems(products.slice((0 * 9), (0 * 9) + 9))
-  }, [])
-
   function fixingHeights() {
     setTimeout(() => {
       const elementsSelected = document.getElementsByClassName('scrapped-title');
       const heightsArr = [];
       for (var x of elementsSelected) { heightsArr.push(x.clientHeight); }
       const calculatedHeight = Math.max.apply(null, heightsArr);
-      for (var x of elementsSelected) { x.style.height = calculatedHeight + 'px'; }
+      for (var y of elementsSelected) { y.style.height = calculatedHeight + 'px'; }
     }, 1000);
   }
-
-  useEffect(() => {
-    const getProducts = async () => {
-      try {
-
-        // Mock Data
-
-        // const fetchData = await fetch('/scrapedData.json')
-          // .then(res => res.json())
-          // .then(data => data);
-
-        const fetchData = await fetchScrappedProducts(scannedData.title);
-
-        const unifiedArr = [];
-        fetchData.alibaba.forEach(x => {
-          x.platform = 'alibaba'; unifiedArr.push(x);
-        });
-        fetchData.amazon.forEach(x => {
-          x.platform = 'amazon'; unifiedArr.push(x);
-        });
-        const filteredPrices = [];
-        unifiedArr.forEach(x => {
-          if (!x.price.includes("-")) { x.price = Number(x.price); filteredPrices.push(x); }
-        });
-        // filteredPrices.forEach(x => console.log(Boolean((!isNaN(x.rating)) && (Number(x.rating) > 0)), x.rating));
-        setFetchedData(filteredPrices);
-        setScrappedProducts(filteredPrices);
-        fixingHeights();
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
-
-    if (scannedData?.title) {
-      getProducts();
-    }
-  }, [scannedData?.title]);
 
   // Slider Logic
     

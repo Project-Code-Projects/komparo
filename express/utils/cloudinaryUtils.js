@@ -13,6 +13,10 @@ const __dirname = path.dirname(__filename);
 
 export async function uploadCsv(csvFilePath, retailer = "alibaba") {
   try {
+    console.log("---------------------------------------------------------------");
+    console.log("Uploading CSV to Cloudinary...");
+    console.log("---------------------------------------------------------------");
+
     const uploadResult = await cloudinary.v2.uploader.upload(csvFilePath, {
       resource_type: "auto",
       folder: `csv_${retailer}`,
@@ -20,7 +24,8 @@ export async function uploadCsv(csvFilePath, retailer = "alibaba") {
 
     const fileUrl = uploadResult.secure_url;
 
-    console.log("CSV file uploaded successfully:", fileUrl);
+    console.log("CSV file uploaded to Cloudinary successfully:", fileUrl);
+    console.log("[END]");
 
     return fileUrl;
   } catch (error) {
@@ -30,6 +35,9 @@ export async function uploadCsv(csvFilePath, retailer = "alibaba") {
 
 export async function downloadCsv(fileUrl) {
   try {
+    console.log("---------------------------------------------------------------");
+    console.log("Downloading CSV from Cloudinary...");
+    console.log("---------------------------------------------------------------");
     const response = await axios({
       method: "get",
       url: fileUrl,
@@ -46,7 +54,8 @@ export async function downloadCsv(fileUrl) {
       writer.on("error", reject);
     });
 
-    console.log("CSV file downloaded successfully to:", outputPath);
+    console.log("CSV file downloaded from succesfully successfully to:", outputPath);
+    console.log("[END]");
 
     const formattedData = await convertCsvToJson(
       outputPath,

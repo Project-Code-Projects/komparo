@@ -9,8 +9,8 @@ import webhookRouter from "./routes/webhookRoute.js";
 import updatePriceRouter from "./routes/updatePrice.js";
 import productsRouter from "./routes/productsRoute.js";
 import { PrismaClient } from "@prisma/client";
-import { scrapeAmazonProducts } from "./middlewares/amazonScraper.js";
-import { scrapeAlibabaProducts } from "./middlewares/alibabaScraper.js";
+import { scrapeAmazonProducts } from "./utils/scrapers/amazonScraper.js";
+import { scrapeAlibabaProducts } from "./utils/scrapers/alibabaScraper.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,7 +41,9 @@ app.listen(PORT, async (req, res) => {
 const prisma = new PrismaClient();
 
 cron.schedule("10 * * * * *", async () => {
+  console.log("---------------------------------------------------------------")
   console.log("Cron job triggered: scraping pending queries from PostgreSQL...");
+  console.log("---------------------------------------------------------------")
 
   try {
     const rows = await prisma.comparator.findMany({
@@ -76,6 +78,7 @@ cron.schedule("10 * * * * *", async () => {
             amazon: amazonResponse,
           },
         });
+        console.log("[END]")
       } catch (scrapeError) {
         console.error(`Error scraping for query "${searchQuery}":`, scrapeError);
       }

@@ -8,6 +8,10 @@ const __dirname = path.dirname(__filename);
 
 export async function convertJsonToCsv(searchQuery, jsonFilePath, retailer) {
   try {
+    console.log("---------------------------------------------------------------");
+    console.log("Converting JSON to CSV");
+    console.log("---------------------------------------------------------------");
+
     const jsonData = JSON.parse(await fs.readFile(jsonFilePath, "utf8"));
     console.log("JSON data read successfully.");
 
@@ -23,6 +27,8 @@ export async function convertJsonToCsv(searchQuery, jsonFilePath, retailer) {
 
     await fs.writeFile(finalCsvFilePath, csvData, "utf8");
     console.log(`CSV file created: ${finalCsvFilePath}`);
+    console.log("[END]")
+
     return finalCsvFilePath;
   } catch (error) {
     console.error("Error converting JSON to CSV:", error);

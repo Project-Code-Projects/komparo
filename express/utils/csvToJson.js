@@ -3,6 +3,10 @@ import Papa from 'papaparse';
 
 export async function convertCsvToJson(csvFilePath) {
     try {
+        console.log("---------------------------------------------------------------");
+        console.log("Converting CSV to JSON...");
+        console.log("---------------------------------------------------------------");
+
         const csvData = await fs.promises.readFile(csvFilePath, 'utf-8');
         console.log('CSV file read successfully.');
 
@@ -22,6 +26,8 @@ export async function convertCsvToJson(csvFilePath) {
                     }));
 
                     console.log('Formatted JSON data:', formattedData);
+                    console.log("[END]");
+
                     resolve(formattedData);
                 },
                 error: (error) => {
