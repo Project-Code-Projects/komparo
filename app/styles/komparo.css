@@ -140,7 +140,10 @@
 }
 
 .scrapped-img {
-  max-width: 100%;
+  width: 100%;
+  height: 250px;
+  object-fit: contain;
+  object-position: top;
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
 }

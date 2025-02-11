@@ -97,8 +97,9 @@ export default function KomparoPage() {
         });
         const filteredPrices = [];
         unifiedArr.forEach(x => {
-          if (!x.price.includes("-")) { x.price = Number(x.price.slice(1)); filteredPrices.push(x); }
+          if (!x.price.includes("-")) { x.price = Number(x.price); filteredPrices.push(x); }
         });
+        // filteredPrices.forEach(x => console.log(Boolean((!isNaN(x.rating)) && (Number(x.rating) > 0)), x.rating));
         setFetchedData(filteredPrices);
         setScrappedProducts(filteredPrices);
         fixingHeights();
@@ -199,7 +200,7 @@ export default function KomparoPage() {
                             <div className="image-slider-container">
                               <section className="filtering-bar">
                                 <Select
-                                  label="Sort by platform : "
+                                  label=""
                                   labelInline
                                   options={options}
                                   onChange={(event) => {
@@ -273,13 +274,15 @@ export default function KomparoPage() {
                                         alt={product.title}
                                       />
                                       <h4 className="scrapped-title">{product.title}</h4>
-                                      {product.rating && (
-                                        <div className="scrapped-rating">
-                                          <InlineStack gap="100" align="start">
-                                            <Rating rating={parseFloat(product.rating)} />
+                                          <div className="scrapped-rating">
+                                          {((!isNaN(product.rating)) && (Number(product.rating) > 0)) ? 
+                                            <InlineStack gap="100" align="start">
+                                            <Rating rating={Number(product.rating)} />
                                           </InlineStack>
+                                          :
+                                          <p>No rating found!</p>
+                                          }
                                         </div>
-                                      )}
                                       {product.platform == 'alibaba' ? <AlibabaLogo /> : <AmazonLogo />}
 
                                       <h5 className="scrapped-price">${product.price}</h5>
