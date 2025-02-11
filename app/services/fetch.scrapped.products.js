@@ -8,13 +8,14 @@ export const fetchScrappedProducts = async (query) => {
 
         query = query.trim();
 
+        console.log(`http://localhost:3001/api/products?query=${query}`);
         const response = await axios.get(`http://localhost:3001/api/products?query=${query}`);
 
         console.log("Products fetched successfully:", response.data);
 
         return response;
     } catch (error) {
-        console.error(`${error.message}: Error retrieving scrapped products.`);
-        throw new Error(error.response?.data?.message || 'Failed to fetch matching products. Please try again later.');
+        console.error(`${error.message}: Error retrieving scrapped products. Either no match found, or server issues.`);
+        throw new Error(error.response?.data?.message || 'No match found.');
     }
 };

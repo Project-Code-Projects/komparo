@@ -52,12 +52,18 @@ export default function KomparoPage() {
 
         if (response.status === 200) {
           const unifiedArr = [];
-          fetchData.alibaba.forEach(x => {
-            x.platform = 'alibaba'; unifiedArr.push(x);
-          });
-          fetchData.amazon.forEach(x => {
-            x.platform = 'amazon'; unifiedArr.push(x);
-          });
+          if (fetchData.alibaba) {
+            fetchData.alibaba.forEach(x => {
+              x.platform = 'alibaba'; unifiedArr.push(x);
+            });
+           }
+          
+          if (fetchData.amazon) { 
+            fetchData.amazon.forEach(x => {
+              x.platform = 'amazon'; unifiedArr.push(x);
+            });
+          }
+          
           const filteredPrices = [];
           unifiedArr.forEach(x => {
             if (!x.price.includes("-")) { x.price = Number(x.price); filteredPrices.push(x); }
