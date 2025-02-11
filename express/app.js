@@ -3,13 +3,12 @@ import cors from "cors";
 import "dotenv/config.js";
 import cron from "node-cron";
 import express from "express";
-import db from "./database/db.js";
 import { fileURLToPath } from "url";
 import { connectDB } from "../prisma/connectDB.js";
-import alibabaRouter from "./routes/scraperRoute.js";
 import webhookRouter from "./routes/webhookRoute.js";
 import updatePriceRouter from "./routes/updatePrice.js";
 import productsRouter from "./routes/productsRoute.js";
+import { PrismaClient } from "@prisma/client";
 import { scrapeAmazonProducts } from "./middlewares/amazonScraper.js";
 import { scrapeAlibabaProducts } from "./middlewares/alibabaScraper.js";
 
@@ -22,7 +21,6 @@ const PORT = process.env.PORT || 3001;
 app.use(express.json());
 app.use(cors({ origin: "*" }));
 app.use(express.static(__dirname));
-app.use("/api/scrape", alibabaRouter);
 app.use("/api/webhooks", webhookRouter);
 app.use("/api/updatePrice", updatePriceRouter); // Bad practice; change naming convention
 app.use("/api/products", productsRouter);
@@ -32,10 +30,7 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, async (req, res) => {
-  console.log(`✅  Server running on http://localhost:${PORT}`);
-  console.log(
-    `✅  Scraper test page available at http://localhost:${PORT}/scraper-test.html`,
-  );
+  console.log(` ✅ Server running on http://localhost:${PORT}`);
   await connectDB();
 });
 
@@ -43,68 +38,50 @@ app.listen(PORT, async (req, res) => {
 // Schedule a Cron Job every 2 minutes
 // -------------------------------
 
-// cron.schedule("10 * * * * *", async () => {
-//   console.log(
-//     "Cron job triggered: scraping pending queries from PostgreSQL...",
-//   );
+const prisma = new PrismaClient();
 
-//   try {
-//     const { rows } = await db.query(
-//       'SELECT * FROM public."Comparator" WHERE status = $1',
-//       ["pending"],
-//     );
+cron.schedule("10 * * * * *", async () => {
+  console.log("Cron job triggered: scraping pending queries from PostgreSQL...");
 
-//     if (!rows.length) {
-//       console.log("No pending queries found.");
-//       return;
-//     }
+  try {
+    const rows = await prisma.comparator.findMany({
+      where: {
+        status: "pending",
+      },
+    });
 
-//     for (const row of rows) {
-//       const searchQuery = row.query; // Your query column value
-//       console.log("Panding task: ", searchQuery);
-//       console.log("Scraping for query:", searchQuery);
+    if (!rows.length) {
+      console.log("No pending queries found.");
+      return;
+    }
 
-//       try {
-//         const amazonResponse = await scrapeAmazonProducts(searchQuery);
-//         const alibabaResponse = await scrapeAlibabaProducts(searchQuery);
+    for (const row of rows) {
+      const searchQuery = row.query;
+      console.log("Pending task: ", searchQuery);
+      console.log("Scraping for query:", searchQuery);
 
-//         // await fetch(
-//         //   "http://localhost:3001/api/scrape/alibaba",
-//         //   {
-//         //     method: "POST",
-//         //     headers: { "Content-Type": "application/json" },
-//         //     body: JSON.stringify({
-//         //       searchQuery,
-//         //       // maxPrice: 100,
-//         //       // maxPages: 1,
-//         //     }),
-//         //   },
-//         // );
+      try {
+        const amazonResponse = await scrapeAmazonProducts(searchQuery);
+        const alibabaResponse = await scrapeAlibabaProducts(searchQuery);
 
-//         //fetch() returns a 'Response' object. You need to convert that response to JSON using .json()
-//         // const resultAmazon = await amazonResponse.json();
-//         // const resultAlibaba = await alibabaResponse.json();
-//         console.log(
-//           "Scraping job result for",
-//           searchQuery,
-//           ":",
-//           amazonResponse,
-//           alibabaResponse,
-//         );
+        console.log("Scraping job result for", searchQuery, ":", amazonResponse, alibabaResponse);
 
-//         // Optionally update the status after successful scraping:
-//         await db.query(
-//           'UPDATE public."Comparator" SET status = $1,alibaba = $2, amazon = $3 WHERE query = $4',
-//           ["completed", alibabaResponse, amazonResponse, searchQuery],
-//         );
-//       } catch (scrapeError) {
-//         console.error(
-//           `Error scraping for query "${searchQuery}":`,
-//           scrapeError,
-//         );
-//       }
-//     }
-//   } catch (error) {
-//     console.error("Error in cron job:", error);
-//   }
-// });
+        await prisma.comparator.update({
+          where: {
+            query: searchQuery,
+          },
+          data: {
+            status: "completed",
+            alibaba: alibabaResponse,
+            amazon: amazonResponse,
+          },
+        });
+      } catch (scrapeError) {
+        console.error(`Error scraping for query "${searchQuery}":`, scrapeError);
+      }
+    }
+  } catch (error) {
+    console.error("Error in cron job:", error);
+  }
+});
+

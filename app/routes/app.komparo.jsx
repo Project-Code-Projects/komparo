@@ -1,4 +1,4 @@
-import { Layout, Text, InlineStack, Button, Select } from "@shopify/polaris"
+import { Layout, Text, InlineStack, Button, Divider, Banner, Icon, Select } from "@shopify/polaris"
 import { useLoaderData } from "@remix-run/react"
 import { loader } from "../services/fetch.products.js"
 import "../styles/komparo.css"
@@ -8,8 +8,11 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { Rating } from "../components/rating";
 import { AlibabaLogo, AmazonLogo } from '../components/logo.jsx';
-import { fetchScrappedProducts } from '../services/fetch.scrapped.products';
+// import { fetchScrappedProducts } from '../services/fetch.scrapped.products';
 import { Toaster } from "../components/toaster.jsx";
+import {
+  AlertCircleIcon
+} from '@shopify/polaris-icons';
 export { loader }
 
 export default function KomparoPage() {
@@ -23,10 +26,62 @@ export default function KomparoPage() {
   const [scrappedProducts, setScrappedProducts] = useState([]);
   const [newPrice, setNewPrice] = useState("");
   const [toasterMessage, setToasterMessage] = useState(null);
+  const [pendingMessage, setPendingMessage] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [platform, setPlatform] = useState('all');
   const [price, setPrice] = useState('default');
   const [showSR, setShowSR] = useState(false);
+
+  // Page Population Logic
+
+  useEffect(() => {
+    setCardItems(products.slice((0 * 9), (0 * 9) + 9))
+  }, [])
+
+  // Fetch Scrapped Products Logic
+
+  useEffect(() => {
+    const getProducts = async () => {
+      try {
+        // Mock Data
+
+        const fetchData = await fetch('/scrapedData.json')
+        .then(res => res.json())
+        .then(data => data);
+        const response = {status: 200};
+
+        // const response = await fetchScrappedProducts(scannedData.title);
+        // const fetchData = response.data;
+
+        if (response.status === 200) {
+          const unifiedArr = [];
+          fetchData.alibaba.forEach(x => {
+            x.platform = 'alibaba'; unifiedArr.push(x);
+          });
+          fetchData.amazon.forEach(x => {
+            x.platform = 'amazon'; unifiedArr.push(x);
+          });
+          const filteredPrices = [];
+          unifiedArr.forEach(x => {
+            if (!x.price.includes("-")) { x.price = Number(x.price); filteredPrices.push(x); }
+          });
+          // filteredPrices.forEach(x => console.log(Boolean((!isNaN(x.rating)) && (Number(x.rating) > 0)), x.rating));
+          setFetchedData(filteredPrices);
+          setScrappedProducts(filteredPrices);
+          fixingHeights();
+        } else if (response.status === 202) setPendingMessage(fetchData.message);
+
+      } catch (error) {
+        setPendingMessage(error.message);
+      }
+    };
+
+    if (scannedData?.title) {
+        getProducts();
+    }
+  }, [scannedData?.title, pendingMessage]);
+
+  // Price Update Logic
 
   async function updatePrice() {
     if (!newPrice) return alert("Please enter a price.");
@@ -82,11 +137,11 @@ export default function KomparoPage() {
 
         // Mock Data
 
-        const fetchData = await fetch('/scrapedData.json')
-          .then(res => res.json())
-          .then(data => data);
+        // const fetchData = await fetch('/scrapedData.json')
+          // .then(res => res.json())
+          // .then(data => data);
 
-        // const fetchData = await fetchScrappedProducts(scannedData.title);
+        const fetchData = await fetchScrappedProducts(scannedData.title);
 
         const unifiedArr = [];
         fetchData.alibaba.forEach(x => {
@@ -112,22 +167,24 @@ export default function KomparoPage() {
       getProducts();
     }
   }, [scannedData?.title]);
-  // Slider Logic
 
-  const settingsNew = {
+  // Slider Logic
+    
+  const settings = {
     dots: true,
     infinite: false,
     speed: 500,
     slidesToShow: 3,
     slidesToScroll: 3,
   };
+
   setTimeout(() => {
     setLoading(true);
   }, 500);
 
   // Pagination logic 
 
-  function paginationHandler(x) {
+  async function paginationHandler(x) {
     setCardItems(products.slice((x * 9), (x * 9) + 9));
   }
 
@@ -136,14 +193,15 @@ export default function KomparoPage() {
     arr.push(i);
   }
 
-  const handlePrevPage = () => {
+  async function handlePrevPage () {
     if (currentPage > 0) {
       paginationHandler(currentPage - 1);
       setCurrentPage(currentPage - 1);
     }
   };
 
-  const handleNextPage = () => {
+  
+  async function handleNextPage () {
     if (currentPage < arr.length - 1) {
       paginationHandler(currentPage + 1);
       setCurrentPage(currentPage + 1);
@@ -170,6 +228,8 @@ export default function KomparoPage() {
             <h3 className="heading">Your Products</h3>
             <div className="container">
 
+              {/* Page Population Logic */}
+
               {cardItems.length > 0 ? (
                 <>
                   <div className="grid">
@@ -195,9 +255,19 @@ export default function KomparoPage() {
                               </p>
                             </article>
                           </section>
-                          <section className="sc-2">
 
-                            <div className="image-slider-container">
+                          {/* Pending Message Logic */}
+
+                          <section className="sc-2">
+                            {pendingMessage ?
+                              <Text variant="bodyLg">
+                                {pendingMessage}
+                              </Text> : (
+                              <>
+                                  
+                                {/* Slider Logic */}
+
+                              <div className="image-slider-container">
                               <section className="filtering-bar">
                                 <Select
                                   label=""
@@ -265,7 +335,7 @@ export default function KomparoPage() {
                                 </p>
                               </section>
                               {loading && (
-                                <Slider {...settingsNew}>
+                                <Slider {...settings}>
                                   {scrappedProducts.map((product, index) => (
                                     <article key={product.platform == 'alibaba' ? `alibaba-${index}` : `amazon-${index}`} className="scrapped-data-card">
                                       <img
@@ -292,83 +362,85 @@ export default function KomparoPage() {
                               )}
                             </div>
 
-                            <hr style={{ width: '95%', margin: '20px auto' }} />
+                                <Divider borderColor="border-inverse" />
 
-                            {/* Price Update Form */}
-
-                            <form
-                              style={{ textAlign: "right", padding: "30px" }}
-                              onSubmit={(e) => {
-                                e.preventDefault();
-                                console.log(e.target.price.value);
-                              }}
-                            >
-                              <p
-                                style={{
-                                  fontSize: "18px",
-                                  marginBottom: "25px",
-                                  textAlign: "left",
-                                }}
-                              >
-                                <span
-                                  className="btn"
-                                  style={{ fontWeight: "bold" }}
-                                >
-                                  Current Price &nbsp; &nbsp;$
-                                </span>
-                                <span className="form-default">
-                                  {scannedData?.price && Number(scannedData.price).toFixed(2)}
-                                </span>
-                              </p>
-                              <p
-                                style={{
-                                  fontSize: "18px",
-                                  marginLeft: "25px",
-                                  textAlign: "left",
-                                }}
-                              >
-                                <span
-                                  className="btn"
-                                  style={{ fontWeight: "bold" }}
-                                >
-                                  New Price &nbsp; &nbsp;$
-                                </span>{" "}
-                                <input
-                                  className="form-input-default"
-                                  style={{
-                                    fontWeight: "600",
-                                    width: "98px",
-                                    marginLeft: "8px",
-                                    border: "none",
-                                    padding: "10px",
-                                    borderRadius: "10px",
-                                    fontSize: "18px",
+                                {/* Price Update Form */}
+                            
+                                <form
+                                  style={{ textAlign: "right", padding: "30px" }}
+                                  onSubmit={(e) => {
+                                    e.preventDefault();
+                                    console.log(e.target.price.value);
                                   }}
-                                  onChange={(e) => setNewPrice(e.target.value)}
-                                  name="price"
-                                  type="number"
-                                  step="0.01"
-                                />
-                              </p>
-                              <button
-                                style={{
-                                  color: "white",
-                                  backgroundColor: "#54BAB9",
-                                  border: "none",
-                                  padding: "8px 20px",
-                                  borderRadius: "22px",
-                                  fontSize: "18px",
-                                  cursor: "pointer",
-                                }}
-                                type="submit"
-                                className="btn"
-                                onClick={updatePrice}
-                              >
-                                Update
-                              </button>
-                            </form>
+                                >
+                                  <p
+                                    style={{
+                                      fontSize: "18px",
+                                      marginBottom: "25px",
+                                      textAlign: "left",
+                                    }}
+                                  >
+                                    <span
+                                      className="btn"
+                                      style={{ fontWeight: "bold" }}
+                                    >
+                                      Current Price &nbsp; &nbsp;$
+                                    </span>
+                                    <span className="form-default">
+                                      {scannedData?.price && Number(scannedData.price).toFixed(2)}
+                                    </span>
+                                  </p>
+                                  <p
+                                    style={{
+                                      fontSize: "18px",
+                                      marginLeft: "25px",
+                                      textAlign: "left",
+                                    }}
+                                  >
+                                    <span
+                                      className="btn"
+                                      style={{ fontWeight: "bold" }}
+                                    >
+                                      New Price &nbsp; &nbsp;$
+                                    </span>{" "}
+                                    <input
+                                      className="form-input-default"
+                                      style={{
+                                        fontWeight: "600",
+                                        width: "98px",
+                                        marginLeft: "8px",
+                                        border: "none",
+                                        padding: "10px",
+                                        borderRadius: "10px",
+                                        fontSize: "18px",
+                                      }}
+                                      onChange={(e) => setNewPrice(e.target.value)}
+                                      name="price"
+                                      type="number"
+                                      step="0.01"
+                                    />
+                                  </p>
+                                  <button
+                                    style={{
+                                      color: "white",
+                                      backgroundColor: "#54BAB9",
+                                      border: "none",
+                                      padding: "8px 20px",
+                                      borderRadius: "22px",
+                                      fontSize: "18px",
+                                      cursor: "pointer",
+                                    }}
+                                    type="submit"
+                                    className="btn"
+                                    onClick={updatePrice}
+                                  >
+                                    Update
+                                  </button>
+                                </form>
+                           </>
+                          )}
                           </section>
-
+                                
                           {/* Close Button */}
 
                           <p style={{ textAlign: 'center', marginTop: '30px' }}>
@@ -378,6 +450,7 @@ export default function KomparoPage() {
                                 setScannedData(null);
                                 setScrappedProducts([]);
                                 setNewPrice("");
+                                setPendingMessage(null);
                               }}>
                               Close
                             </Button>
@@ -400,7 +473,8 @@ export default function KomparoPage() {
                     </button>
                     {arr.map(x =>
                       <button
-                        key={x}
+                        type="button"
+                        key={x} 
                         className={`pagination-button ${currentPage === x - 1 ? 'active' : ''}`}
                         onClick={() => {
                           paginationHandler(x - 1);
@@ -410,7 +484,8 @@ export default function KomparoPage() {
                         {x}
                       </button>
                     )}
-                    <button
+
+                    <button button="type"
                       className="pagination-arrow"
                       onClick={handleNextPage}
                       disabled={currentPage === arr.length - 1}
