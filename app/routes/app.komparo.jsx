@@ -27,7 +27,6 @@ export default function KomparoPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [platform, setPlatform] = useState('all');
   const [price, setPrice] = useState('default');
-  const [showSR, setShowSR] = useState(false);
 
   // Page Population Logic
 
@@ -42,13 +41,13 @@ export default function KomparoPage() {
       try {
         // Mock Data
 
-        // const fetchData = await fetch('/scrapedData.json')
-        // .then(res => res.json())
-        // .then(data => data);
-        // const response = {status: 200};
+        const fetchData = await fetch('/scrapedData.json')
+        .then(res => res.json())
+        .then(data => data);
+        const response = {status: 200};
 
-        const response = await fetchScrappedProducts(scannedData.title);
-        const fetchData = response.data;
+        // const response = await fetchScrappedProducts(scannedData.title);
+        // const fetchData = response.data;
 
         if (response.status === 200) {
           const unifiedArr = [];
@@ -231,6 +230,23 @@ export default function KomparoPage() {
 
                               <div className="image-slider-container">
                               <section className="filtering-bar">
+                              <p className="price-filtering-form">
+                                  <input id="min" type="number" className="pff-input" min="0" name="min" placeholder="Min" />
+                                  <span style={{margin: '0 5px'}}>-</span>
+                                  <input id="max" type="number" className="pff-input" min="0" name="max" placeholder="Max" style={{marginRight: '5px'}} />
+                                  <button type="submit" className="" onClick={() => {
+                                    let maxVal = Number(document.getElementById('max').value); let minVal = Number(document.getElementById('min').value); 
+                                    if (maxVal == 0) { maxVal = Infinity }
+                                    setScrappedProducts(fetchedData.filter(x => x.price <= maxVal && x.price >= minVal));
+                                    fixingHeights();
+                                  }} style={{marginRight: '5px'}}>Search by price</button>
+                                  <button type="reset" className="" onClick={() => {
+                                    setScrappedProducts(fetchedData);
+                                    document.getElementById('max').value = '';
+                                    document.getElementById('min').value = '';
+                                    fixingHeights();
+                                  }}>Reset</button> 
+                                </p>
                                 <Select
                                   label=""
                                   labelInline
@@ -278,23 +294,6 @@ export default function KomparoPage() {
                                   }}
                                   value={price}
                                 />
-                                <p className="price-filtering-form">
-                                  <input id="min" type="number" className="pff-input" name="min" placeholder="Min" />
-                                  <span style={{margin: '0 5px'}}>-</span>
-                                  <input id="max" type="number" className="pff-input" name="max" placeholder="Max" style={{marginRight: '5px'}} />
-                                  {showSR ? <button type="reset" className="" onClick={() => {
-                                    setShowSR(false); setScrappedProducts(fetchedData);
-                                    document.getElementById('max').value = '';
-                                    document.getElementById('min').value = '';
-                                  }}>Reset</button>  : <button type="submit" className="" onClick={() => {
-                                    setShowSR(true);
-                                    let maxVal = Number(document.getElementById('max').value); let minVal = Number(document.getElementById('min').value); 
-                                    if (maxVal == 0) { maxVal = Infinity }
-                                    // console.log(maxVal, minVal);
-                                    setScrappedProducts(fetchedData.filter(x => x.price <= maxVal && x.price >= minVal));
-                                    fixingHeights();
-                                  }}>Search by price</button> }
-                                </p>
                               </section>
                               {loading && (
                                 <Slider {...settings}>
@@ -312,7 +311,7 @@ export default function KomparoPage() {
                                             <Rating rating={Number(product.rating)} />
                                           </InlineStack>
                                           :
-                                          <p>No rating found!</p>
+                                          <p style={{color: 'lightgray'}}><i>No rating found!</i></p>
                                           }
                                         </div>
                                       {product.platform == 'alibaba' ? <AlibabaLogo /> : <AmazonLogo />}
@@ -379,6 +378,7 @@ export default function KomparoPage() {
                                       onChange={(e) => setNewPrice(e.target.value)}
                                       name="price"
                                       type="number"
+                                      min="0"
                                       step="0.01"
                                     />
                                   </p>

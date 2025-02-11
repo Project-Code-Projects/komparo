@@ -238,7 +238,6 @@
 
 .price-filtering-form {
   display: inline;
-  margin-left: 30px;
 }
 
 .pff-input {
@@ -247,7 +246,7 @@
 
 .filtering-bar {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   margin-bottom: 15px;
 }
