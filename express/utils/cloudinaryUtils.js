@@ -62,7 +62,8 @@ export async function downloadCsv(fileUrl) {
       "../datasets/json/display_results.json",
     );
 
-    // console.log("Converted CSV to JSON successfully:", formattedData);
+    console.log("Converted CSV to JSON successfully:", formattedData);
+    console.log("[END]");
 
     return formattedData;
   } catch (error) {

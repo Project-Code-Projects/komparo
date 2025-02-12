@@ -86,7 +86,7 @@ async function scrapePage(driver) {
       }
     }
   } catch (e) {
-    console.error("Error scraping page:", e);
+    console.error("Error scrapping page:", e);
   }
 
   return productDataList;
@@ -171,7 +171,7 @@ export async function scrapeAmazonProducts(
     return amazonUrl;
     //return res.status(200).json({ url: amazonUrl });
   } catch (error) {
-    console.error("Scraping error:", error);
+    console.error("Scrapping error:", error);
   } finally {
     if (driver) {
       console.log("Quitting driver...");

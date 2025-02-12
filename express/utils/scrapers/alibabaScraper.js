@@ -139,7 +139,7 @@ export async function scrapePage(driver) {
           productData.price = productData.price.replace(/\$/g, "").trim();
           console.log("price:", productData.price);
           productData.scrapedAt = new Date().toISOString();
-          console.log("Scraped Product:", JSON.stringify(productData, null, 2));
+          console.log("Scrapped Product:", JSON.stringify(productData, null, 2));
           productDataList.push(productData);
         }
       } catch (e) {
@@ -147,7 +147,7 @@ export async function scrapePage(driver) {
       }
     }
   } catch (e) {
-    console.error("Error scraping page:", e);
+    console.error("Error scrapping page:", e);
   }
 
   return productDataList;
@@ -158,9 +158,9 @@ export async function scrapeAlibabaProducts(
   maxPrice = 1000,
   maxPages = 1,
 ) {
-  console.log("---------------------------------------------------------------")
+  console.log("---------------------------------------------------------------");
   console.log("Scraping Alibaba products...");
-  console.log("---------------------------------------------------------------")
+  console.log("---------------------------------------------------------------");
 
   //const { searchQuery, maxPrice = 1000, maxPages = 1 } = req.body;
 
@@ -228,7 +228,7 @@ export async function scrapeAlibabaProducts(
     console.log("alibaba: ", alibabaUrl);
     return alibabaUrl;
   } catch (error) {
-    console.error("Scraping error:", error);
+    console.error("Scrapping error:", error);
   } finally {
     if (driver) {
       console.log("Quitting driver...");

@@ -1,29 +1,65 @@
-// import axios from 'axios';
+import "dotenv/config.js";
+import axios from "axios";
+import { PrismaClient } from "@prisma/client";
 
-// const shopifyAPI = async () => {
-//     const shop = 'your-shop-name.myshopify.com';
-//     const accessToken = 'your-access-token';
+const prisma = new PrismaClient();
 
-//     try {
-//         const response = await axios.get(`https://${shop}/admin/api/2024-01/products.json`, {
-//             headers: {
-//                 'X-Shopify-Access-Token': accessToken,
-//                 'Content-Type': 'application/json',
-//             },
-//         });
+const storeName = process.env.SHOPIFY_STORE_NAME || "price-comparison-app";
+const accessToken = process.env.SHOPIFY_ACCESS_TOKEN || "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";
 
-//         const products = response.data.products;
-//         console.log('Initial Product List:', products);
+export async function getProductsFromShopify() {
+    try {
+        const response = await axios.get(`https://${storeName}.myshopify.com/admin/api/2025-01/products.json`, {
+            headers: {
+                "X-Shopify-Access-Token": accessToken,
+            },
+        });
+        console.log("Fetched products:", response.data.products);
+        return response.data.products;
+    } catch (error) {
+        console.error("Error fetching products:", error.response?.data || error.message);
+        return [];
+    }
+}
 
-//         // Store in DB or cache
-//         return products;
-//     } catch (error) {
-//         console.error('Error fetching products:', error);
-//     }
-// };
+export async function initializeComparatorProducts() {
+    try {
+        console.log("---------------------------------------------------------------");
+        console.log("Initializing comparator products...");
+        console.log("---------------------------------------------------------------");
+        const response = await axios.get(`https://${storeName}.myshopify.com/admin/api/2025-01/products.json`, {
+            headers: {
+                "X-Shopify-Access-Token": accessToken,
+            },
+        });
 
-// // Call this function on server start
-// shopifyAPI();
+        const products = response.data.products;
 
-// const client = new shopify.clients.Rest({ session });
-// const response = client.get({ path: 'shop' });
+        if (!products.length) {
+            console.log("No products found.");
+            return;
+        }
+
+        for (const product of products) {
+            const productName = product.title;
+
+            await prisma.comparator.upsert({
+                where: { query: productName },
+                update: { updatedAt: new Date() },
+                create: {
+                    query: productName,
+                    status: "pending",
+                },
+            });
+
+            console.log(`Inserted/Updated product: ${productName}`);
+        }
+        console.log("[END]")
+    } catch (error) {
+        console.error("Error in initializeComparatorProducts:", error.response?.data || error.message);
+    } finally {
+        await prisma.$disconnect();
+    }
+}
+
+

@@ -3,8 +3,12 @@ import { downloadCsv } from '../utils/cloudinaryUtils.js';
 
 const prisma = new PrismaClient();
 
-export const getScrapedProducts = async (req, res) => {
+export const getScrappedProducts = async (req, res) => {
     try {
+        console.log("---------------------------------------------------------------");
+        console.log("Getting scrapped products...");
+        console.log("---------------------------------------------------------------");
+
         let { query } = req.query;
 
         if (!query) {
@@ -41,6 +45,7 @@ export const getScrapedProducts = async (req, res) => {
             amazonProducts = (await downloadCsv(amazon_url)).slice(0, 3);
         }
 
+        console.log("[END]")
         res.status(200).json({
             alibaba_url,
             alibaba: alibabaProducts,

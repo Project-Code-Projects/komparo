@@ -1,6 +1,6 @@
+import "dotenv/config.js";
 import path from "path";
 import cors from "cors";
-import "dotenv/config.js";
 import cron from "node-cron";
 import express from "express";
 import { fileURLToPath } from "url";
@@ -11,6 +11,7 @@ import productsRouter from "./routes/productsRoute.js";
 import { PrismaClient } from "@prisma/client";
 import { scrapeAmazonProducts } from "./utils/scrapers/amazonScraper.js";
 import { scrapeAlibabaProducts } from "./utils/scrapers/alibabaScraper.js";
+import { initializeComparatorProducts } from "./utils/shopifyUtils.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,6 +33,7 @@ app.get("/", (req, res) => {
 app.listen(PORT, async (req, res) => {
   console.log(` ✅ Server running on http://localhost:${PORT}`);
   await connectDB();
+  await initializeComparatorProducts();
 });
 
 // -------------------------------
