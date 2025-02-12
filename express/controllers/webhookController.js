@@ -4,6 +4,10 @@ const prisma = new PrismaClient();
 
 export const newProductCreated = async (req, res) => {
     try {
+        console.log("---------------------------------------------------------------");
+        console.log("There is a new product in your store...");
+        console.log("---------------------------------------------------------------");
+
         const newProduct = req.body;
         const { title } = newProduct;
 
@@ -43,6 +47,7 @@ export const newProductCreated = async (req, res) => {
             } else console.log('Query exists but was updated recently:', title);
         }
 
+        console.log("[END]");
         res.status(200).send('Webhook processed successfully');
     } catch (error) {
         console.error('Error processing webhook:', error);
