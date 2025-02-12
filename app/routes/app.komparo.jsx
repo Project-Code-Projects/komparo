@@ -44,13 +44,13 @@ export default function KomparoPage() {
       try {
         // Mock Data
 
-        const fetchData = await fetch('/scrapedData.json')
-          .then(res => res.json())
-          .then(data => data);
-        const response = { status: 200 };
+        // const fetchData = await fetch('/scrapedData.json')
+        //   .then(res => res.json())
+        //   .then(data => data);
+        // const response = { status: 200 };
 
-        // const response = await fetchScrappedProducts(scannedData.title);
-        // const fetchData = response.data;
+        const response = await fetchScrappedProducts(scannedData.title);
+        const fetchData = response.data;
 
         if (response.status === 200) {
           const unifiedArr = [];
@@ -237,7 +237,7 @@ export default function KomparoPage() {
                                         $<input id="min" type="number" className="pff-input" min="0" name="min" placeholder="Min" style={{marginLeft: '5px'}} />
                                         <span style={{ margin: '0 5px' }}>-</span>
                                         <input id="max" type="number" className="pff-input" min="0" name="max" placeholder="Max" style={{ marginRight: '5px' }} />
-                                        <button type="submit" className="" onClick={() => {
+                                        <Button onClick={() => {
                                           let maxVal = Number(document.getElementById('max').value); let minVal = Number(document.getElementById('min').value);
                                           if (maxVal == 0) { maxVal = Infinity }
                                           if (priceResetData.length > 0) {
@@ -252,19 +252,23 @@ export default function KomparoPage() {
                                           }
 
                                           fixingHeights();
-                                        }} style={{ marginRight: '5px' }}>Search</button>
-                                        <button type="reset" className="" onClick={() => {
-                                          if (priceResetData.length > 0) {
-                                            setScrappedProducts(priceResetData);
-                                            setPriceResetData([]);
-                                            setNoPriceMatched(false);
-                                            document.getElementById('max').value = '';
-                                            document.getElementById('min').value = '';
-                                            fixingHeights();
-                                          }
-                                        }}>Reset</button>
+                                        }} style={{ marginRight: '5px' }}>Search</Button>
+                                        {priceResetData.length > 0
+                                          &&
+                                          <Button variant="primary" onClick={() => {
+                                            if (priceResetData.length > 0) {
+                                              setScrappedProducts(priceResetData);
+                                              setPriceResetData([]);
+                                              setNoPriceMatched(false);
+                                              document.getElementById('max').value = '';
+                                              document.getElementById('min').value = '';
+                                              fixingHeights();
+                                            }
+                                          }}>Reset</Button>
+                                        }
+                                        
                                       </p>
-                                        <div style={{display: 'flex'}}>
+                                        <div style={{display: 'flex', justifyContent: 'space-between', width: '37%'}}>
                                         <Select
                                         label=""
                                         labelInline
@@ -338,7 +342,7 @@ export default function KomparoPage() {
                                       <>
                                         {
                                           noPriceMatched ?
-                                            <p style={{ textAlign: 'center', marginTop: '30px' }}>No Price Matched!</p>
+                                            <p style={{ textAlign: 'center', marginTop: '30px' }}>No product available in this price range</p>
                                             :
                                             < Slider {...settings}>
                                               {scrappedProducts.map((product, index) => (

@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "14eecd3c23b30159050b0aee0b714c16"
-application_url = "https://along-assists-bring-vitamin.trycloudflare.com"
+application_url = "https://egyptian-gore-enjoying-activation.trycloudflare.com"
 embedded = true
 name = "komparo"
 handle = "komparo-3"
@@ -20,9 +20,9 @@ scopes = "write_products, read_products"
 
 [auth]
 redirect_urls = [
-  "https://along-assists-bring-vitamin.trycloudflare.com/auth/callback",
-  "https://along-assists-bring-vitamin.trycloudflare.com/auth/shopify/callback",
-  "https://along-assists-bring-vitamin.trycloudflare.com/api/auth/callback"
+  "https://egyptian-gore-enjoying-activation.trycloudflare.com/auth/callback",
+  "https://egyptian-gore-enjoying-activation.trycloudflare.com/auth/shopify/callback",
+  "https://egyptian-gore-enjoying-activation.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
