@@ -234,7 +234,7 @@ export default function KomparoPage() {
                                   <div className="image-slider-container">
                                     <section className="filtering-bar">
                                       <p className="price-filtering-form">
-                                        <input id="min" type="number" className="pff-input" min="0" name="min" placeholder="Min" />
+                                        $<input id="min" type="number" className="pff-input" min="0" name="min" placeholder="Min" style={{marginLeft: '5px'}} />
                                         <span style={{ margin: '0 5px' }}>-</span>
                                         <input id="max" type="number" className="pff-input" min="0" name="max" placeholder="Max" style={{ marginRight: '5px' }} />
                                         <button type="submit" className="" onClick={() => {
@@ -252,7 +252,7 @@ export default function KomparoPage() {
                                           }
 
                                           fixingHeights();
-                                        }} style={{ marginRight: '5px' }}>Search by price</button>
+                                        }} style={{ marginRight: '5px' }}>Search</button>
                                         <button type="reset" className="" onClick={() => {
                                           if (priceResetData.length > 0) {
                                             setScrappedProducts(priceResetData);
@@ -264,7 +264,8 @@ export default function KomparoPage() {
                                           }
                                         }}>Reset</button>
                                       </p>
-                                      <Select
+                                        <div style={{display: 'flex'}}>
+                                        <Select
                                         label=""
                                         labelInline
                                         options={options}
@@ -331,6 +332,7 @@ export default function KomparoPage() {
                                         }}
                                         value={price}
                                       />
+                                        </div>
                                     </section>
                                     {loading &&
                                       <>
