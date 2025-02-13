@@ -10,11 +10,13 @@ import {
 } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
 import "../styles/pastel.colors.css";
-// import ChartComponent from "../components/Chart";
+import LineChartGraph from "../components/LineChart";
+import BarChartGraph from "../components/BarChart";
 
 export default function AdditionalPage() {
   return (
-    <Page>
+<>
+<Page>
 <TitleBar title="Additional page" />
 <Layout>
   <Layout.Section>
@@ -66,6 +68,9 @@ export default function AdditionalPage() {
   </Layout.Section>
 </Layout>
 </Page>
+<LineChartGraph />
+<BarChartGraph />
+</>
   );
 }
   // <div><ChartComponent /></div>

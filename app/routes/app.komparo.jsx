@@ -536,7 +536,7 @@ function ProductCard({ product, setShowModal, setScannedData }) {
   }
 
   return (
-    <div className="card" onClick={() => scanHandler(product)}>
+    <div className="card" title="click to compare prices" onClick={() => scanHandler(product)}>
       <img src={product.imageUrl || "/placeholder.svg"} alt={product.title} className="image" />
       <div>
         <h5 className="title">
