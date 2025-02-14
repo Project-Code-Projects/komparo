@@ -21,7 +21,7 @@ export default function BarChartGraph() {
     return null;
   }
   return (
-    <>
+    <div style={{marginRight: '40px'}}>
         <ResponsiveContainer width="100%" height={300}>
     <BarChart data={data} barSize={40}>
       <CartesianGrid strokeDasharray="3 3" />
@@ -33,6 +33,6 @@ export default function BarChartGraph() {
     </BarChart>
   </ResponsiveContainer>
   <p style={{textAlign: 'center'}}>Graph : Representation of price vs number of sold products(NOP).</p>
-    </>
+    </div>
   );
 }

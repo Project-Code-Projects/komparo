@@ -10,11 +10,14 @@ import { Rating } from "../components/rating";
 import { AlibabaLogo, AmazonLogo } from '../components/logo.jsx';
 import { fetchScrappedProducts } from '../services/fetch.scrapped.products';
 import { Toaster } from "../components/toaster.jsx";
+import BarChartGraph from "../components/BarChart.jsx"
+import LineChartGraph from "../components/LineChart.jsx"
 export { loader }
 
 export default function KomparoPage() {
   const [scannedData, setScannedData] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showPriceModal, setShowPriceModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [cardItems, setCardItems] = useState([]);
   const data = useLoaderData();
@@ -234,7 +237,7 @@ export default function KomparoPage() {
                                   <div className="image-slider-container">
                                     <section className="filtering-bar">
                                       <p className="price-filtering-form">
-                                        $<input id="min" type="number" className="pff-input" min="0" name="min" placeholder="Min" style={{marginLeft: '5px'}} />
+                                        $<input id="min" type="number" className="pff-input" min="0" name="min" placeholder="Min" style={{ marginLeft: '5px' }} />
                                         <span style={{ margin: '0 5px' }}>-</span>
                                         <input id="max" type="number" className="pff-input" min="0" name="max" placeholder="Max" style={{ marginRight: '5px' }} />
                                         <Button onClick={() => {
@@ -266,77 +269,77 @@ export default function KomparoPage() {
                                             }
                                           }}>Reset</Button>
                                         }
-                                        
+
                                       </p>
-                                        <div style={{display: 'flex', justifyContent: 'space-between', width: '37%'}}>
+                                      <div style={{ display: 'flex', justifyContent: 'space-between', width: '37%' }}>
                                         <Select
-                                        label=""
-                                        labelInline
-                                        options={options}
-                                        onChange={(event) => {
-                                          setPlatform(event);
-                                          if (event == 'all') {
-                                            setPrice('default');
-                                            setPriceResetData([]);
-                                            setPriceDefaultData([]);
-                                            setNoPriceMatched(false);
-                                            document.getElementById('max').value = '';
-                                            document.getElementById('min').value = '';
-                                            setScrappedProducts(fetchedData);
-                                            fixingHeights();
-                                          }
-                                          else if (event == 'alibaba') {
-                                            setPrice('default');
-                                            setPriceResetData([]);
-                                            setPriceDefaultData([]);
-                                            setNoPriceMatched(false);
-                                            document.getElementById('max').value = '';
-                                            document.getElementById('min').value = '';
-                                            setScrappedProducts(fetchedData.filter(x => x.platform == 'alibaba'));
-                                            fixingHeights();
-                                          }
-                                          else {
-                                            setPrice('default');
-                                            setPriceResetData([]);
-                                            setPriceDefaultData([]);
-                                            setNoPriceMatched(false);
-                                            document.getElementById('max').value = '';
-                                            document.getElementById('min').value = '';
-                                            setScrappedProducts(fetchedData.filter(x => x.platform == 'amazon'));
-                                            fixingHeights();
-                                          }
-                                        }}
-                                        value={platform}
-                                      />
-                                      <Select
-                                        label="Sort by price : "
-                                        labelInline
-                                        options={optionsFirst}
-                                        onChange={(event) => {
-                                          setPrice(event);
-                                          if (event == 'default') {
-                                            setScrappedProducts(priceDefaultData);
-                                            fixingHeights();
-                                          }
-                                          else if (event == 'lth') {
-                                            if (priceDefaultData.length == 0) {setPriceDefaultData(scrappedProducts)}
-                                            const arr = scrappedProducts.map(x => x);
-                                            arr.sort(function (a, b) { return a.price - b.price });
-                                            setScrappedProducts(arr);
-                                            fixingHeights();
-                                          }
-                                          else {
-                                            if (priceDefaultData.length == 0) {setPriceDefaultData(scrappedProducts)}
-                                            const arr = scrappedProducts.map(x => x);
-                                            arr.sort(function (a, b) { return b.price - a.price });
-                                            setScrappedProducts(arr);
-                                            fixingHeights();
-                                            fixingHeights();
-                                          }
-                                        }}
-                                        value={price}
-                                      />
-                                        </div>
+                                          label=""
+                                          labelInline
+                                          options={options}
+                                          onChange={(event) => {
+                                            setPlatform(event);
+                                            if (event == 'all') {
+                                              setPrice('default');
+                                              setPriceResetData([]);
+                                              setPriceDefaultData([]);
+                                              setNoPriceMatched(false);
+                                              document.getElementById('max').value = '';
+                                              document.getElementById('min').value = '';
+                                              setScrappedProducts(fetchedData);
+                                              fixingHeights();
+                                            }
+                                            else if (event == 'alibaba') {
+                                              setPrice('default');
+                                              setPriceResetData([]);
+                                              setPriceDefaultData([]);
+                                              setNoPriceMatched(false);
+                                              document.getElementById('max').value = '';
+                                              document.getElementById('min').value = '';
+                                              setScrappedProducts(fetchedData.filter(x => x.platform == 'alibaba'));
+                                              fixingHeights();
+                                            }
+                                            else {
+                                              setPrice('default');
+                                              setPriceResetData([]);
+                                              setPriceDefaultData([]);
+                                              setNoPriceMatched(false);
+                                              document.getElementById('max').value = '';
+                                              document.getElementById('min').value = '';
+                                              setScrappedProducts(fetchedData.filter(x => x.platform == 'amazon'));
+                                              fixingHeights();
+                                            }
+                                          }}
+                                          value={platform}
+                                        />
+                                        <Select
+                                          label="Sort by price : "
+                                          labelInline
+                                          options={optionsFirst}
+                                          onChange={(event) => {
+                                            setPrice(event);
+                                            if (event == 'default') {
+                                              setScrappedProducts(priceDefaultData);
+                                              fixingHeights();
+                                            }
+                                            else if (event == 'lth') {
+                                              if (priceDefaultData.length == 0) { setPriceDefaultData(scrappedProducts) }
+                                              const arr = scrappedProducts.map(x => x);
+                                              arr.sort(function (a, b) { return a.price - b.price });
+                                              setScrappedProducts(arr);
+                                              fixingHeights();
+                                            }
+                                            else {
+                                              if (priceDefaultData.length == 0) { setPriceDefaultData(scrappedProducts) }
+                                              const arr = scrappedProducts.map(x => x);
+                                              arr.sort(function (a, b) { return b.price - a.price });
+                                              setScrappedProducts(arr);
+                                              fixingHeights();
+                                              fixingHeights();
+                                            }
+                                          }}
+                                          value={price}
+                                        />
+                                      </div>
                                     </section>
                                     {loading &&
                                       <>
@@ -365,6 +368,30 @@ export default function KomparoPage() {
                                                   {product.platform == 'alibaba' ? <AlibabaLogo /> : <AmazonLogo />}
 
                                                   <h5 className="scrapped-price">${product.price}</h5>
+                                                  <p style={{ textAlign: 'center' }}>
+                                                    <button type="button"
+                                                      onClick={() => setShowPriceModal(true)}
+                                                    >
+                                                      Price Fluctuation Graph
+                                                    </button>
+                                                    <br />
+                                                    <button type="button" style={{ margin: '10px 0' }}>Product Details</button>
+                                                  </p>
+                                                  <div className="modal" style={{ display: showPriceModal ? 'block' : 'none' }}>
+                                                    <div className="modal-content"
+                                                      style={{width: '95%'}}
+                                                    >
+                                                      <div className="modal-body"
+                                                        style={{padding: '50px 0', paddingRight: '30px', paddingBottom: '20px'}}
+                                                      >
+                                                      <LineChartGraph />
+                                                        <p style={{textAlign: 'center', marginTop: '15px'}}><button type="button" onClick={() => setShowPriceModal(false)}>
+                                                        Close
+                                                          </button>
+                                                          </p>
+                                                      </div>
+                                                    </div>
+                                                  </div>
                                                 </article>
                                               ))}
                                             </Slider>
@@ -372,6 +399,10 @@ export default function KomparoPage() {
                                       </>
                                     }
                                   </div>
+
+                                  <BarChartGraph />
+                                  
+                                  <br />
 
                                   <Divider borderColor="border-inverse" />
 
