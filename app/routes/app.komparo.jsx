@@ -371,11 +371,11 @@ export default function KomparoPage() {
                                                    
                                                   <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                                                   <h5 className="scrapped-price">${product.price}</h5>
-                                                  <button type="button" style={{ border: 'none', backgroundColor: 'transparent', textDecoration: 'underline', color: 'blue', marginRight: '5px' }}>View Product</button>
+                                                  <button type="button" style={{ border: 'none', backgroundColor: 'transparent', textDecoration: 'underline', color: 'blue', marginRight: '5px' }}><a href={product.link} target="_blank">View Product</a></button>
                                                   </div>
                                                   
                                                   <p style={{ textAlign: 'center', margin: '10px 0', marginBottom: '15px' }}>
-                                                    <button type="button"
+                                                    <button type="button" style={{ cursor: 'pointer' }}
                                                       onClick={() => setShowPriceModal(true)}
                                                     >
                                                       Price History
