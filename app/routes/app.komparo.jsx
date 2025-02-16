@@ -28,6 +28,7 @@ export default function KomparoPage() {
   const [toasterMessage, setToasterMessage] = useState(null);
   const [pendingMessage, setPendingMessage] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
+  const [averagePrice, setAveragePrice] = useState(0);
   const [platform, setPlatform] = useState('all');
   const [price, setPrice] = useState('default');
   const [priceResetData, setPriceResetData] = useState([]);
@@ -57,6 +58,7 @@ export default function KomparoPage() {
 
         if (response.status === 200) {
           const unifiedArr = [];
+          const priceArr = [];
           if (fetchData.alibaba) {
             fetchData.alibaba.forEach(x => {
               x.platform = 'alibaba'; unifiedArr.push(x);
@@ -71,9 +73,9 @@ export default function KomparoPage() {
 
           const filteredPrices = [];
           unifiedArr.forEach(x => {
-            if (!x.price.includes("-")) { x.price = Number(x.price); filteredPrices.push(x); }
+            if (!x.price.includes("-")) { x.price = Number(x.price); filteredPrices.push(x); priceArr.push(x.price); }
           });
-          // filteredPrices.forEach(x => console.log(Boolean((!isNaN(x.rating)) && (Number(x.rating) > 0)), x.rating));
+          setAveragePrice(priceArr.reduce((x, y) => x + y) / priceArr.length);
           setFetchedData(filteredPrices);
           setScrappedProducts(filteredPrices);
           fixingHeights();
@@ -355,7 +357,7 @@ export default function KomparoPage() {
                                                     className="scrapped-img"
                                                     alt={product.title}
                                                   />
-                                                  <h4 className="scrapped-title">{product.title}</h4>
+                                                  <h4 className="scrapped-title" title={product.title}>{product.title.length > 50 ? product.title.slice(0, 50) + '...' : product.title}</h4>
                                                   <div className="scrapped-rating">
                                                     {((!isNaN(product.rating)) && (Number(product.rating) > 0)) ?
                                                       <InlineStack gap="100" align="start">
@@ -366,18 +368,21 @@ export default function KomparoPage() {
                                                     }
                                                   </div>
                                                   {product.platform == 'alibaba' ? <AlibabaLogo /> : <AmazonLogo />}
-
+                                                   
+                                                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                                                   <h5 className="scrapped-price">${product.price}</h5>
-                                                  <p style={{ textAlign: 'center' }}>
+                                                  <button type="button" style={{ border: 'none', backgroundColor: 'transparent', textDecoration: 'underline', color: 'blue', marginRight: '5px' }}>View Product</button>
+                                                  </div>
+                                                  
+                                                  <p style={{ textAlign: 'center', margin: '10px 0', marginBottom: '15px' }}>
                                                     <button type="button"
                                                       onClick={() => setShowPriceModal(true)}
                                                     >
-                                                      Price Fluctuation Graph
+                                                      Price History
                                                     </button>
-                                                    <br />
-                                                    <button type="button" style={{ margin: '10px 0' }}>Product Details</button>
+                                                    
                                                   </p>
-                                                  <div className="modal" style={{ display: showPriceModal ? 'block' : 'none' }}>
+                                                  <div className="modal" style={{ display: showPriceModal ? 'block' : 'none', padding: '10px 0' }}>
                                                     <div className="modal-content"
                                                       style={{width: '95%'}}
                                                     >
@@ -401,6 +406,8 @@ export default function KomparoPage() {
                                   </div>
 
                                   <BarChartGraph />
+
+                                  <p style={{textAlign: 'center', marginRight: '30px', marginTop: '10px'}}><b>Average Price : </b> ${averagePrice.toFixed(2)}</p>
                                   
                                   <br />
 
@@ -502,6 +509,7 @@ export default function KomparoPage() {
                                 document.getElementById('min').value = '';
                                 setNewPrice("");
                                 setPendingMessage(null);
+                                setAveragePrice(0);
                               }}>
                               Close
                             </Button>

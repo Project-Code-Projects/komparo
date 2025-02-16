@@ -1,4 +1,4 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const data = [
   { price: 10, nop: 400 },
@@ -28,11 +28,11 @@ export default function BarChartGraph() {
       <XAxis dataKey="price" />
       <YAxis />
       <Tooltip content={<CustomTooltip />} />
-      <Legend />
+      {/* <Legend /> */}
       <Bar dataKey="nop" fill="#8884d8" />
     </BarChart>
   </ResponsiveContainer>
-  <p style={{textAlign: 'center'}}>Graph : Representation of price vs number of sold products(NOP).</p>
+  <p style={{textAlign: 'center'}}>Price vs Number of Products sold (NOP)</p>
     </div>
   );
 }
