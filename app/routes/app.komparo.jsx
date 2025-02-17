@@ -34,6 +34,8 @@ export default function KomparoPage() {
   const [priceResetData, setPriceResetData] = useState([]);
   const [priceDefaultData, setPriceDefaultData] = useState([]);
   const [noPriceMatched, setNoPriceMatched] = useState(false);
+  const [noProductsFromAlibaba, setNoProductsFromAlibaba] = useState(false);
+  const [noProductsFromAmazon, setNoProductsFromAmazon] = useState(false);
 
   // Page Population Logic
 
@@ -194,7 +196,12 @@ export default function KomparoPage() {
       <div className="back-ground">
         <Layout>
           <Layout.Section>
-            <h3 className="heading">Your Products</h3>
+          <h3 className="heading">Your Products</h3>
+            <h2 className="logo"><i>Komparo</i></h2>
+            
+            <article className="ins-container">
+            <p><span className="highlight">Komparo</span> is your go-to price comparison app! Simply click on any one of your products to instantly find similar items on Alibaba, Amazon, and other eCommerce platforms. We also provide valuable price analysis to help you understand market trends and set the perfect selling price.</p>
+            </article>
             <div className="container">
 
               {/* Page Population Logic */}
@@ -273,7 +280,7 @@ export default function KomparoPage() {
                                         }
 
                                       </p>
-                                      <div style={{ display: 'flex', justifyContent: 'space-between', width: '37%' }}>
+                                      <div style={{ display: 'flex', justifyContent: 'space-between', minWidth: '42%' }}>
                                         <Select
                                           label=""
                                           labelInline
@@ -287,6 +294,8 @@ export default function KomparoPage() {
                                               setNoPriceMatched(false);
                                               document.getElementById('max').value = '';
                                               document.getElementById('min').value = '';
+                                              setNoProductsFromAlibaba(false);
+                                              setNoProductsFromAmazon(false);
                                               setScrappedProducts(fetchedData);
                                               fixingHeights();
                                             }
@@ -297,7 +306,10 @@ export default function KomparoPage() {
                                               setNoPriceMatched(false);
                                               document.getElementById('max').value = '';
                                               document.getElementById('min').value = '';
-                                              setScrappedProducts(fetchedData.filter(x => x.platform == 'alibaba'));
+                                              const arr = fetchedData.filter(x => x.platform == 'alibaba');
+                                              if (arr.length == 0) {setNoProductsFromAlibaba(true)}
+                                              setNoProductsFromAmazon(false);
+                                              setScrappedProducts(arr);
                                               fixingHeights();
                                             }
                                             else {
@@ -307,14 +319,17 @@ export default function KomparoPage() {
                                               setNoPriceMatched(false);
                                               document.getElementById('max').value = '';
                                               document.getElementById('min').value = '';
-                                              setScrappedProducts(fetchedData.filter(x => x.platform == 'amazon'));
+                                              setNoProductsFromAlibaba(false);
+                                              const arr = fetchedData.filter(x => x.platform == 'amazon');
+                                              if (arr.length == 0) {setNoProductsFromAmazon(true)}
+                                              setScrappedProducts(arr);
                                               fixingHeights();
                                             }
                                           }}
                                           value={platform}
                                         />
                                         <Select
-                                          label="Sort by price : "
+                                          label="Sort by Price : "
                                           labelInline
                                           options={optionsFirst}
                                           onChange={(event) => {
@@ -345,11 +360,10 @@ export default function KomparoPage() {
                                     </section>
                                     {loading &&
                                       <>
-                                        {
-                                          noPriceMatched ?
-                                            <p style={{ textAlign: 'center', marginTop: '30px' }}>No product available in this price range</p>
-                                            :
-                                            < Slider {...settings}>
+                                        {noPriceMatched &&<p style={{ textAlign: 'center', color: 'gray', marginTop: '40px' }}><i>No product available in this price range</i></p>}
+                                        {noProductsFromAlibaba &&<p style={{ textAlign: 'center', color: 'gray', marginTop: '40px' }}><i>No product available on Alibaba</i></p>}
+                                        {noProductsFromAmazon &&<p style={{ textAlign: 'center', color: 'gray', marginTop: '40px' }}><i>No product available on Amazon</i></p>}
+                                        < Slider {...settings}>
                                               {scrappedProducts.map((product, index) => (
                                                 <article key={product.platform == 'alibaba' ? `alibaba-${index}` : `amazon-${index}`} className="scrapped-data-card">
                                                   <img
@@ -371,39 +385,44 @@ export default function KomparoPage() {
                                                    
                                                   <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                                                   <h5 className="scrapped-price">${product.price}</h5>
-                                                  <button type="button" style={{ border: 'none', backgroundColor: 'transparent', textDecoration: 'underline', color: 'blue', marginRight: '5px' }}><a href={product.link} target="_blank">View Product</a></button>
+                                                  <button type="button" style={{ border: 'none', backgroundColor: 'transparent', textDecoration: 'underline', color: '#578E7E', marginRight: '5px' }}><a href={product.link} target="_blank">View Product</a></button>
                                                   </div>
                                                   
                                                   <p style={{ textAlign: 'center', margin: '10px 0', marginBottom: '15px' }}>
-                                                    <button type="button" style={{ cursor: 'pointer' }}
+                                                    <Button
                                                       onClick={() => setShowPriceModal(true)}
                                                     >
                                                       Price History
-                                                    </button>
+                                                    </Button>
                                                     
                                                   </p>
-                                                  <div className="modal" style={{ display: showPriceModal ? 'block' : 'none', padding: '10px 0' }}>
+                                                  
+                                                </article>
+                                              ))}
+                                            </Slider>
+                                      </>
+                                    }
+                                  </div>
+                                  <div className="modal"
+                                                    style={{ display: showPriceModal ? 'block' : 'none', height: 'auto', zIndex: '100'}}
+                                                  >
                                                     <div className="modal-content"
-                                                      style={{width: '95%'}}
+                                                      
                                                     >
                                                       <div className="modal-body"
-                                                        style={{padding: '50px 0', paddingRight: '30px', paddingBottom: '20px'}}
+                                                        style={{padding: '40px 0', paddingRight: '30px', paddingBottom: '10px'}}
                                                       >
                                                       <LineChartGraph />
-                                                        <p style={{textAlign: 'center', marginTop: '15px'}}><button type="button" onClick={() => setShowPriceModal(false)}>
+                                                        <p style={{textAlign: 'center', marginTop: '15px'}}><Button variant="primary" onClick={() => setShowPriceModal(false)}>
                                                         Close
-                                                          </button>
+                                                          </Button>
                                                           </p>
                                                       </div>
                                                     </div>
                                                   </div>
-                                                </article>
-                                              ))}
-                                            </Slider>
-                                        }
-                                      </>
-                                    }
-                                  </div>
+                                  <Divider borderColor="border-inverse" />
+
+                                  <br /><br />
 
                                   <BarChartGraph />
 
@@ -473,7 +492,8 @@ export default function KomparoPage() {
                                     <button
                                       style={{
                                         color: "white",
-                                        backgroundColor: "#54BAB9",
+                                        backgroundColor: "#3d3d3d",
+                                        // backgroundColor: "#578E7E",
                                         border: "none",
                                         padding: "8px 20px",
                                         borderRadius: "22px",
@@ -510,6 +530,8 @@ export default function KomparoPage() {
                                 setNewPrice("");
                                 setPendingMessage(null);
                                 setAveragePrice(0);
+                                setNoProductsFromAlibaba(false);
+                                setNoProductsFromAmazon(false);
                               }}>
                               Close
                             </Button>
@@ -577,7 +599,7 @@ function ProductCard({ product, setShowModal, setScannedData }) {
   return (
     <div className="card" title="click to compare prices" onClick={() => scanHandler(product)}>
       <img src={product.imageUrl || "/placeholder.svg"} alt={product.title} className="image" />
-      <div>
+      <div style={{marginLeft: '10px'}}>
         <h5 className="title">
           {product.title}
         </h5>

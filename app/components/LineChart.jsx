@@ -1,12 +1,12 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const data = [
-  { date: 'Jan 17', price: 3000 },
-  { date: 'Jan 24', price: 2780 },
-  { date: 'Feb 4', price: 3500 },
-  { date: 'Feb 11', price: 3000 },
-  { date: 'Feb 17', price: 2500 },
-  { date: 'Feb 24', price: 2780 },
+  { date: 'Jan 17', price: 1200 },
+  { date: 'Jan 24', price: 2200 },
+  { date: 'Feb 4', price: 2700 },
+  { date: 'Feb 11', price: 1500 },
+  { date: 'Feb 17', price: 1700 },
+  { date: 'Feb 24', price: 1700 },
 ];
 
 export default function LineChartGraph() {
@@ -32,10 +32,10 @@ export default function LineChartGraph() {
         <YAxis />
         <Tooltip content={<CustomTooltip />} />
         {/* <Legend /> */}
-        <Line type="monotone" dataKey="price" stroke="#8884d8" />
+        <Line type="monotone" dataKey="price" stroke="#578E7E" />
       </LineChart>
     </ResponsiveContainer>
-    <p style={{textAlign: 'center'}}>Price Over Time (Week)</p>
+    <p style={{textAlign: 'center', color: 'gray'}}><i>Price Over Time (Week)</i></p>
     </>
   );
 }

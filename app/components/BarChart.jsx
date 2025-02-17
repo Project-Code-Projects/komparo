@@ -29,10 +29,10 @@ export default function BarChartGraph() {
       <YAxis />
       <Tooltip content={<CustomTooltip />} />
       {/* <Legend /> */}
-      <Bar dataKey="nop" fill="#8884d8" />
+      <Bar dataKey="nop" fill="#578E7E" />
     </BarChart>
   </ResponsiveContainer>
-  <p style={{textAlign: 'center'}}>Price vs Number of Products sold (NOP)</p>
+  <p style={{textAlign: 'center', color: 'gray'}}><i>Number of Products Sold (NOP) vs Price</i></p>
     </div>
   );
 }
