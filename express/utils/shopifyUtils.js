@@ -45,7 +45,6 @@ export async function initializeComparatorProducts() {
 
             await prisma.comparator.upsert({
                 where: { query: productName },
-                update: { updatedAt: new Date() },
                 create: {
                     query: productName,
                     status: "pending",
