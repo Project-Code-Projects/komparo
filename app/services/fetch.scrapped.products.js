@@ -8,10 +8,10 @@ export const fetchScrappedProducts = async (query) => {
 
         query = query.trim();
 
-        console.log(`http://localhost:3001/api/products?query=${query}`);
+        // console.log(`http://localhost:3001/api/products?query=${query}`);
         const response = await axios.get(`http://localhost:3001/api/products?query=${query}`);
 
-        console.log("Products fetched successfully:", response.data);
+        // console.log("Products fetched successfully:", response.data);
 
         return response;
     } catch (error) {

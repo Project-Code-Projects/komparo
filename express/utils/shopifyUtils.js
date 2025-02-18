@@ -4,8 +4,8 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const storeName = process.env.SHOPIFY_STORE_NAME || "price-comparison-app";
-const accessToken = process.env.SHOPIFY_ACCESS_TOKEN || "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";
+const storeName = process.env.SHOPIFY_STORE_NAME;
+const accessToken = process.env.SHOPIFY_ACCESS_TOKEN;
 
 export async function getProductsFromShopify() {
     try {
