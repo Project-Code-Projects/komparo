@@ -42,51 +42,65 @@ app.listen(PORT, async (req, res) => {
 
 const prisma = new PrismaClient();
 
+let isScraping = false;
+
 cron.schedule("10 * * * * *", async () => {
-  console.log("---------------------------------------------------------------")
+  if (isScraping) {
+    console.log("⏳ Scraping is already in progress. Skipping this run...");
+    return;
+  }
+
+  isScraping = true;
+
+  console.log("---------------------------------------------------------------");
   console.log("Cron job triggered: scraping pending queries from PostgreSQL...");
-  console.log("---------------------------------------------------------------")
+  console.log("---------------------------------------------------------------");
 
   try {
-    const rows = await prisma.comparator.findMany({
+    const row = await prisma.comparator.findFirst({
       where: {
         status: "pending",
       },
     });
 
-    if (!rows.length) {
+    if (!row) {
       console.log("No pending queries found.");
+      isScraping = false;
       return;
     }
 
-    for (const row of rows) {
-      const searchQuery = row.query;
-      console.log("Pending task: ", searchQuery);
-      console.log("Scraping for query:", searchQuery);
+    const searchQuery = row.query;
+    console.log("Processing:", searchQuery);
 
-      try {
-        const amazonResponse = await scrapeAmazonProducts(searchQuery);
-        const alibabaResponse = await scrapeAlibabaProducts(searchQuery);
+    await prisma.comparator.update({
+      where: { query: searchQuery },
+      data: { status: "processing" },
+    });
 
-        console.log("Scraping job result for", searchQuery, ":", amazonResponse, alibabaResponse);
+    try {
+      const amazonResponse = await scrapeAmazonProducts(searchQuery);
+      const alibabaResponse = await scrapeAlibabaProducts(searchQuery);
 
-        await prisma.comparator.update({
-          where: {
-            query: searchQuery,
-          },
-          data: {
-            status: "completed",
-            alibaba: alibabaResponse,
-            amazon: amazonResponse,
-          },
-        });
-        console.log("[END]")
-      } catch (scrapeError) {
-        console.error(`Error scraping for query "${searchQuery}":`, scrapeError);
-      }
+      console.log("Scraping completed for", searchQuery);
+
+      await prisma.comparator.update({
+        where: { query: searchQuery },
+        data: {
+          status: "completed",
+          alibaba: alibabaResponse,
+          amazon: amazonResponse,
+        },
+      });
+    } catch (scrapeError) {
+      console.error(`Error scraping for "${searchQuery}":`, scrapeError);
+      await prisma.comparator.update({
+        where: { query: searchQuery },
+        data: { status: "pending" },
+      });
     }
   } catch (error) {
     console.error("Error in cron job:", error);
   }
-});
 
+  isScraping = false;
+});

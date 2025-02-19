@@ -9,6 +9,10 @@ import { uploadCsv } from "../cloudinaryUtils.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+export async function randomDelay(min = 3000, max = 7000) {
+  return new Promise((resolve) => setTimeout(resolve, Math.random() * (max - min) + min));
+}
+
 export async function extractData(container, selector, attribute = null) {
   try {
     const element = await container.findElement(By.css(selector));
@@ -44,6 +48,8 @@ export async function applyNewFilter(driver) {
 
           await driver.wait(until.elementIsVisible(linkElement), 10000);
           await driver.wait(until.elementIsEnabled(linkElement), 10000);
+
+          await randomDelay();
 
           try {
             await linkElement.click();
