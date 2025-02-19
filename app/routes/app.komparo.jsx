@@ -36,6 +36,7 @@ export default function KomparoPage() {
   const [noPriceMatched, setNoPriceMatched] = useState(false);
   const [noProductsFromAlibaba, setNoProductsFromAlibaba] = useState(false);
   const [noProductsFromAmazon, setNoProductsFromAmazon] = useState(false);
+  const [barChartGraphData, setBarChartGraphData] = useState([]);
 
   // Page Population Logic
 
@@ -48,13 +49,6 @@ export default function KomparoPage() {
   useEffect(() => {
     const getProducts = async () => {
       try {
-        // Mock Data
-
-        // const fetchData = await fetch('/scrapedData.json')
-        //   .then(res => res.json())
-        //   .then(data => data);
-        // const response = { status: 200 };
-
         const response = await fetchScrappedProducts(scannedData.title);
         const fetchData = response.data;
 
@@ -77,6 +71,11 @@ export default function KomparoPage() {
           unifiedArr.forEach(x => {
             if (!x.price.includes("-")) { x.price = Number(x.price); filteredPrices.push(x); priceArr.push(x.price); }
           });
+          const arrDataBC = filteredPrices.map(x => {
+            return {price: x.price, nop: Number(x.nop)};
+          });
+          arrDataBC.sort(function(a, b){return a.price - b.price});
+          setBarChartGraphData(arrDataBC);
           setAveragePrice(priceArr.reduce((x, y) => x + y) / priceArr.length);
           setFetchedData(filteredPrices);
           setScrappedProducts(filteredPrices);
@@ -425,7 +424,7 @@ export default function KomparoPage() {
 
                                   <br /><br />
 
-                                  {fetchedData.length > 0 && <BarChartGraph />}
+                                  {fetchedData.length > 0 && <BarChartGraph dataSet={barChartGraphData} />}
 
                                   
 
