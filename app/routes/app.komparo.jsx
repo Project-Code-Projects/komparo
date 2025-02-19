@@ -37,6 +37,8 @@ export default function KomparoPage() {
   const [noProductsFromAlibaba, setNoProductsFromAlibaba] = useState(false);
   const [noProductsFromAmazon, setNoProductsFromAmazon] = useState(false);
   const [barChartGraphData, setBarChartGraphData] = useState([]);
+  const [amazonURL, setAmazonURL] = useState('');
+  const [alibabaURL, setAlibabaURL] = useState('');
 
   // Page Population Logic
 
@@ -56,12 +58,14 @@ export default function KomparoPage() {
           const unifiedArr = [];
           const priceArr = [];
           if (fetchData.alibaba) {
+            setAlibabaURL(fetchData.alibaba_url);
             fetchData.alibaba.forEach(x => {
               x.platform = 'alibaba'; unifiedArr.push(x);
             });
           }
 
           if (fetchData.amazon) {
+            setAmazonURL(fetchData.amazon_url);
             fetchData.amazon.forEach(x => {
               x.platform = 'amazon'; unifiedArr.push(x);
             });
@@ -74,6 +78,7 @@ export default function KomparoPage() {
           const arrDataBC = filteredPrices.map(x => {
             return {price: x.price, nop: Number(x.nop)};
           });
+          // console.log(priceArr);
           arrDataBC.sort(function(a, b){return a.price - b.price});
           setBarChartGraphData(arrDataBC);
           setAveragePrice(priceArr.reduce((x, y) => x + y) / priceArr.length);
@@ -92,6 +97,7 @@ export default function KomparoPage() {
       getProducts();
     }
   }, [scannedData?.title, pendingMessage]);
+
 
   // Price Update Logic
 
@@ -420,6 +426,7 @@ export default function KomparoPage() {
                                                       </div>
                                                     </div>
                                                   </div>
+                                                  <span>Download data(csv) from : </span> &nbsp; {amazonURL && <a href={amazonURL}>Amazon</a>} &nbsp; {alibabaURL && <a href={alibabaURL}>Alibaba</a>} <br /><br />
                                   <Divider borderColor="border-inverse" />
 
                                   <br /><br />
