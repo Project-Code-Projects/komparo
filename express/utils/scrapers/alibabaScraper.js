@@ -144,6 +144,10 @@ export async function scrapePage(driver) {
           // productData.price = productData.price.trim();
           productData.price = productData.price.replace(/\$/g, "").trim();
           console.log("price:", productData.price);
+          console.log("BEFORE NOP:", productData.nop);
+          productData.nop = Number(productData.nop.replace(/\D/g, ""));
+          console.log("AFTER NOP:", productData.nop);
+          console.log("NOP:", productData.nop);
           productData.scrapedAt = new Date().toISOString();
           console.log("Scrapped Product:", JSON.stringify(productData, null, 2));
           productDataList.push(productData);
