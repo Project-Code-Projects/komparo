@@ -81,6 +81,7 @@ export default function KomparoPage() {
           setFetchedData(filteredPrices);
           setScrappedProducts(filteredPrices);
           fixingHeights();
+          setPendingMessage(null);
         } else if (response.status === 202) setPendingMessage(fetchData.message);
 
       } catch (error) {
@@ -424,7 +425,9 @@ export default function KomparoPage() {
 
                                   <br /><br />
 
-                                  <BarChartGraph />
+                                  {fetchedData.length > 0 && <BarChartGraph />}
+
+                                  
 
                                   <p style={{textAlign: 'center', marginRight: '30px', marginTop: '10px'}}><b>Average Price : </b> ${averagePrice.toFixed(2)}</p>
                                   
@@ -532,6 +535,7 @@ export default function KomparoPage() {
                                 setAveragePrice(0);
                                 setNoProductsFromAlibaba(false);
                                 setNoProductsFromAmazon(false);
+                        
                               }}>
                               Close
                             </Button>

@@ -20,6 +20,7 @@ export async function convertCsvToJson(csvFilePath) {
                         price: row['price'] || '',
                         company: row['company'] || '',
                         moq: row['moq'] || '',
+                        nop: row['nop'] || '',
                         rating: row['rating'] || '',
                         image: row['image'] || '',
                         link: row['link'] || '',
