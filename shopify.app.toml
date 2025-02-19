@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "36c68ffb8e0d642626679a4448405849"
-application_url = "https://historical-division-examine-candy.trycloudflare.com"
+application_url = "https://fuji-rated-ocean-nano.trycloudflare.com"
 embedded = true
 name = "price-comparison-app"
 handle = "price-comparison-app"
@@ -23,9 +23,9 @@ scopes = "write_products, read_products"
 
 [auth]
 redirect_urls = [
-  "https://historical-division-examine-candy.trycloudflare.com/auth/callback",
-  "https://historical-division-examine-candy.trycloudflare.com/auth/shopify/callback",
-  "https://historical-division-examine-candy.trycloudflare.com/api/auth/callback"
+  "https://fuji-rated-ocean-nano.trycloudflare.com/auth/callback",
+  "https://fuji-rated-ocean-nano.trycloudflare.com/auth/shopify/callback",
+  "https://fuji-rated-ocean-nano.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
