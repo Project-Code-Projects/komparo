@@ -81,6 +81,9 @@ cron.schedule("10 * * * * *", async () => {
       const amazonResponse = await scrapeAmazonProducts(searchQuery);
       const alibabaResponse = await scrapeAlibabaProducts(searchQuery);
 
+      console.log("---------------------------------------------------------------");
+      console.log("Back to Cron Scheduler...");
+      console.log("---------------------------------------------------------------");
       console.log("Scraping completed for", searchQuery);
 
       await prisma.comparator.update({
@@ -91,6 +94,7 @@ cron.schedule("10 * * * * *", async () => {
           amazon: amazonResponse,
         },
       });
+
       console.log("Updated status for", searchQuery);
       console.log("[END]")
     } catch (scrapeError) {
