@@ -9,7 +9,7 @@ import { uploadCsv } from "../cloudinaryUtils.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export async function randomDelay(min = 3000, max = 7000) {
+export async function randomDelay(min = 5000, max = 12000) {
   return new Promise((resolve) => setTimeout(resolve, Math.random() * (max - min) + min));
 }
 
@@ -144,9 +144,8 @@ export async function scrapePage(driver) {
           // productData.price = productData.price.trim();
           productData.price = productData.price.replace(/\$/g, "").trim();
           console.log("price:", productData.price);
-          console.log("BEFORE NOP:", productData.nop);
           productData.nop = Number(productData.nop.replace(/\D/g, ""));
-          console.log("AFTER NOP:", productData.nop);
+          console.log("nop:", productData.nop);
           console.log("NOP:", productData.nop);
           productData.scrapedAt = new Date().toISOString();
           console.log("Scrapped Product:", JSON.stringify(productData, null, 2));
@@ -192,7 +191,7 @@ export async function scrapeAlibabaProducts(
     await driver.get(url);
     await driver.sleep(5000);
 
-    // await applyNewFilter(driver);
+    await applyNewFilter(driver);
 
     let allProducts = [];
     let currentPage = 1;
