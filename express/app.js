@@ -23,7 +23,7 @@ app.use(express.json());
 app.use(cors({ origin: "*" }));
 app.use(express.static(__dirname));
 app.use("/api/webhooks", webhookRouter);
-app.use("/api/updatePrice", updatePriceRouter); // Bad practice; change naming convention
+app.use("/api/updatePrice", updatePriceRouter); // Bad practice; change naming convention Mr. Iqbal
 app.use("/api/products", productsRouter);
 
 app.get("/", (req, res) => {
@@ -91,6 +91,8 @@ cron.schedule("10 * * * * *", async () => {
           amazon: amazonResponse,
         },
       });
+      console.log("Updated status for", searchQuery);
+      console.log("[END]")
     } catch (scrapeError) {
       console.error(`Error scraping for "${searchQuery}":`, scrapeError);
       await prisma.comparator.update({
