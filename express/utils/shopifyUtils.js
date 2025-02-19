@@ -40,14 +40,24 @@ export async function initializeComparatorProducts() {
             return;
         }
 
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
         for (const product of products) {
             const productName = product.title;
+
+            const existingRecord = await prisma.comparator.findUnique({
+                where: { query: productName }
+            });
 
             await prisma.comparator.upsert({
                 where: { query: productName },
                 create: {
                     query: productName,
                     status: "pending",
+                },
+                update: {
+                    status: existingRecord && existingRecord.updated_at < oneWeekAgo ? "pending" : existingRecord?.status
                 },
             });
 
@@ -60,5 +70,3 @@ export async function initializeComparatorProducts() {
         await prisma.$disconnect();
     }
 }
-
-
