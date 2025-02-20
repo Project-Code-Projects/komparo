@@ -1,8 +1,8 @@
-import { Layout, Text, InlineStack, Button, Divider, Banner, Icon, Select } from "@shopify/polaris"
+import { Layout, Text, InlineStack, Button, Divider, Banner, Icon, Select, TextField } from "@shopify/polaris"
 import { useLoaderData } from "@remix-run/react"
 import { loader } from "../services/fetch.products.js"
 import "../styles/komparo.css"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
@@ -39,6 +39,8 @@ export default function KomparoPage() {
   const [barChartGraphData, setBarChartGraphData] = useState([]);
   const [amazonURL, setAmazonURL] = useState('');
   const [alibabaURL, setAlibabaURL] = useState('');
+  const [minPriceValue, setMinPriceValue] = useState();
+  const [maxPriceValue, setMaxPriceValue] = useState();
 
   // Page Population Logic
 
@@ -197,6 +199,16 @@ export default function KomparoPage() {
     { label: 'High to Low', value: 'htl' }
   ];
 
+  const handleChangePI_1 = useCallback(
+    (newValue) => setMinPriceValue(Number(newValue)),
+    [],
+  );
+
+  const handleChangePI_2 = useCallback(
+    (newValue) => setMaxPriceValue(Number(newValue)),
+    [],
+  );
+
   return (
     <main style={{ padding: '60px', paddingTop: '80px', backgroundColor: '#3D3D3D' }}>
       <div className="back-ground">
@@ -251,42 +263,58 @@ export default function KomparoPage() {
 
                                   <div className="image-slider-container">
                                     <section className="filtering-bar">
-                                      <p className="price-filtering-form">
-                                        $<input id="min" type="number" className="pff-input" min="0" name="min" placeholder="Min" style={{ marginLeft: '5px' }} />
-                                        <span style={{ margin: '0 5px' }}>-</span>
-                                        <input id="max" type="number" className="pff-input" min="0" name="max" placeholder="Max" style={{ marginRight: '5px' }} />
+                                      <div className="price-filtering-form">
+                                        <article style={{display: 'flex', alignItems: 'center', width: '52%', marginRight: '7px'}}>
+                                        <span style={{marginRight: '3px'}}>$</span><TextField
+      type="number"
+      placeholder="Min"
+      min={0}
+      value={minPriceValue}
+      onChange={handleChangePI_1}
+      autoComplete="off"
+    />
+                                        <span style={{ margin: '0 3px' }}>-</span>
+                                        <TextField
+      type="number"
+      placeholder="Max"
+      min={0}
+      value={maxPriceValue}
+      onChange={handleChangePI_2}
+      autoComplete="off"
+    />
+                                        </article>
                                         <Button onClick={() => {
-                                          let maxVal = Number(document.getElementById('max').value); let minVal = Number(document.getElementById('min').value);
-                                          if (maxVal == 0) { maxVal = Infinity }
+                                          let minValue = minPriceValue; let maxValue = maxPriceValue; 
+                                          if (maxValue == undefined) { setMaxPriceValue(Infinity); maxValue = Infinity; }
+                                          if (minValue == undefined) { setMinPriceValue(0); minValue = 0; }
                                           if (priceResetData.length > 0) {
-                                            const arr = priceResetData.filter(x => x.price <= maxVal && x.price >= minVal);
+                                            const arr = priceResetData.filter(x => x.price <= maxValue && x.price >= minValue);
                                             if (arr.length > 0) { setNoPriceMatched(false) } else { setNoPriceMatched(true) }
                                             setScrappedProducts(arr);
                                           } else {
                                             setPriceResetData(scrappedProducts);
-                                            const arr = scrappedProducts.filter(x => x.price <= maxVal && x.price >= minVal);
+                                            const arr = scrappedProducts.filter(x => x.price <= maxValue && x.price >= minValue);
                                             if (arr.length > 0) { setNoPriceMatched(false) } else { setNoPriceMatched(true) }
                                             setScrappedProducts(arr);
                                           }
-
                                           fixingHeights();
-                                        }} style={{ marginRight: '5px' }}>Search</Button>
+                                        }}>Search</Button>&nbsp;
                                         {priceResetData.length > 0
                                           &&
                                           <Button variant="primary" onClick={() => {
                                             if (priceResetData.length > 0) {
+                                              setMinPriceValue();
+                                              setMaxPriceValue();
                                               setScrappedProducts(priceResetData);
                                               setPriceResetData([]);
                                               setNoPriceMatched(false);
-                                              document.getElementById('max').value = '';
-                                              document.getElementById('min').value = '';
                                               fixingHeights();
                                             }
                                           }}>Reset</Button>
                                         }
 
-                                      </p>
-                                      <div style={{ display: 'flex', justifyContent: 'space-between', minWidth: '42%' }}>
+                                      </div>
+                                      <div style={{ display: 'flex', justifyContent: 'space-between', minWidth: '47%' }}>
                                         <Select
                                           label=""
                                           labelInline
@@ -298,8 +326,8 @@ export default function KomparoPage() {
                                               setPriceResetData([]);
                                               setPriceDefaultData([]);
                                               setNoPriceMatched(false);
-                                              document.getElementById('max').value = '';
-                                              document.getElementById('min').value = '';
+                                              setMinPriceValue();
+                                              setMaxPriceValue();
                                               setNoProductsFromAlibaba(false);
                                               setNoProductsFromAmazon(false);
                                               setScrappedProducts(fetchedData);
@@ -310,8 +338,8 @@ export default function KomparoPage() {
                                               setPriceResetData([]);
                                               setPriceDefaultData([]);
                                               setNoPriceMatched(false);
-                                              document.getElementById('max').value = '';
-                                              document.getElementById('min').value = '';
+                                              setMinPriceValue();
+                                              setMaxPriceValue();
                                               const arr = fetchedData.filter(x => x.platform == 'alibaba');
                                               if (arr.length == 0) {setNoProductsFromAlibaba(true)}
                                               setNoProductsFromAmazon(false);
@@ -323,8 +351,8 @@ export default function KomparoPage() {
                                               setPriceResetData([]);
                                               setPriceDefaultData([]);
                                               setNoPriceMatched(false);
-                                              document.getElementById('max').value = '';
-                                              document.getElementById('min').value = '';
+                                              setMinPriceValue();
+                                              setMaxPriceValue();
                                               setNoProductsFromAlibaba(false);
                                               const arr = fetchedData.filter(x => x.platform == 'amazon');
                                               if (arr.length == 0) {setNoProductsFromAmazon(true)}
@@ -481,6 +509,7 @@ export default function KomparoPage() {
                                         New Price &nbsp; &nbsp;$
                                       </span>{" "}
                                       <input
+                                        id="ipu"
                                         className="form-input-default"
                                         style={{
                                           fontWeight: "600",
@@ -534,14 +563,14 @@ export default function KomparoPage() {
                                 setPriceResetData([]);
                                 setPriceDefaultData([]);
                                 setNoPriceMatched(false);
-                                document.getElementById('max').value = '';
-                                document.getElementById('min').value = '';
+                                setMinPriceValue();
+                                setMaxPriceValue();
                                 setNewPrice("");
                                 setPendingMessage(null);
                                 setAveragePrice(0);
                                 setNoProductsFromAlibaba(false);
                                 setNoProductsFromAmazon(false);
-                        
+                                document.getElementById('ipu').value = '';
                               }}>
                               Close
                             </Button>

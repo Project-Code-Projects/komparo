@@ -260,7 +260,7 @@
 }
 
 .price-filtering-form {
-  display: inline;
+  display: flex;
 }
 
 .pff-input {
