@@ -394,9 +394,9 @@ export default function KomparoPage() {
                                     </section>
                                     {loading &&
                                       <>
-                                        {noPriceMatched &&<p style={{ textAlign: 'center', color: 'gray', marginTop: '40px' }}><i>No product available in this price range</i></p>}
-                                        {noProductsFromAlibaba &&<p style={{ textAlign: 'center', color: 'gray', marginTop: '40px' }}><i>No product available on Alibaba</i></p>}
-                                        {noProductsFromAmazon &&<p style={{ textAlign: 'center', color: 'gray', marginTop: '40px' }}><i>No product available on Amazon</i></p>}
+                                        {noPriceMatched &&<p style={{ textAlign: 'center', color: 'gray', marginTop: '45px', fontSize: '17px' }}><i>No product available in this price range</i></p>}
+                                        {noProductsFromAlibaba &&<p style={{ textAlign: 'center', color: 'gray', marginTop: '45px', fontSize: '17px' }}><i>No product available on Alibaba</i></p>}
+                                        {noProductsFromAmazon &&<p style={{ textAlign: 'center', color: 'gray', marginTop: '45px', fontSize: '17px' }}><i>No product available on Amazon</i></p>}
                                         < Slider {...settings}>
                                               {scrappedProducts.map((product, index) => (
                                                 <article key={product.platform == 'alibaba' ? `alibaba-${index}` : `amazon-${index}`} className="scrapped-data-card">
@@ -438,7 +438,7 @@ export default function KomparoPage() {
                                     }
                                   </div>
                                   <div className="modal"
-                                                    style={{ display: showPriceModal ? 'block' : 'none', height: 'auto', zIndex: '100'}}
+                                                    style={{ display: showPriceModal ? 'block' : 'none', zIndex: '100', paddingTop: '25px'}}
                                                   >
                                                     <div className="modal-content"
                                                       
