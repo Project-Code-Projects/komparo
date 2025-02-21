@@ -47,7 +47,15 @@ export default function KomparoPage() {
   // Page Population Logic
 
   useEffect(() => {
-    setCardItems(products.slice((0 * 9), (0 * 9) + 9))
+    setCardItems(products.slice((0 * 9), (0 * 9) + 9));
+    setTimeout(() => {
+      const firstModal = document.getElementById('modal-1');
+      const secondModal = document.getElementById('modal-2');
+      window.onclick = function(event) {
+        if (event.target == firstModal) {setShowModal(false)}
+        else if (event.target == secondModal) {setShowPriceModal(false)}
+      };
+    }, 500);
   }, [])
 
   function calculateStatistics(numbers) {
@@ -244,7 +252,7 @@ export default function KomparoPage() {
     (newValue) => setMaxPriceValue(Number(newValue)),
     [],
   );
-
+  
   return (
     <main style={{ padding: '60px', paddingTop: '80px', backgroundColor: '#3D3D3D' }}>
       <div className="back-ground">
@@ -271,7 +279,7 @@ export default function KomparoPage() {
                     ))}
                   </div>
 
-                  <div className="modal" style={{ display: showModal ? 'block' : 'none' }}>
+                  <div id="modal-1" className="modal" style={{ display: showModal ? 'block' : 'none' }}>
                     <div className="modal-content">
                       <div className="modal-body">
                         <div>
@@ -473,7 +481,7 @@ export default function KomparoPage() {
                                       </>
                                     }
                                   </div>
-                                  <div className="modal"
+                                  <div id="modal-2" className="modal"
                                                     style={{ display: showPriceModal ? 'block' : 'none', zIndex: '100', paddingTop: '25px'}}
                                                   >
                                                     <div className="modal-content"
@@ -497,10 +505,7 @@ export default function KomparoPage() {
 
                                   {fetchedData.length > 0 && <BarChartGraph dataSet={barChartGraphData} />}
 
-                                  
-
-                                  <p style={{textAlign: 'center', marginRight: '30px', marginTop: '10px'}}><b>Average Price : </b> ${averagePrice.toFixed(2)}</p>
-                                  <p style={{textAlign: 'center', marginRight: '30px', marginTop: '10px'}}><b>Median Price : </b> ${medianPrice} &nbsp; <b>Mode Price : </b> ${modePrice}</p>
+                                  <p style={{textAlign: 'center', marginRight: '30px', marginTop: '10px'}}><b>Average Price : </b> ${averagePrice.toFixed(2)} &nbsp; <b>Median Price : </b> ${medianPrice} &nbsp; <b>Mode Price : </b> ${modePrice}</p>
 
                                   <br />
 
