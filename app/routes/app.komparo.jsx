@@ -29,6 +29,8 @@ export default function KomparoPage() {
   const [pendingMessage, setPendingMessage] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [averagePrice, setAveragePrice] = useState(0);
+  const [medianPrice, setMedianPrice] = useState(0);
+  const [modePrice, setModePrice] = useState([]);
   const [platform, setPlatform] = useState('all');
   const [price, setPrice] = useState('default');
   const [priceResetData, setPriceResetData] = useState([]);
@@ -47,6 +49,38 @@ export default function KomparoPage() {
   useEffect(() => {
     setCardItems(products.slice((0 * 9), (0 * 9) + 9))
   }, [])
+
+  function calculateStatistics(numbers) {
+    // Mean Calculation
+    const mean = numbers.reduce((sum, num) => sum + num, 0) / numbers.length;
+    
+    // Median Calculation
+    const sortedNumbers = [...numbers].sort((a, b) => a - b);
+    const mid = Math.floor(sortedNumbers.length / 2);
+    const median = sortedNumbers.length % 2 === 0 
+        ? (sortedNumbers[mid - 1] + sortedNumbers[mid]) / 2 
+        : sortedNumbers[mid];
+    
+    // Mode Calculation
+    const frequency = {};
+    let maxFreq = 0;
+    let mode = [];
+    
+    for (const num of numbers) {
+        frequency[num] = (frequency[num] || 0) + 1;
+        if (frequency[num] > maxFreq) {
+            maxFreq = frequency[num];
+        }
+    }
+    
+    for (const key in frequency) {
+        if (frequency[key] === maxFreq) {
+            mode.push(parseFloat(key));
+        }
+    }
+    
+    return { mean, median, mode };
+}
 
   // Fetch Scrapped Products Logic
 
@@ -80,10 +114,12 @@ export default function KomparoPage() {
           const arrDataBC = filteredPrices.map(x => {
             return {price: x.price, nop: Number(x.nop)};
           });
-          // console.log(priceArr);
+          const statisticalData = calculateStatistics(priceArr);
           arrDataBC.sort(function(a, b){return a.price - b.price});
           setBarChartGraphData(arrDataBC);
-          setAveragePrice(priceArr.reduce((x, y) => x + y) / priceArr.length);
+          setAveragePrice(statisticalData.mean);
+          setMedianPrice(statisticalData.median);
+          setModePrice(statisticalData.mode);
           setFetchedData(filteredPrices);
           setScrappedProducts(filteredPrices);
           fixingHeights();
@@ -464,7 +500,8 @@ export default function KomparoPage() {
                                   
 
                                   <p style={{textAlign: 'center', marginRight: '30px', marginTop: '10px'}}><b>Average Price : </b> ${averagePrice.toFixed(2)}</p>
-                                  
+                                  <p style={{textAlign: 'center', marginRight: '30px', marginTop: '10px'}}><b>Median Price : </b> ${medianPrice} &nbsp; <b>Mode Price : </b> ${modePrice}</p>
+
                                   <br />
 
                                   <Divider borderColor="border-inverse" />
