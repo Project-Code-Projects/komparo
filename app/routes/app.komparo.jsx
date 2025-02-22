@@ -158,8 +158,8 @@ export default function KomparoPage() {
 
   async function updatePrice() {
     if (!newPrice) return alert("Please enter a price.");
-    console.log(newPrice);
-    console.log(newPriceCompare);
+    // console.log(newPrice);
+    // console.log(newPriceCompare);
     setLoading(true);
     try {
       const response = await fetch("http://localhost:3001/api/updatePrice", {
@@ -629,7 +629,7 @@ export default function KomparoPage() {
                                         step="0.01"
                                       />
                                     </p>
-                                    <p
+                                    {scannedData?.compareAtPrice && <p
                                       style={{
                                         fontSize: "18px",
                                         textAlign: "left",
@@ -660,7 +660,7 @@ export default function KomparoPage() {
                                         min="0"
                                         step="0.01"
                                       />
-                                    </p>
+                                    </p>}
                                     <button
                                       style={{
                                         color: "white",
