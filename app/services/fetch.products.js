@@ -1,3 +1,53 @@
+// import { json } from "@remix-run/node";
+// import shopify from "../shopify.server";
+
+// export async function loader({ request }) {
+//   const { admin } = await shopify.authenticate.admin(request);
+//   const response = await admin.graphql(`
+//     {
+//       products(first: 100, sortKey: CREATED_AT, reverse: true) {
+//         nodes {
+//             id
+//             title
+//             description
+//             images(first: 1) {
+//                 edges {
+//                     node {
+//                         src
+//                     }
+//                 }
+//             }
+//             priceRangeV2 {
+//                 minVariantPrice {
+//                     amount
+//                     currencyCode
+//                 }
+//             }
+//         }
+//       }
+//     }
+//   `);
+
+//   const parsedResponse = await response.json();
+
+//   return json({
+//     products: parsedResponse.data.products.nodes.map((product) => ({
+//       id: product.id,
+//       title: product.title,
+//       description: product.description,
+//       imageUrl:
+//         product.images.edges.length > 0
+//           ? product.images.edges[0].node.src
+//           : null,
+//       price: product.priceRangeV2
+//         ? product.priceRangeV2.minVariantPrice.amount
+//         : null,
+//       currency: product.priceRangeV2
+//         ? product.priceRangeV2.minVariantPrice.currencyCode
+//         : null,
+//     })),
+//   });
+// }
 import { json } from "@remix-run/node";
 import shopify from "../shopify.server";
 
@@ -7,44 +57,45 @@ export async function loader({ request }) {
     {
       products(first: 100, sortKey: CREATED_AT, reverse: true) {
         nodes {
-            id
-            title
-            description
-            images(first: 1) {
-                edges {
-                    node {
-                        src
-                    }
-                }
+          id
+          title
+          description
+          images(first: 1) {
+            edges {
+              node {
+                src
+              }
             }
-            priceRangeV2 {
-                minVariantPrice {
-                    amount
-                    currencyCode
-                }
+          }
+          variants(first: 1) {
+            edges {
+              node {
+                price
+                compareAtPrice
+              }
             }
+          }
         }
       }
     }
   `);
+  
 
   const parsedResponse = await response.json();
 
-  return json({
-    products: parsedResponse.data.products.nodes.map((product) => ({
+return json({
+  products: parsedResponse.data.products.nodes.map((product) => {
+    const firstVariant = product.variants.edges.length > 0 ? product.variants.edges[0].node : null;
+
+    return {
       id: product.id,
       title: product.title,
       description: product.description,
       imageUrl:
-        product.images.edges.length > 0
-          ? product.images.edges[0].node.src
-          : null,
-      price: product.priceRangeV2
-        ? product.priceRangeV2.minVariantPrice.amount
-        : null,
-      currency: product.priceRangeV2
-        ? product.priceRangeV2.minVariantPrice.currencyCode
-        : null,
-    })),
-  });
+        product.images.edges.length > 0 ? product.images.edges[0].node.src : null,
+      price: firstVariant ? firstVariant.price : null,
+      compareAtPrice: firstVariant ? firstVariant.compareAtPrice : null,
+    };
+  }),
+});
 }

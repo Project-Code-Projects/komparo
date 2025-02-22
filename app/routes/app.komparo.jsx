@@ -13,6 +13,9 @@ import { Toaster } from "../components/toaster.jsx";
 import BarChartGraph from "../components/BarChart.jsx"
 import LineChartGraph from "../components/LineChart.jsx"
 export { loader }
+import {
+  PageDownIcon
+} from '@shopify/polaris-icons';
 
 export default function KomparoPage() {
   const [scannedData, setScannedData] = useState(null);
@@ -25,6 +28,7 @@ export default function KomparoPage() {
   const [fetchedData, setFetchedData] = useState([]);
   const [scrappedProducts, setScrappedProducts] = useState([]);
   const [newPrice, setNewPrice] = useState("");
+  const [newPriceCompare, setNewPriceCompare] = useState("");
   const [toasterMessage, setToasterMessage] = useState(null);
   const [pendingMessage, setPendingMessage] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -32,6 +36,7 @@ export default function KomparoPage() {
   const [medianPrice, setMedianPrice] = useState(0);
   const [modePrice, setModePrice] = useState([]);
   const [platform, setPlatform] = useState('all');
+  const [platformDownload, setPlatformDownload] = useState('alibaba');
   const [price, setPrice] = useState('default');
   const [priceResetData, setPriceResetData] = useState([]);
   const [priceDefaultData, setPriceDefaultData] = useState([]);
@@ -43,6 +48,7 @@ export default function KomparoPage() {
   const [alibabaURL, setAlibabaURL] = useState('');
   const [minPriceValue, setMinPriceValue] = useState();
   const [maxPriceValue, setMaxPriceValue] = useState();
+  const [highestNOPPrice, setHighestNOPPrice] = useState(0);
 
   // Page Population Logic
 
@@ -51,9 +57,9 @@ export default function KomparoPage() {
     setTimeout(() => {
       const firstModal = document.getElementById('modal-1');
       const secondModal = document.getElementById('modal-2');
-      window.onclick = function(event) {
-        if (event.target == firstModal) {setShowModal(false)}
-        else if (event.target == secondModal) {setShowPriceModal(false)}
+      window.onclick = function (event) {
+        if (event.target == firstModal) { setShowModal(false) }
+        else if (event.target == secondModal) { setShowPriceModal(false) }
       };
     }, 500);
   }, [])
@@ -61,34 +67,34 @@ export default function KomparoPage() {
   function calculateStatistics(numbers) {
     // Mean Calculation
     const mean = numbers.reduce((sum, num) => sum + num, 0) / numbers.length;
-    
+
     // Median Calculation
     const sortedNumbers = [...numbers].sort((a, b) => a - b);
     const mid = Math.floor(sortedNumbers.length / 2);
-    const median = sortedNumbers.length % 2 === 0 
-        ? (sortedNumbers[mid - 1] + sortedNumbers[mid]) / 2 
-        : sortedNumbers[mid];
-    
+    const median = sortedNumbers.length % 2 === 0
+      ? (sortedNumbers[mid - 1] + sortedNumbers[mid]) / 2
+      : sortedNumbers[mid];
+
     // Mode Calculation
     const frequency = {};
     let maxFreq = 0;
     let mode = [];
-    
+
     for (const num of numbers) {
-        frequency[num] = (frequency[num] || 0) + 1;
-        if (frequency[num] > maxFreq) {
-            maxFreq = frequency[num];
-        }
+      frequency[num] = (frequency[num] || 0) + 1;
+      if (frequency[num] > maxFreq) {
+        maxFreq = frequency[num];
+      }
     }
-    
+
     for (const key in frequency) {
-        if (frequency[key] === maxFreq) {
-            mode.push(parseFloat(key));
-        }
+      if (frequency[key] === maxFreq) {
+        mode.push(parseFloat(key));
+      }
     }
-    
+
     return { mean, median, mode };
-}
+  }
 
   // Fetch Scrapped Products Logic
 
@@ -101,6 +107,7 @@ export default function KomparoPage() {
         if (response.status === 200) {
           const unifiedArr = [];
           const priceArr = [];
+          const nopArr = [];
           if (fetchData.alibaba) {
             setAlibabaURL(fetchData.alibaba_url);
             fetchData.alibaba.forEach(x => {
@@ -117,13 +124,15 @@ export default function KomparoPage() {
 
           const filteredPrices = [];
           unifiedArr.forEach(x => {
-            if (!x.price.includes("-")) { x.price = Number(x.price); filteredPrices.push(x); priceArr.push(x.price); }
+            if (!x.price.includes("-")) { x.price = Number(x.price); filteredPrices.push(x); priceArr.push(x.price); nopArr.push(Number(x.nop)); }
           });
+          const highestNOP = Math.max.apply(null, nopArr);
           const arrDataBC = filteredPrices.map(x => {
-            return {price: x.price, nop: Number(x.nop)};
+            if (highestNOP == Number(x.nop)) {setHighestNOPPrice(x.price)}
+            return { price: x.price, nop: Number(x.nop) };
           });
           const statisticalData = calculateStatistics(priceArr);
-          arrDataBC.sort(function(a, b){return a.price - b.price});
+          arrDataBC.sort(function (a, b) { return a.price - b.price });
           setBarChartGraphData(arrDataBC);
           setAveragePrice(statisticalData.mean);
           setMedianPrice(statisticalData.median);
@@ -149,6 +158,8 @@ export default function KomparoPage() {
 
   async function updatePrice() {
     if (!newPrice) return alert("Please enter a price.");
+    console.log(newPrice);
+    console.log(newPriceCompare);
     setLoading(true);
     try {
       const response = await fetch("http://localhost:3001/api/updatePrice", {
@@ -168,7 +179,7 @@ export default function KomparoPage() {
           ...prevData,
           price: parseFloat(newPrice),
         }));
-        setNewPrice("");
+        setNewPrice(""); setNewPriceCompare('');
         document.querySelector("input[name='price']").value = "";
       } else {
         throw new Error(result.error || "Failed to update price.");
@@ -232,15 +243,20 @@ export default function KomparoPage() {
   };
 
   const options = [
-    { label: 'All', value: 'all' },
-    { label: 'Alibaba', value: 'alibaba' },
+    { label: 'All\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0', value: 'all' },
+    { label: 'Alibaba\u00A0', value: 'alibaba' },
     { label: 'Amazon', value: 'amazon' }
   ];
 
   const optionsFirst = [
-    { label: 'Default', value: 'default' },
-    { label: 'Low to High', value: 'lth' },
-    { label: 'High to Low', value: 'htl' }
+    { label: 'Default\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0', value: 'default' },
+    { label: 'Low to High\u00A0', value: 'lth' },
+    { label: 'High to Low\u00A0', value: 'htl' }
+  ];
+
+  const optionsDownload = [
+    { label: 'Alibaba', value: 'alibaba' },
+    { label: 'Amazon', value: 'amazon' }
   ];
 
   const handleChangePI_1 = useCallback(
@@ -252,17 +268,17 @@ export default function KomparoPage() {
     (newValue) => setMaxPriceValue(Number(newValue)),
     [],
   );
-  
+
   return (
     <main style={{ padding: '60px', paddingTop: '80px', backgroundColor: '#3D3D3D' }}>
       <div className="back-ground">
         <Layout>
           <Layout.Section>
-          <h3 className="heading">Your Products</h3>
+            <h3 className="heading">Your Products</h3>
             <h2 className="logo"><i>Komparo</i></h2>
-            
+
             <article className="ins-container">
-            <p><span className="highlight">Komparo</span> is your go-to price comparison app! Simply click on any one of your products to instantly find similar items on Alibaba, Amazon, and other eCommerce platforms. We also provide valuable price analysis to help you understand market trends and set the perfect selling price.</p>
+              <p><span className="highlight">Komparo</span> is your go-to price comparison app! Simply click on any one of your products to instantly find similar items on Alibaba, Amazon, and other eCommerce platforms. We also provide valuable price analysis to help you understand market trends and set the perfect selling price.</p>
             </article>
             <div className="container">
 
@@ -287,7 +303,10 @@ export default function KomparoPage() {
                             <img src={scannedData?.imageUrl} className="image-scan" alt={scannedData?.title || 'Product image'} />
                             <article className="card-body">
                               <h3 className="scan-title">{scannedData?.title}</h3>
-                              <h4 className="price" style={{ fontSize: '22px' }}>${scannedData?.price}</h4>
+                              <article style={{display: 'flex', alignItems: 'center'}}>
+                              <h4 className="price" style={{ fontSize: '22px', marginRight: '10px' }}>${scannedData?.price}</h4>
+                              {scannedData?.compareAtPrice && (<del className="price" style={{ fontSize: '14px', color: 'gray' }}>${scannedData?.compareAtPrice}</del>)}
+                              </article>
                               <p className="scan-desc" style={{ padding: '25px', backgroundColor: 'white', borderRadius: '20px', marginTop: '20px' }}>
                                 {scannedData?.description && scannedData.description.length != 0 ? scannedData.description : 'No description provided!'}
                               </p>
@@ -308,27 +327,27 @@ export default function KomparoPage() {
                                   <div className="image-slider-container">
                                     <section className="filtering-bar">
                                       <div className="price-filtering-form">
-                                        <article style={{display: 'flex', alignItems: 'center', width: '52%', marginRight: '7px'}}>
-                                        <span style={{marginRight: '3px'}}>$</span><TextField
-      type="number"
-      placeholder="Min"
-      min={0}
-      value={minPriceValue}
-      onChange={handleChangePI_1}
-      autoComplete="off"
-    />
-                                        <span style={{ margin: '0 3px' }}>-</span>
-                                        <TextField
-      type="number"
-      placeholder="Max"
-      min={0}
-      value={maxPriceValue}
-      onChange={handleChangePI_2}
-      autoComplete="off"
-    />
+                                        <article style={{ display: 'flex', alignItems: 'center', width: '52%', marginRight: '7px' }}>
+                                          <span style={{ marginRight: '3px', fontWeight: '600', fontSize: '15px' }}>$</span><TextField
+                                            type="number"
+                                            placeholder="Min"
+                                            min={0}
+                                            value={minPriceValue}
+                                            onChange={handleChangePI_1}
+                                            autoComplete="off"
+                                          />
+                                          <span style={{ margin: '0 3px' }}>-</span>
+                                          <TextField
+                                            type="number"
+                                            placeholder="Max"
+                                            min={0}
+                                            value={maxPriceValue}
+                                            onChange={handleChangePI_2}
+                                            autoComplete="off"
+                                          />
                                         </article>
-                                        <Button onClick={() => {
-                                          let minValue = minPriceValue; let maxValue = maxPriceValue; 
+                                        <button className="btn-ps hover-btn-s" style={{ color: 'white', cursor: "pointer", fontSize: '16px', backgroundColor: '#578E7E', border: 'none', borderRadius: '8px', padding: '4px 10px' }} onClick={() => {
+                                          let minValue = minPriceValue; let maxValue = maxPriceValue;
                                           if (maxValue == undefined) { setMaxPriceValue(Infinity); maxValue = Infinity; }
                                           if (minValue == undefined) { setMinPriceValue(0); minValue = 0; }
                                           if (priceResetData.length > 0) {
@@ -342,10 +361,10 @@ export default function KomparoPage() {
                                             setScrappedProducts(arr);
                                           }
                                           fixingHeights();
-                                        }}>Search</Button>&nbsp;
+                                        }}>Search</button>&nbsp;
                                         {priceResetData.length > 0
                                           &&
-                                          <Button variant="primary" onClick={() => {
+                                          <button className="btn-ps hover-btn" style={{ color: 'white', cursor: "pointer", fontSize: '16px', backgroundColor: '#3d3d3d', border: 'none', borderRadius: '8px', padding: '4px 10px' }} onClick={() => {
                                             if (priceResetData.length > 0) {
                                               setMinPriceValue();
                                               setMaxPriceValue();
@@ -354,7 +373,7 @@ export default function KomparoPage() {
                                               setNoPriceMatched(false);
                                               fixingHeights();
                                             }
-                                          }}>Reset</Button>
+                                          }}>Reset</button>
                                         }
 
                                       </div>
@@ -385,7 +404,7 @@ export default function KomparoPage() {
                                               setMinPriceValue();
                                               setMaxPriceValue();
                                               const arr = fetchedData.filter(x => x.platform == 'alibaba');
-                                              if (arr.length == 0) {setNoProductsFromAlibaba(true)}
+                                              if (arr.length == 0) { setNoProductsFromAlibaba(true) }
                                               setNoProductsFromAmazon(false);
                                               setScrappedProducts(arr);
                                               fixingHeights();
@@ -399,7 +418,7 @@ export default function KomparoPage() {
                                               setMaxPriceValue();
                                               setNoProductsFromAlibaba(false);
                                               const arr = fetchedData.filter(x => x.platform == 'amazon');
-                                              if (arr.length == 0) {setNoProductsFromAmazon(true)}
+                                              if (arr.length == 0) { setNoProductsFromAmazon(true) }
                                               setScrappedProducts(arr);
                                               fixingHeights();
                                             }
@@ -438,74 +457,114 @@ export default function KomparoPage() {
                                     </section>
                                     {loading &&
                                       <>
-                                        {noPriceMatched &&<p style={{ textAlign: 'center', color: 'gray', marginTop: '45px', fontSize: '17px' }}><i>No product available in this price range</i></p>}
-                                        {noProductsFromAlibaba &&<p style={{ textAlign: 'center', color: 'gray', marginTop: '45px', fontSize: '17px' }}><i>No product available on Alibaba</i></p>}
-                                        {noProductsFromAmazon &&<p style={{ textAlign: 'center', color: 'gray', marginTop: '45px', fontSize: '17px' }}><i>No product available on Amazon</i></p>}
+                                        {noPriceMatched && <p style={{ textAlign: 'center', color: 'gray', marginTop: '45px', fontSize: '17px' }}><i>No product available in this price range</i></p>}
+                                        {noProductsFromAlibaba && <p style={{ textAlign: 'center', color: 'gray', marginTop: '45px', fontSize: '17px' }}><i>No product available on Alibaba</i></p>}
+                                        {noProductsFromAmazon && <p style={{ textAlign: 'center', color: 'gray', marginTop: '45px', fontSize: '17px' }}><i>No product available on Amazon</i></p>}
                                         < Slider {...settings}>
-                                              {scrappedProducts.map((product, index) => (
-                                                <article key={product.platform == 'alibaba' ? `alibaba-${index}` : `amazon-${index}`} className="scrapped-data-card">
-                                                  <img
-                                                    src={product.image || "https://via.placeholder.com/150"}
-                                                    className="scrapped-img"
-                                                    alt={product.title}
-                                                  />
-                                                  <h4 className="scrapped-title" title={product.title}>{product.title.length > 50 ? product.title.slice(0, 50) + '...' : product.title}</h4>
-                                                  <div className="scrapped-rating">
-                                                    {((!isNaN(product.rating)) && (Number(product.rating) > 0)) ?
-                                                      <InlineStack gap="100" align="start">
-                                                        <Rating rating={Number(product.rating)} />
-                                                      </InlineStack>
-                                                      :
-                                                      <p style={{ color: 'lightgray' }}><i>No rating found!</i></p>
-                                                    }
-                                                  </div>
-                                                  {product.platform == 'alibaba' ? <AlibabaLogo /> : <AmazonLogo />}
-                                                   
-                                                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                                                  <h5 className="scrapped-price">${product.price}</h5>
-                                                  <button type="button" style={{ border: 'none', backgroundColor: 'transparent', textDecoration: 'underline', color: '#578E7E', marginRight: '5px' }}><a href={product.link} target="_blank">View Product</a></button>
-                                                  </div>
-                                                  
-                                                  <p style={{ textAlign: 'center', margin: '10px 0', marginBottom: '15px' }}>
-                                                    <Button
-                                                      onClick={() => setShowPriceModal(true)}
-                                                    >
-                                                      Price History
-                                                    </Button>
-                                                    
-                                                  </p>
-                                                  
-                                                </article>
-                                              ))}
-                                            </Slider>
+                                          {scrappedProducts.map((product, index) => (
+                                            <article key={product.platform == 'alibaba' ? `alibaba-${index}` : `amazon-${index}`} className="scrapped-data-card">
+                                              <img
+                                                src={product.image || "https://via.placeholder.com/150"}
+                                                className="scrapped-img"
+                                                alt={product.title}
+                                              />
+                                              <h4 className="scrapped-title" title={product.title}>{product.title.length > 50 ? product.title.slice(0, 50) + '...' : product.title}</h4>
+                                              <div className="scrapped-rating">
+                                                {((!isNaN(product.rating)) && (Number(product.rating) > 0)) ?
+                                                  <InlineStack gap="100" align="start">
+                                                    <Rating rating={Number(product.rating)} />
+                                                  </InlineStack>
+                                                  :
+                                                  <p style={{ color: 'lightgray' }}><i>No rating found!</i></p>
+                                                }
+                                              </div>
+                                              {product.platform == 'alibaba' ? <AlibabaLogo /> : <AmazonLogo />}
+
+                                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <h5 className="scrapped-price">${product.price}</h5>
+                                                <button type="button" style={{ border: 'none', backgroundColor: 'transparent', textDecoration: 'underline', color: '#578E7E', marginRight: '5px' }}><a href={product.link} target="_blank">View Product</a></button>
+                                              </div>
+
+                                              <p style={{ textAlign: 'center', margin: '10px 0', marginBottom: '15px' }}>
+                                                <Button
+                                                  onClick={() => setShowPriceModal(true)}
+                                                >
+                                                  Price History
+                                                </Button>
+
+                                              </p>
+
+                                            </article>
+                                          ))}
+                                        </Slider>
                                       </>
                                     }
                                   </div>
                                   <div id="modal-2" className="modal"
-                                                    style={{ display: showPriceModal ? 'block' : 'none', zIndex: '100', paddingTop: '25px'}}
-                                                  >
-                                                    <div className="modal-content"
-                                                      
-                                                    >
-                                                      <div className="modal-body"
-                                                        style={{padding: '40px 0', paddingRight: '30px', paddingBottom: '10px'}}
-                                                      >
-                                                      <LineChartGraph />
-                                                        <p style={{textAlign: 'center', marginTop: '15px'}}><Button variant="primary" onClick={() => setShowPriceModal(false)}>
-                                                        Close
-                                                          </Button>
-                                                          </p>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                  <span>Download data(csv) from : </span> &nbsp; {amazonURL && <a href={amazonURL}>Amazon</a>} &nbsp; {alibabaURL && <a href={alibabaURL}>Alibaba</a>} <br /><br />
+                                    style={{ display: showPriceModal ? 'block' : 'none', zIndex: '100', paddingTop: '25px' }}
+                                  >
+                                    <div className="modal-content"
+
+                                    >
+                                      <div className="modal-body"
+                                        style={{ padding: '40px 0', paddingRight: '30px', paddingBottom: '10px' }}
+                                      >
+                                        <LineChartGraph />
+                                        <p style={{ textAlign: 'center', marginTop: '15px' }}><Button variant="primary" onClick={() => setShowPriceModal(false)}>
+                                          Close
+                                        </Button>
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  {/* <span>Download data(csv) from : </span> &nbsp; {amazonURL && <a href={amazonURL}>Amazon</a>} &nbsp; {alibabaURL && <a href={alibabaURL}>Alibaba</a>} <br /><br /> */}
+                                  <article style={{display: 'flex', alignItems: 'center', marginBottom: '20px'}}>
+                                  <Select
+                                          label=""
+                                          labelInline
+                                          options={optionsDownload}
+                                          onChange={(event) => {
+                                            setPlatformDownload(event);
+                                          }}
+                                          value={platformDownload}
+                                        />
+                                  <>
+                                  {platformDownload === 'alibaba' ?
+                                    <a style={{fontSize: '30px', marginLeft: '8px', marginBottom: '3px'}} href={alibabaURL}>
+                                      <button className="btn-ps hover-btn" style={{ color: 'white', fontSize: '16px', backgroundColor: '#3d3d3d', border: 'none', borderRadius: '8px', padding: '7.5px 12px', cursor: 'pointer' }}>Download</button>
+                                    </a>
+                                :
+                                <a style={{fontSize: '30px', marginLeft: '8px', marginBottom: '3px'}} href={amazonURL}>
+                                  <button className="btn-ps hover-btn" style={{ color: 'white', fontSize: '16px', backgroundColor: '#3d3d3d', border: 'none', borderRadius: '8px', padding: '7.5px 12px', cursor: 'pointer' }}>Download</button>
+                                </a>
+                                }
+                                  </>
+                                  </article>
+                                  
                                   <Divider borderColor="border-inverse" />
 
                                   <br /><br />
 
                                   {fetchedData.length > 0 && <BarChartGraph dataSet={barChartGraphData} />}
 
-                                  <p style={{textAlign: 'center', marginRight: '30px', marginTop: '10px'}}><b>Average Price : </b> ${averagePrice.toFixed(2)} &nbsp; <b>Median Price : </b> ${medianPrice} &nbsp; <b>Mode Price : </b> ${modePrice}</p>
+                                  {/* <p style={{ textAlign: 'center', marginRight: '30px', marginTop: '10px' }}><b>Average Price : </b> ${averagePrice.toFixed(2)} &nbsp; <b>Median Price : </b> ${medianPrice} &nbsp; <b>Mode Price : </b> ${modePrice}</p> */}
+<br />
+{fetchedData.length > 0 && <table>
+<tbody>
+<tr>
+    <th style={{borderBottomColor: 'white'}}>Average Price</th>
+    <td>${averagePrice.toFixed(2)}</td>
+  </tr>
+  <tr>
+    <th style={{borderBottomColor: 'white'}}>Most Frequent Price</th>
+    <td>${modePrice[0].toFixed(2)}</td>
+  </tr>
+   <tr>
+    <th>Highest NOP Price</th>
+    <td>${highestNOPPrice.toFixed(2)}</td>
+  </tr>
+</tbody>
+</table>}
 
                                   <br />
 
@@ -524,6 +583,7 @@ export default function KomparoPage() {
                                       style={{
                                         fontSize: "18px",
                                         marginBottom: "25px",
+                                        marginLeft: "30px",
                                         textAlign: "left",
                                       }}
                                     >
@@ -540,7 +600,7 @@ export default function KomparoPage() {
                                     <p
                                       style={{
                                         fontSize: "18px",
-                                        marginLeft: "25px",
+                                        marginLeft: "55px",
                                         textAlign: "left",
                                       }}
                                     >
@@ -569,6 +629,38 @@ export default function KomparoPage() {
                                         step="0.01"
                                       />
                                     </p>
+                                    <p
+                                      style={{
+                                        fontSize: "18px",
+                                        textAlign: "left",
+                                        marginTop: "25px",
+                                      }}
+                                    >
+                                      <span
+                                        className="btn"
+                                        style={{ fontWeight: "bold" }}
+                                      >
+                                        Compare at Price &nbsp; &nbsp;$
+                                      </span>{" "}
+                                      <input
+                                        id="ipu-c"
+                                        className="form-input-default"
+                                        style={{
+                                          fontWeight: "600",
+                                          width: "98px",
+                                          marginLeft: "8px",
+                                          border: "none",
+                                          padding: "10px",
+                                          borderRadius: "10px",
+                                          fontSize: "18px",
+                                        }}
+                                        onChange={(e) => setNewPriceCompare(e.target.value)}
+                                        name="price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                      />
+                                    </p>
                                     <button
                                       style={{
                                         color: "white",
@@ -581,7 +673,7 @@ export default function KomparoPage() {
                                         cursor: "pointer",
                                       }}
                                       type="submit"
-                                      className="btn"
+                                      className="btn hover-btn"
                                       onClick={updatePrice}
                                     >
                                       Update
@@ -613,6 +705,7 @@ export default function KomparoPage() {
                                 setNoProductsFromAlibaba(false);
                                 setNoProductsFromAmazon(false);
                                 document.getElementById('ipu').value = '';
+                                setPlatformDownload('Alibaba');
                               }}>
                               Close
                             </Button>
@@ -680,7 +773,7 @@ function ProductCard({ product, setShowModal, setScannedData }) {
   return (
     <div className="card" title="click to compare prices" onClick={() => scanHandler(product)}>
       <img src={product.imageUrl || "/placeholder.svg"} alt={product.title} className="image" />
-      <div style={{marginLeft: '10px'}}>
+      <div style={{ marginLeft: '10px' }}>
         <h5 className="title">
           {product.title}
         </h5>
