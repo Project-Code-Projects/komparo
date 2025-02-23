@@ -22,7 +22,7 @@ export const getScrappedProducts = async (req, res) => {
             where: { query }
         });
 
-        if (comparator.status === "pending") {
+        if (comparator.status === "pending" || comparator.status === "processing") {
             return res.status(202).json({
                 message: "Data is still being processed. Please check back in a few hours..."
             });
