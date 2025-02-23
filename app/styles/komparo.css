@@ -24,15 +24,18 @@
   cursor: pointer;
 }
 
+.btn-ps {
+  font-family: "Judson", serif;
+}
+
 .card:hover {
   border: 2px solid #578E7E;
 }
 
 .image {
   width: 100%;
-  /* height: 300px; */
-  /*remove */
-  height: 260px;
+  height: 350px;
+  /* height: 260px; */
   /* border-radius: 15px; */
   border-top-left-radius: 25px;
   border-top-right-radius: 25px;
@@ -43,7 +46,7 @@
 .image-scan {
   width: 36%;
   height: 280px;
-  border-radius: 50px;
+  /* border-radius: 50px; */
   border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
@@ -56,7 +59,7 @@
 }
 
 .scan-title {
-  font-family: "Jomolhari", serif;
+  font-family: "Junge", serif;
   font-size: 22px;
   width: 70%;
   margin-bottom: 14px;
@@ -150,13 +153,14 @@
   display: flex;
   align-items: flex-start;
   background-color: #fbfbfb;
-  border-radius: 50px;
+  /* border-radius: 50px; */
   padding: 35px 45px;
   /* box-shadow: 2px 2px 2px lightgray; */
   border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .card-body {
+  padding-top: 10px !important;
   padding: 0 20px;
   padding-left: 30px;
 }
@@ -260,7 +264,7 @@
 }
 
 .price-filtering-form {
-  display: inline;
+  display: flex;
 }
 
 .pff-input {
@@ -297,7 +301,46 @@
   min-width: 80px;
 }
 
+.slick-dots {
+  margin-bottom: -20px !important;
+}
 
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 70%;
+  margin: auto;
+}
+
+td, th {
+  border: 1px solid #3D3D3D;
+  text-align: left;
+  padding: 11px;
+}
+
+th {
+  width: 50%;
+  background-color: #3D3D3D;
+  color: white;
+  font-family: "Lusitana", serif;
+  font-weight: normal;
+  font-size: 15px;
+}
+
+td {
+  text-align: center;
+  font-family: "Lusitana", serif;
+  font-weight: bold;
+  font-size: 17px;
+}
+
+.hover-btn:hover {
+  background-color: #000 !important;
+}
+
+.hover-btn-s:hover {
+  background-color: #3a5f54 !important;
+}
 
 /* The Modal (background) */
 .modal {
@@ -397,7 +440,7 @@
 }
 
 .image-slider-container {
-  margin-bottom: 40px;
+  margin-bottom: 60px;
 }
 
 .scrapped-title {
