@@ -70,3 +70,4 @@ export async function initializeComparatorProducts() {
         await prisma.$disconnect();
     }
 }
+

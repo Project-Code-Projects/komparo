@@ -1,14 +1,8 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const data = [
-  { price: 10, nop: 400 },
-  { price: 20, nop: 300 },
-  { price: 30, nop: 200 },
-  { price: 40, nop: 278 },
-];
 
-export default function BarChartGraph() {
-  
+export default function BarChartGraph({dataSet}) {
+  // console.log(dataSet);
   function CustomTooltip({ payload, label, active }) {
     if (active) {
       return (
@@ -23,7 +17,7 @@ export default function BarChartGraph() {
   return (
     <div style={{marginRight: '40px'}}>
         <ResponsiveContainer width="100%" height={300}>
-    <BarChart data={data} barSize={40}>
+    <BarChart data={dataSet} barSize={40}>
       <CartesianGrid strokeDasharray="3 3" />
       <XAxis dataKey="price" />
       <YAxis />
