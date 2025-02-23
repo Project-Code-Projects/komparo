@@ -629,7 +629,7 @@ export default function KomparoPage() {
                                         step="0.01"
                                       />
                                     </p>
-                                    {scannedData?.compareAtPrice && <p
+                                     <p
                                       style={{
                                         fontSize: "18px",
                                         textAlign: "left",
@@ -640,7 +640,7 @@ export default function KomparoPage() {
                                         className="btn"
                                         style={{ fontWeight: "bold" }}
                                       >
-                                        Compare at Price &nbsp; &nbsp;$
+                                        Compare-at Price &nbsp; &nbsp;$
                                       </span>{" "}
                                       <input
                                         id="ipu-c"
@@ -660,7 +660,7 @@ export default function KomparoPage() {
                                         min="0"
                                         step="0.01"
                                       />
-                                    </p>}
+                                    </p>
                                     <button
                                       style={{
                                         color: "white",
