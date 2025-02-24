@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "14eecd3c23b30159050b0aee0b714c16"
-application_url = "https://horse-provider-apart-greene.trycloudflare.com"
+application_url = "https://relay-learning-regression-plane.trycloudflare.com"
 embedded = true
 name = "komparo"
 handle = "komparo-3"
@@ -20,9 +20,9 @@ scopes = "write_products, read_products"
 
 [auth]
 redirect_urls = [
-  "https://horse-provider-apart-greene.trycloudflare.com/auth/callback",
-  "https://horse-provider-apart-greene.trycloudflare.com/auth/shopify/callback",
-  "https://horse-provider-apart-greene.trycloudflare.com/api/auth/callback"
+  "https://relay-learning-regression-plane.trycloudflare.com/auth/callback",
+  "https://relay-learning-regression-plane.trycloudflare.com/auth/shopify/callback",
+  "https://relay-learning-regression-plane.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
