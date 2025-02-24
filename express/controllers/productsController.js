@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { title } from 'process';
 // import { downloadCsv } from '../utils/cloudinaryUtils.js';
 
 const prisma = new PrismaClient();
@@ -33,6 +34,11 @@ export const getScrappedProducts = async (req, res) => {
         const result = await prisma.scrapeData.findMany({
             where: { comparatorQuery: query }
         });
+
+        const arr = [];
+
+        result.forEach(x => arr.push({title: x.title, dataDate: x.createdAt}));
+
         // console.log(result);
         // const { amazon: amazon_url, alibaba: alibaba_url } = comparator;
 
@@ -54,7 +60,8 @@ export const getScrappedProducts = async (req, res) => {
         // }
 
         console.log("[END]")
-        res.status(200).json(result);
+        // res.status(200).json(result);
+        res.status(200).json(arr);
 
     } catch (error) {
         console.error("Error fetching products:", error);
