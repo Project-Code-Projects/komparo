@@ -4,14 +4,14 @@ import cors from "cors";
 import cron from "node-cron";
 import express from "express";
 import { fileURLToPath } from "url";
+import { PrismaClient } from "@prisma/client";
 import { connectDB } from "../prisma/connectDB.js";
 import webhookRouter from "./routes/webhookRoute.js";
 import updatePriceRouter from "./routes/updatePrice.js";
 import productsRouter from "./routes/productsRoute.js";
-import { PrismaClient } from "@prisma/client";
+import { initializeComparatorProducts } from "./utils/shopifyUtils.js";
 import { scrapeAmazonProducts } from "./utils/scrapers/amazonScraper.js";
 import { scrapeAlibabaProducts } from "./utils/scrapers/alibabaScraper.js";
-import { initializeComparatorProducts } from "./utils/shopifyUtils.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,9 +52,15 @@ cron.schedule("10 * * * * *", async () => {
 
   isScraping = true;
 
-  console.log("---------------------------------------------------------------");
-  console.log("Cron job triggered: scraping pending queries from PostgreSQL...");
-  console.log("---------------------------------------------------------------");
+  console.log(
+    "---------------------------------------------------------------",
+  );
+  console.log(
+    "Cron job triggered: scraping pending queries from PostgreSQL...",
+  );
+  console.log(
+    "---------------------------------------------------------------",
+  );
 
   try {
     const row = await prisma.comparator.findFirst({
@@ -79,25 +85,27 @@ cron.schedule("10 * * * * *", async () => {
     });
 
     try {
-      const amazonResponse = await scrapeAmazonProducts(searchQuery);
-      const alibabaResponse = await scrapeAlibabaProducts(searchQuery);
+      await scrapeAmazonProducts(searchQuery);
+      await scrapeAlibabaProducts(searchQuery);
 
-      console.log("---------------------------------------------------------------");
+      console.log(
+        "---------------------------------------------------------------",
+      );
       console.log("Back to Cron Scheduler...");
-      console.log("---------------------------------------------------------------");
+      console.log(
+        "---------------------------------------------------------------",
+      );
       console.log("Scraping completed for", searchQuery);
 
       await prisma.comparator.update({
         where: { query: searchQuery },
         data: {
           status: "completed",
-          alibaba: alibabaResponse,
-          amazon: amazonResponse,
         },
       });
 
       console.log("Updated status for", searchQuery);
-      console.log("[END]")
+      console.log("[END]");
     } catch (scrapeError) {
       console.error(`Error scraping for "${searchQuery}":`, scrapeError);
       await prisma.comparator.update({
