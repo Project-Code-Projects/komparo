@@ -85,7 +85,7 @@ cron.schedule("10 * * * * *", async () => {
 
     try {
       await scrapeAmazonProducts(searchQuery);
-      // await scrapeAlibabaProducts(searchQuery);
+      await scrapeAlibabaProducts(searchQuery);
 
       console.log(
         "---------------------------------------------------------------",
