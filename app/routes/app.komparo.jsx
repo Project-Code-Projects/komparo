@@ -153,7 +153,7 @@ export default function KomparoPage() {
   }, [scannedData?.title, pendingMessage]);
 
 
-  // Price Update Logic
+  // Price Update Logic [New]
 
   async function updatePrice() {
     if (!newPrice || !newPriceCompare) return alert("Please enter either the price or compare-at price.");
