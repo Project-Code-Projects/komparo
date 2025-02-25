@@ -34,17 +34,62 @@ export const getScrappedProducts = async (req, res) => {
         const result = await prisma.scrapeData.findMany({
             where: { comparatorQuery: query }
         });
-
+        // console.log(result);
         const arr = [];
-        
+        const alibabaArr = [];
+        const alibabaArrNew = [];
+        const amazonArr = [];
+        const amazonArrNew = [];
 
         result.forEach(x => {
             if (x.source == 'alibaba') {
-                arr.push({title: x.title, dataDate: new Date(x.createdAt)});
+                alibabaArr.push(x); // {title: x.title, dataDate: new Date(x.createdAt)}
+            } else if (x.source == 'amazon') {
+                amazonArr.push(x);
+            }
+        });
+        // console.log(alibabaArr); console.log(amazonArr);
+        // alibabaArr[0].quantity = 0;
+        // alibabaArrNew.push(alibabaArr[0]);
+
+        // amazonArr[0].quantity = 0;
+        // amazonArrNew.push(amazonArr[0]);
+
+        alibabaArr.forEach(x => {
+            let found = false;
+        
+            for (const y of alibabaArrNew) {
+                if (x.title === y.title) {
+                    y.quantity += 1;
+                    found = true;
+                    break; // Stop checking once found
+                }
+            }
+        
+            if (!found) {
+                x.quantity = 1;
+                alibabaArrNew.push(x);
             }
         });
 
-        // console.log(result);
+        amazonArr.forEach(x => {
+            let found = false;
+        
+            for (const y of amazonArrNew) {
+                if (x.title === y.title) {
+                    y.quantity += 1;
+                    found = true;
+                    break; // Stop checking once found
+                }
+            }
+        
+            if (!found) {
+                x.quantity = 1;
+                amazonArrNew.push(x);
+            }
+        });
+
+        // console.log(amazonArrNew);
         // const { amazon: amazon_url, alibaba: alibaba_url } = comparator;
 
         // console.log("Amazon URL:", amazon_url || "No Amazon URL available");
@@ -65,8 +110,8 @@ export const getScrappedProducts = async (req, res) => {
         // }
 
         console.log("[END]")
-        // res.status(200).json(result);
-        res.status(200).json(arr);
+        res.status(200).json({alibaba: alibabaArrNew, amazon: amazonArrNew});
+        // res.status(200).json(res);
 
     } catch (error) {
         console.error("Error fetching products:", error);
