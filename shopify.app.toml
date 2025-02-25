@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "14eecd3c23b30159050b0aee0b714c16"
-application_url = "https://called-enclosed-posing-naturally.trycloudflare.com"
+application_url = "https://invision-electro-fancy-guyana.trycloudflare.com"
 embedded = true
 name = "komparo"
 handle = "komparo-3"
@@ -20,9 +20,9 @@ scopes = "write_products, read_products"
 
 [auth]
 redirect_urls = [
-  "https://called-enclosed-posing-naturally.trycloudflare.com/auth/callback",
-  "https://called-enclosed-posing-naturally.trycloudflare.com/auth/shopify/callback",
-  "https://called-enclosed-posing-naturally.trycloudflare.com/api/auth/callback"
+  "https://invision-electro-fancy-guyana.trycloudflare.com/auth/callback",
+  "https://invision-electro-fancy-guyana.trycloudflare.com/auth/shopify/callback",
+  "https://invision-electro-fancy-guyana.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]

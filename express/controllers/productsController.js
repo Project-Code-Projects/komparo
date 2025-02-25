@@ -32,7 +32,7 @@ export const getScrappedProducts = async (req, res) => {
         }
 
         const result = await prisma.scrapeData.findMany({
-            where: { comparatorQuery: query }
+            where: { comparatorQueryId: comparator.id }
         });
         // console.log(result);
         const arr = [];

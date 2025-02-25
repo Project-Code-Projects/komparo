@@ -354,7 +354,7 @@ export async function isValidProduct(productData) {
   return true;
 }
 
-export async function scrapePage(driver, searchQuery) {
+export async function scrapePage(driver, searchQuery, searchQueryId) {
   const productDataList = [];
 
   try {
@@ -383,7 +383,7 @@ export async function scrapePage(driver, searchQuery) {
           ),
           link: await extractData(container, ".search-card-e-title a", "href"),
           source: "alibaba",
-          comparatorQuery: searchQuery,
+          comparatorQueryId: searchQueryId,
         };
 
         if (isValidProduct(productData)) {
@@ -415,6 +415,7 @@ export async function scrapePage(driver, searchQuery) {
 
 export async function scrapeAlibabaProducts(
   searchQuery,
+  searchQueryId,
   maxPrice = 1000,
   maxPages = 1,
 ) {
@@ -448,7 +449,7 @@ export async function scrapeAlibabaProducts(
     let currentPage = 1;
 
     while (currentPage <= maxPages) {
-      const products = await scrapePage(driver, searchQuery);
+      const products = await scrapePage(driver, searchQuery, searchQueryId);
 
       if (!products.length) break;
 
