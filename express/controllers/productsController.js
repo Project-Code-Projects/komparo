@@ -36,8 +36,13 @@ export const getScrappedProducts = async (req, res) => {
         });
 
         const arr = [];
+        
 
-        result.forEach(x => arr.push({title: x.title, dataDate: x.createdAt}));
+        result.forEach(x => {
+            if (x.source == 'alibaba') {
+                arr.push({title: x.title, dataDate: new Date(x.createdAt)});
+            }
+        });
 
         // console.log(result);
         // const { amazon: amazon_url, alibaba: alibaba_url } = comparator;
