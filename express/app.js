@@ -76,6 +76,7 @@ cron.schedule("10 * * * * *", async () => {
     }
 
     const searchQuery = row.query;
+    const searchQueryId = row.id;
     console.log("Processing:", searchQuery);
 
     await prisma.comparator.update({
@@ -84,8 +85,8 @@ cron.schedule("10 * * * * *", async () => {
     });
 
     try {
-      await scrapeAmazonProducts(searchQuery);
-      await scrapeAlibabaProducts(searchQuery);
+      await scrapeAmazonProducts(searchQuery, searchQueryId);
+      await scrapeAlibabaProducts(searchQuery, searchQueryId);
 
       console.log(
         "---------------------------------------------------------------",

@@ -220,7 +220,7 @@ function isValidProduct(productData) {
   );
 }
 
-async function scrapePage(driver, searchQuery) {
+async function scrapePage(driver, searchQuery, searchQueryId) {
   const productDataList = [];
 
   try {
@@ -253,7 +253,7 @@ async function scrapePage(driver, searchQuery) {
             "href",
           ),
           source: "amazon",
-          comparatorQuery: searchQuery,
+          comparatorQueryId: searchQueryId,
         };
 
         if (isValidProduct(productData)) {
@@ -276,6 +276,7 @@ async function scrapePage(driver, searchQuery) {
 
 export async function scrapeAmazonProducts(
   searchQuery,
+  searchQueryId,
   maxPrice = 1000,
   maxPages = 1,
 ) {
@@ -306,7 +307,7 @@ export async function scrapeAmazonProducts(
     let currentPage = 1;
 
     while (currentPage <= maxPages) {
-      const products = await scrapePage(driver, searchQuery);
+      const products = await scrapePage(driver, searchQuery, searchQueryId);
 
       if (!products.length) break;
 
