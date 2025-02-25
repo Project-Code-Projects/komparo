@@ -35,6 +35,21 @@ export const getScrappedProducts = async (req, res) => {
             where: { comparatorQueryId: comparator.id }
         });
         // console.log(result);
+
+
+        // const titleArr = [];
+        // let checker = false, title;
+        // for (const x of result) {
+        //     if (titleArr.includes(x.title)) {
+        //         checker = true; title = x.title;
+        //         break;
+        //     } else {
+        //         titleArr.push(x.title);
+        //     }
+        // }
+
+
+
         const arr = [];
         const alibabaArr = [];
         const alibabaArrNew = [];
@@ -48,19 +63,18 @@ export const getScrappedProducts = async (req, res) => {
                 amazonArr.push(x);
             }
         });
-        // console.log(alibabaArr); console.log(amazonArr);
-        // alibabaArr[0].quantity = 0;
-        // alibabaArrNew.push(alibabaArr[0]);
-
-        // amazonArr[0].quantity = 0;
-        // amazonArrNew.push(amazonArr[0]);
+        
 
         alibabaArr.forEach(x => {
             let found = false;
         
             for (const y of alibabaArrNew) {
                 if (x.title === y.title) {
-                    y.quantity += 1;
+                    const quantity = y.quantity + 1;
+                    const arr = [...y.graphData, {dataDate: x.createdAt, dataPrice: x.price}];
+                    x.quantity = quantity;
+                    x.graphData = arr;
+                    alibabaArrNew[alibabaArrNew.indexOf(y)] = x;
                     found = true;
                     break; // Stop checking once found
                 }
@@ -68,6 +82,7 @@ export const getScrappedProducts = async (req, res) => {
         
             if (!found) {
                 x.quantity = 1;
+                x.graphData = [{dataDate: x.createdAt, dataPrice: x.price}];
                 alibabaArrNew.push(x);
             }
         });
@@ -77,7 +92,11 @@ export const getScrappedProducts = async (req, res) => {
         
             for (const y of amazonArrNew) {
                 if (x.title === y.title) {
-                    y.quantity += 1;
+                    const quantity = y.quantity + 1;
+                    const arr = [...y.graphData, {dataDate: x.createdAt, dataPrice: x.price}];
+                    x.quantity = quantity;
+                    x.graphData = arr;
+                    amazonArrNew[amazonArrNew.indexOf(y)] = x;
                     found = true;
                     break; // Stop checking once found
                 }
@@ -85,33 +104,16 @@ export const getScrappedProducts = async (req, res) => {
         
             if (!found) {
                 x.quantity = 1;
+                x.graphData = [{dataDate: x.createdAt, dataPrice: x.price}];
                 amazonArrNew.push(x);
             }
         });
 
-        // console.log(amazonArrNew);
-        // const { amazon: amazon_url, alibaba: alibaba_url } = comparator;
-
-        // console.log("Amazon URL:", amazon_url || "No Amazon URL available");
-        // console.log("Alibaba URL:", alibaba_url || "No Alibaba URL available");
-
-        // let amazonProducts;
-        // let alibabaProducts;
-
-        // if (alibaba_url) {
-        //     console.log("Downloading from Alibaba URL:", alibaba_url);
-        //     // alibabaProducts = (await downloadCsv(alibaba_url)).slice(0, 3);
-        //     alibabaProducts = (await downloadCsv(alibaba_url));
-        // }
-        // if (amazon_url) {
-        //     console.log("Downloading from Amazon URL:", amazon_url);
-        //     // amazonProducts = (await downloadCsv(amazon_url)).slice(0, 3);
-        //     amazonProducts = (await downloadCsv(amazon_url));
-        // }
+        
 
         console.log("[END]")
         res.status(200).json({alibaba: alibabaArrNew, amazon: amazonArrNew});
-        // res.status(200).json(res);
+        // res.status(200).json(res); checker, title
 
     } catch (error) {
         console.error("Error fetching products:", error);
