@@ -4,9 +4,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:alina@localhost:5432/komparo?schema=public"
+  url      = env("DATABASE_URL")
 }
-
 model Session {
   id            String    @id
   shop          String
