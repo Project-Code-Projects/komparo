@@ -73,6 +73,7 @@ cron.schedule("10 * * * * *", async () => {
 
     if (!row) {
       console.log("No pending queries found.");
+      console.log(Date());
       isScraping = false;
       return;
     }

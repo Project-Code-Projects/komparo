@@ -14,6 +14,10 @@ import { Toaster } from "../components/toaster.jsx";
 import BarChartGraph from "../components/BarChart.jsx"
 import LineChartGraph from "../components/LineChart.jsx"
 export { loader }
+import {
+  PageDownIcon
+} from '@shopify/polaris-icons';
+import ScatterChartGraph from "../components/ScatterChart.jsx"
 
 export default function KomparoPage() {
   const [scannedData, setScannedData] = useState(null);
@@ -47,6 +51,8 @@ export default function KomparoPage() {
   const [minPriceValue, setMinPriceValue] = useState();
   const [maxPriceValue, setMaxPriceValue] = useState();
   const [highestNOPPrice, setHighestNOPPrice] = useState(0);
+  const [graphData, setGraphData] = useState([]);
+  const [scatteredGraphData, setScatteredGraphData] = useState([]);
 
   // Page Population Logic
 
@@ -101,7 +107,7 @@ export default function KomparoPage() {
       try {
         const encodedTitle = encodeURIComponent(scannedData.title);
         const response = await fetchScrappedProducts(encodedTitle);
-        const fetchData = response.data;
+        const fetchData = response.data.dataArr;
 
         if (response.status === 200) {
           const priceArr = [];
@@ -118,6 +124,7 @@ export default function KomparoPage() {
           const statisticalData = calculateStatistics(priceArr);
           arrDataBC.sort(function (a, b) { return a.price - b.price });
           setBarChartGraphData(arrDataBC);
+          setScatteredGraphData(response.data.graphDataArr);
           setAveragePrice(statisticalData.mean);
           setMedianPrice(statisticalData.median);
           setModePrice(statisticalData.mode);
@@ -507,7 +514,15 @@ export default function KomparoPage() {
 
                                               <p style={{ textAlign: 'center', margin: '10px 0', marginBottom: '15px' }}>
                                                 <Button
-                                                  onClick={() => setShowPriceModal(true)}
+                                                  onClick={() => {
+                                                    const newGraphData = [];
+                                                    product.graphData.forEach(x => {
+                                                      const arr = new Date(x.dataDate).toString().split(' ');
+                                                      newGraphData.push({dataDate: arr[1] + ' ' + arr[2] + ' ' + arr[4], dataPrice: Number(x.dataPrice)});
+                                                    });
+                                                    setGraphData(newGraphData);
+                                                    setShowPriceModal(true);
+                                                  }}
                                                 >
                                                   Price History
                                                 </Button>
@@ -529,7 +544,7 @@ export default function KomparoPage() {
                                       <div className="modal-body"
                                         style={{ padding: '40px 0', paddingRight: '30px', paddingBottom: '10px' }}
                                       >
-                                        <LineChartGraph />
+                                        <LineChartGraph graphData={graphData} />
                                         <p style={{ textAlign: 'center', marginTop: '15px' }}><Button variant="primary" onClick={() => setShowPriceModal(false)}>
                                           Close
                                         </Button>
@@ -551,25 +566,26 @@ export default function KomparoPage() {
 
                                   {fetchedData.length > 0 && <BarChartGraph dataSet={barChartGraphData} />}
 
-                                  {/* <p style={{ textAlign: 'center', marginRight: '30px', marginTop: '10px' }}><b>Average Price : </b> ${averagePrice.toFixed(2)} &nbsp; <b>Median Price : </b> ${medianPrice} &nbsp; <b>Mode Price : </b> ${modePrice}</p> */}
-                                  <br />
+                                  {/* {fetchedData.length > 0 && <ScatterChartGraph graphData={scatteredGraphData} />} */}
+
                                   
-                                  {fetchedData.length > 0 && <table>
-                                  <tbody>
-                                  <tr>
-                                      <th style={{borderBottomColor: 'white'}}>Average Price</th>
-                                      <td>${averagePrice.toFixed(2)}</td>
-                                    </tr>
-                                    <tr>
-                                      <th style={{borderBottomColor: 'white'}}>Most Frequent Price</th>
-                                      <td>${modePrice[0].toFixed(2)}</td>
-                                    </tr>
-                                    <tr>
-                                      <th>Highest NOP Price</th>
-                                      <td>${highestNOPPrice.toFixed(2)}</td>
-                                    </tr>
-                                  </tbody>
-                                  </table>}
+<br />
+{fetchedData.length > 0 && <table>
+<tbody>
+<tr>
+    <th style={{borderBottomColor: 'white'}}>Average Price</th>
+    <td>${averagePrice.toFixed(2)}</td>
+  </tr>
+  <tr>
+    <th style={{borderBottomColor: 'white'}}>Most Frequent Price</th>
+    <td>${modePrice[0].toFixed(2)}</td>
+  </tr>
+   <tr>
+    <th>Highest NOP Price</th>
+    <td>${highestNOPPrice.toFixed(2)}</td>
+  </tr>
+</tbody>
+</table>}
 
                                   <br />
 

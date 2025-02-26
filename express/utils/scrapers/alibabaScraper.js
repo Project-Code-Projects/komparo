@@ -255,8 +255,8 @@ import { Options } from "selenium-webdriver/edge.js";
 import { Builder, By, until } from "selenium-webdriver";
 import { promises as fs } from "fs";
 import path from "path";
-import { uploadCsv } from "../cloudinaryUtils.js";
-import { convertJsonToCsv } from "../jsonToCsv.js";
+// import { uploadCsv } from "../cloudinaryUtils.js";
+// import { convertJsonToCsv } from "../jsonToCsv.js";
 
 const prisma = new PrismaClient();
 
