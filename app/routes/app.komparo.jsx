@@ -1,4 +1,4 @@
-import { Layout, Text, InlineStack, Button, Divider, Banner, Icon, Select, TextField } from "@shopify/polaris"
+import { Layout, Text, InlineStack, Button, Divider, Select, TextField } from "@shopify/polaris"
 import { useLoaderData } from "@remix-run/react"
 import { loader } from "../services/fetch.products.js"
 import "../styles/komparo.css"
@@ -9,6 +9,7 @@ import Slider from "react-slick";
 import { Rating } from "../components/rating";
 import { AlibabaLogo, AmazonLogo } from '../components/logo.jsx';
 import { fetchScrappedProducts } from '../services/fetch.scrapped.products';
+import { fetchDownloadLink } from "../services/fetch.download.link.js"
 import { Toaster } from "../components/toaster.jsx";
 import BarChartGraph from "../components/BarChart.jsx"
 import LineChartGraph from "../components/LineChart.jsx"
@@ -262,19 +263,38 @@ export default function KomparoPage() {
     [],
   );
 
-  const downloadJSON = (data, filename = "data.json") => {
-    const jsonStr = JSON.stringify(data, null, 2);
-    const blob = new Blob([jsonStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
+  // Download JSON Logic
+
+  // const downloadJSON = (data, filename = "data.json") => {
+  //   const jsonStr = JSON.stringify(data, null, 2);
+  //   const blob = new Blob([jsonStr], { type: "application/json" });
+  //   const url = URL.createObjectURL(blob);
   
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
+  //   const a = document.createElement("a");
+  //   a.href = url;
+  //   a.download = filename;
+  //   document.body.appendChild(a);
+  //   a.click();
+  //   document.body.removeChild(a);
+  //   URL.revokeObjectURL(url);
+  // };
+
+
+  // Download CSV Logic
+
+  async function downloadCSV(fetchedData) { 
+    try {
+      setToasterMessage("Generating download link. Please wait a moment.");
+      const encodedTitle = encodeURIComponent(scannedData.title);
+      const response = await fetchDownloadLink(encodedTitle);
+      const downloadUrl = response.data.downloadUrl;
+      window.open(downloadUrl, '_blank');
+      setToasterMessage(null);
+     } catch (error) {
+      console.error("Error:", error);
+      alert("Failed to fetch download link. Try again later.");
+    }
+  }
 
   return (
     <main style={{ padding: '60px', paddingTop: '80px', backgroundColor: '#3D3D3D' }}>
@@ -534,8 +554,9 @@ export default function KomparoPage() {
                                   </div>
                                   
                                   <article style={{display: 'flex', justifyContent: 'center', marginBottom: '20px'}}>
-                                      <button className="btn-ps hover-btn" style={{ color: 'white', fontSize: '16px', backgroundColor: '#3d3d3d', border: 'none', borderRadius: '8px', padding: '7.5px 12px', cursor: 'pointer' }} onClick={() => downloadJSON(fetchedData)}>
-                                      Download Data
+                                      {/* <button className="btn-ps hover-btn" style={{ color: 'white', fontSize: '16px', backgroundColor: '#3d3d3d', border: 'none', borderRadius: '8px', padding: '7.5px 12px', cursor: 'pointer' }} onClick={() => downloadJSON(fetchedData)}> */}
+                                      <button className="btn-ps hover-btn" style={{ color: 'white', fontSize: '16px', backgroundColor: '#3d3d3d', border: 'none', borderRadius: '8px', padding: '7.5px 12px', cursor: 'pointer' }} onClick={() => downloadCSV()}>
+                                         Download 
                                       </button>
                                   </article>
                                   

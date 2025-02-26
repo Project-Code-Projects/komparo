@@ -12,6 +12,7 @@ import productsRouter from "./routes/productsRoute.js";
 import { initializeComparatorProducts } from "./utils/shopifyUtils.js";
 import { scrapeAmazonProducts } from "./utils/scrapers/amazonScraper.js";
 import { scrapeAlibabaProducts } from "./utils/scrapers/alibabaScraper.js";
+import { getDownloadUrl } from "./controllers/downloadController.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,6 +26,7 @@ app.use(express.static(__dirname));
 app.use("/api/webhooks", webhookRouter);
 app.use("/api/updatePrice", updatePriceRouter); // Bad practice; change naming convention Mr. Iqbal
 app.use("/api/products", productsRouter);
+app.use("/api/download", getDownloadUrl);
 
 app.get("/", (req, res) => {
   res.send("Shopify server is running!");

@@ -12,8 +12,6 @@ export const getScrappedProducts = async (req, res) => {
 
         let { query } = req.query;
 
-        // console.log('Query :', query);
-
         if (!query) {
             return res.status(400).json({ error: "Query parameter is required" });
         }

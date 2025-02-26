@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { config } from "../config/cloudinaryConfig.js";
+import { config } from "../../config/cloudinaryConfig.js";
 import { fileURLToPath } from "url";
 import cloudinary from "cloudinary";
 import axios from "axios";
@@ -54,7 +54,7 @@ export async function downloadCsv(fileUrl) {
       writer.on("error", reject);
     });
 
-    console.log("CSV file downloaded from succesfully successfully to:", outputPath);
+    console.log("CSV file downloaded successfully to:", outputPath);
     console.log("[END]");
 
     const formattedData = await convertCsvToJson(
