@@ -101,7 +101,8 @@ export default function KomparoPage() {
   useEffect(() => {
     const getProducts = async () => {
       try {
-        const response = await fetchScrappedProducts(scannedData.title);
+        const encodedTitle = encodeURIComponent(scannedData.title);
+        const response = await fetchScrappedProducts(encodedTitle);
         const fetchData = response.data;
 
         if (response.status === 200) {
