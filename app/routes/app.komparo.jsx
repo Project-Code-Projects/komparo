@@ -104,26 +104,11 @@ export default function KomparoPage() {
         const fetchData = response.data;
 
         if (response.status === 200) {
-          const unifiedArr = [];
           const priceArr = [];
           const nopArr = [];
-          if (fetchData.alibaba) {
-            setAlibabaURL(fetchData.alibaba_url);
-            fetchData.alibaba.forEach(x => {
-              x.platform = 'alibaba'; unifiedArr.push(x);
-            });
-          }
-
-          if (fetchData.amazon) {
-            setAmazonURL(fetchData.amazon_url);
-            fetchData.amazon.forEach(x => {
-              x.platform = 'amazon'; unifiedArr.push(x);
-            });
-          }
-
           const filteredPrices = [];
-          unifiedArr.forEach(x => {
-            if (!x.price.includes("-")  && !isNaN(Number(x.price))) { x.price = Number(x.price); filteredPrices.push(x); priceArr.push(x.price); nopArr.push(Number(x.nop)); console.log(x.price);}
+          fetchData.forEach(x => {
+            if (!x.price.includes("-") && !isNaN(Number(x.price))) { x.price = Number(x.price); filteredPrices.push(x); priceArr.push(x.price); nopArr.push(Number(x.nop)); }
           });
           const highestNOP = Math.max.apply(null, nopArr);
           const arrDataBC = filteredPrices.map(x => {
@@ -271,6 +256,20 @@ export default function KomparoPage() {
     [],
   );
 
+  const downloadJSON = (data, filename = "data.json") => {
+    const jsonStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+  
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <main style={{ padding: '60px', paddingTop: '80px', backgroundColor: '#3D3D3D' }}>
       <div className="back-ground">
@@ -405,7 +404,7 @@ export default function KomparoPage() {
                                               setNoPriceMatched(false);
                                               setMinPriceValue();
                                               setMaxPriceValue();
-                                              const arr = fetchedData.filter(x => x.platform == 'alibaba');
+                                              const arr = fetchedData.filter(x => x.source == 'alibaba');
                                               if (arr.length == 0) { setNoProductsFromAlibaba(true) }
                                               setNoProductsFromAmazon(false);
                                               setScrappedProducts(arr);
@@ -419,7 +418,7 @@ export default function KomparoPage() {
                                               setMinPriceValue();
                                               setMaxPriceValue();
                                               setNoProductsFromAlibaba(false);
-                                              const arr = fetchedData.filter(x => x.platform == 'amazon');
+                                              const arr = fetchedData.filter(x => x.source == 'amazon');
                                               if (arr.length == 0) { setNoProductsFromAmazon(true) }
                                               setScrappedProducts(arr);
                                               fixingHeights();
@@ -464,7 +463,7 @@ export default function KomparoPage() {
                                         {noProductsFromAmazon && <p style={{ textAlign: 'center', color: 'gray', marginTop: '45px', fontSize: '17px' }}><i>No product available on Amazon</i></p>}
                                         < Slider {...settings}>
                                           {scrappedProducts.map((product, index) => (
-                                            <article key={product.platform == 'alibaba' ? `alibaba-${index}` : `amazon-${index}`} className="scrapped-data-card">
+                                            <article key={product.source == 'alibaba' ? `alibaba-${index}` : `amazon-${index}`} className="scrapped-data-card">
                                               <img
                                                 src={product.image || "https://via.placeholder.com/150"}
                                                 className="scrapped-img"
@@ -480,7 +479,7 @@ export default function KomparoPage() {
                                                   <p style={{ color: 'lightgray' }}><i>No rating found!</i></p>
                                                 }
                                               </div>
-                                              {product.platform == 'alibaba' ? <AlibabaLogo /> : <AmazonLogo />}
+                                              {product.source == 'alibaba' ? <AlibabaLogo /> : <AmazonLogo />}
 
                                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <h5 className="scrapped-price">${product.price}</h5>
@@ -519,28 +518,11 @@ export default function KomparoPage() {
                                       </div>
                                     </div>
                                   </div>
-                                  {/* <span>Download data(csv) from : </span> &nbsp; {amazonURL && <a href={amazonURL}>Amazon</a>} &nbsp; {alibabaURL && <a href={alibabaURL}>Alibaba</a>} <br /><br /> */}
-                                  <article style={{display: 'flex', alignItems: 'center', marginBottom: '20px'}}>
-                                  <Select
-                                          label=""
-                                          labelInline
-                                          options={optionsDownload}
-                                          onChange={(event) => {
-                                            setPlatformDownload(event);
-                                          }}
-                                          value={platformDownload}
-                                        />
-                                  <>
-                                  {platformDownload === 'alibaba' ?
-                                    <a style={{fontSize: '30px', marginLeft: '8px', marginBottom: '3px'}} href={alibabaURL}>
-                                      <button className="btn-ps hover-btn" style={{ color: 'white', fontSize: '16px', backgroundColor: '#3d3d3d', border: 'none', borderRadius: '8px', padding: '7.5px 12px', cursor: 'pointer' }}>Download</button>
-                                    </a>
-                                :
-                                <a style={{fontSize: '30px', marginLeft: '8px', marginBottom: '3px'}} href={amazonURL}>
-                                  <button className="btn-ps hover-btn" style={{ color: 'white', fontSize: '16px', backgroundColor: '#3d3d3d', border: 'none', borderRadius: '8px', padding: '7.5px 12px', cursor: 'pointer' }}>Download</button>
-                                </a>
-                                }
-                                  </>
+                                  
+                                  <article style={{display: 'flex', justifyContent: 'center', marginBottom: '20px'}}>
+                                      <button className="btn-ps hover-btn" style={{ color: 'white', fontSize: '16px', backgroundColor: '#3d3d3d', border: 'none', borderRadius: '8px', padding: '7.5px 12px', cursor: 'pointer' }} onClick={() => downloadJSON(fetchedData)}>
+                                      Download Data
+                                      </button>
                                   </article>
                                   
                                   <Divider borderColor="border-inverse" />
