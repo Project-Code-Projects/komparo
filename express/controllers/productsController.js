@@ -32,10 +32,26 @@ export const getScrappedProducts = async (req, res) => {
         }
 
         const result = await prisma.scrapeData.findMany({
-            where: { comparatorQueryId: comparator.id }
+            where: { comparatorQueryId: comparator.id },
+            orderBy: { id: "asc" } // Sorting in ascending order
         });
+        
         // console.log(result);
-
+        
+        const arrNew = [];
+        let initialId = result[0].id, initialDate = result[0].createdAt;
+        arrNew.push({dataDate: result[0].createdAt, dataPrice: Number(result[0].price), dataNOP: result[0].nop});
+        result.forEach(x => {
+            if (result.indexOf(x) !== 0) {
+                if (x.id === initialId + 1) {
+                    arrNew.push({dataDate: initialDate, dataPrice: Number(x.price), dataNOP: x.nop});
+                } else {
+                    initialDate = x.createdAt;
+                    arrNew.push({dataDate: initialDate, dataPrice: Number(x.price), dataNOP: x.nop});
+                }
+                initialId = x.id;
+            }
+        })
 
         // const titleArr = [];
         // let checker = false, title;
@@ -50,6 +66,7 @@ export const getScrappedProducts = async (req, res) => {
 
 
 
+        
         const arr = [];
         const alibabaArr = [];
         const alibabaArrNew = [];
@@ -108,12 +125,12 @@ export const getScrappedProducts = async (req, res) => {
                 amazonArrNew.push(x);
             }
         });
-
+        
         
 
         console.log("[END]")
-        res.status(200).json([...alibabaArrNew, ...amazonArrNew]);
-        // res.status(200).json(res); checker, title
+        // res.status(200).json([...alibabaArrNew, ...amazonArrNew]); checker, title
+        res.status(200).json({dataArr: [...alibabaArrNew, ...amazonArrNew], graphDataArr: arrNew});
 
     } catch (error) {
         console.error("Error fetching products:", error);

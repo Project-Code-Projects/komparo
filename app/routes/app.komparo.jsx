@@ -51,6 +51,7 @@ export default function KomparoPage() {
   const [maxPriceValue, setMaxPriceValue] = useState();
   const [highestNOPPrice, setHighestNOPPrice] = useState(0);
   const [graphData, setGraphData] = useState([]);
+  const [scatteredGraphData, setScatteredGraphData] = useState([]);
 
   // Page Population Logic
 
@@ -105,7 +106,7 @@ export default function KomparoPage() {
       try {
         const encodedTitle = encodeURIComponent(scannedData.title);
         const response = await fetchScrappedProducts(encodedTitle);
-        const fetchData = response.data;
+        const fetchData = response.data.dataArr;
 
         if (response.status === 200) {
           const priceArr = [];
@@ -122,6 +123,7 @@ export default function KomparoPage() {
           const statisticalData = calculateStatistics(priceArr);
           arrDataBC.sort(function (a, b) { return a.price - b.price });
           setBarChartGraphData(arrDataBC);
+          setScatteredGraphData(response.data.graphDataArr);
           setAveragePrice(statisticalData.mean);
           setMedianPrice(statisticalData.median);
           setModePrice(statisticalData.mode);
@@ -543,7 +545,7 @@ export default function KomparoPage() {
 
                                   {fetchedData.length > 0 && <BarChartGraph dataSet={barChartGraphData} />}
 
-                                  {/* {fetchedData.length > 0 && <ScatterChartGraph/>} */}
+                                  {/* {fetchedData.length > 0 && <ScatterChartGraph graphData={scatteredGraphData} />} */}
 
                                   
 <br />
