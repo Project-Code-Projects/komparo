@@ -100,7 +100,6 @@ export default function KomparoPage() {
       try {
         const encodedTitle = encodeURIComponent(scannedData.title);
         const response = await fetchScrappedProducts(encodedTitle);
-
         const fetchData = response.data;
 
         if (response.status === 200) {
