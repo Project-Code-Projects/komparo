@@ -3,16 +3,19 @@
 client_id = "14eecd3c23b30159050b0aee0b714c16"
 application_url = "https://add-humanities-basketball-population.trycloudflare.com"
 embedded = true
-name = "komparo"
-handle = "komparo-3"
-
-[build]
-include_config_on_deploy = true
-dev_store_url = "project-code-biscuits.myshopify.com"
-automatically_update_urls_on_dev = true
+name = "price-comparison-app"
+handle = "price-comparison-app"
 
 [webhooks]
 api_version = "2025-01"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/app/uninstalled"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
@@ -27,3 +30,7 @@ redirect_urls = [
 
 [pos]
 embedded = false
+
+[build]
+dev_store_url = "price-comparison-app.myshopify.com"
+automatically_update_urls_on_dev = true
