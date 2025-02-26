@@ -50,6 +50,7 @@ export default function KomparoPage() {
   const [minPriceValue, setMinPriceValue] = useState();
   const [maxPriceValue, setMaxPriceValue] = useState();
   const [highestNOPPrice, setHighestNOPPrice] = useState(0);
+  const [graphData, setGraphData] = useState([]);
 
   // Page Population Logic
 
@@ -488,8 +489,13 @@ export default function KomparoPage() {
                                               <p style={{ textAlign: 'center', margin: '10px 0', marginBottom: '15px' }}>
                                                 <Button
                                                   onClick={() => {
+                                                    const newGraphData = [];
+                                                    product.graphData.forEach(x => {
+                                                      const arr = new Date(x.dataDate).toString().split(' ');
+                                                      newGraphData.push({dataDate: arr[1] + ' ' + arr[2] + ' ' + arr[4], dataPrice: Number(x.dataPrice)});
+                                                    });
+                                                    setGraphData(newGraphData);
                                                     setShowPriceModal(true);
-                                                    // console.log(product);
                                                   }}
                                                 >
                                                   Price History
@@ -512,7 +518,7 @@ export default function KomparoPage() {
                                       <div className="modal-body"
                                         style={{ padding: '40px 0', paddingRight: '30px', paddingBottom: '10px' }}
                                       >
-                                        <LineChartGraph />
+                                        <LineChartGraph graphData={graphData} />
                                         <p style={{ textAlign: 'center', marginTop: '15px' }}><Button variant="primary" onClick={() => setShowPriceModal(false)}>
                                           Close
                                         </Button>
@@ -533,7 +539,7 @@ export default function KomparoPage() {
 
                                   {fetchedData.length > 0 && <BarChartGraph dataSet={barChartGraphData} />}
 
-                                  {fetchedData.length > 0 && <ScatterChartGraph/>}
+                                  {/* {fetchedData.length > 0 && <ScatterChartGraph/>} */}
 
                                   
 <br />
