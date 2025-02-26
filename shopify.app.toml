@@ -1,18 +1,21 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "14eecd3c23b30159050b0aee0b714c16"
-application_url = "https://feel-conspiracy-period-convertible.trycloudflare.com"
+client_id = "36c68ffb8e0d642626679a4448405849"
+application_url = "https://earlier-agricultural-caps-executives.trycloudflare.com"
 embedded = true
-name = "komparo"
-handle = "komparo-3"
-
-[build]
-include_config_on_deploy = true
-dev_store_url = "project-code-biscuits.myshopify.com"
-automatically_update_urls_on_dev = true
+name = "price-comparison-app"
+handle = "price-comparison-app"
 
 [webhooks]
 api_version = "2025-01"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/app/uninstalled"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
@@ -20,10 +23,14 @@ scopes = "write_products, read_products"
 
 [auth]
 redirect_urls = [
-  "https://feel-conspiracy-period-convertible.trycloudflare.com/auth/callback",
-  "https://feel-conspiracy-period-convertible.trycloudflare.com/auth/shopify/callback",
-  "https://feel-conspiracy-period-convertible.trycloudflare.com/api/auth/callback"
+  "https://earlier-agricultural-caps-executives.trycloudflare.com/auth/callback",
+  "https://earlier-agricultural-caps-executives.trycloudflare.com/auth/shopify/callback",
+  "https://earlier-agricultural-caps-executives.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
 embedded = false
+
+[build]
+dev_store_url = "price-comparison-app.myshopify.com"
+automatically_update_urls_on_dev = true

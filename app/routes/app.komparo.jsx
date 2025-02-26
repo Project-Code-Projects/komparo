@@ -13,9 +13,6 @@ import { Toaster } from "../components/toaster.jsx";
 import BarChartGraph from "../components/BarChart.jsx"
 import LineChartGraph from "../components/LineChart.jsx"
 export { loader }
-import {
-  PageDownIcon
-} from '@shopify/polaris-icons';
 
 export default function KomparoPage() {
   const [scannedData, setScannedData] = useState(null);
@@ -110,7 +107,7 @@ export default function KomparoPage() {
           const nopArr = [];
           const filteredPrices = [];
           fetchData.forEach(x => {
-            if (!x.price.includes("-")) { x.price = Number(x.price); filteredPrices.push(x); priceArr.push(x.price); nopArr.push(Number(x.nop)); }
+            if (!x.price.includes("-") && !isNaN(Number(x.price))) { x.price = Number(x.price); filteredPrices.push(x); priceArr.push(x.price); nopArr.push(Number(x.nop)); }
           });
           const highestNOP = Math.max.apply(null, nopArr);
           const arrDataBC = filteredPrices.map(x => {
@@ -140,12 +137,12 @@ export default function KomparoPage() {
   }, [scannedData?.title, pendingMessage]);
 
 
-  // Price Update Logic
+  // Price Update Logic [New]
 
   async function updatePrice() {
-    if (!newPrice) return alert("Please enter a price.");
-    // console.log(newPrice);
-    // console.log(newPriceCompare);
+    if (!newPrice || !newPriceCompare) return alert("Please enter either the price or compare-at price.");
+    console.log("Price:", newPrice);
+    console.log("Compare Price:", newPriceCompare);
     setLoading(true);
     try {
       const response = await fetch("http://localhost:3001/api/updatePrice", {
@@ -156,6 +153,7 @@ export default function KomparoPage() {
         body: JSON.stringify({
           productId: scannedData.id,
           newPrice: parseFloat(newPrice),
+          newCompareAtPrice:parseFloat(newPriceCompare),
         }),
       });
       const result = await response.json();
@@ -164,9 +162,11 @@ export default function KomparoPage() {
         setScannedData((prevData) => ({
           ...prevData,
           price: parseFloat(newPrice),
+          compareAtPrice: parseFloat(newPriceCompare),
         }));
-        setNewPrice(""); setNewPriceCompare('');
+        setNewPrice(""); setNewPriceCompare("");
         document.querySelector("input[name='price']").value = "";
+        document.querySelector("input[name='compare-at price']").value = "";
       } else {
         throw new Error(result.error || "Failed to update price.");
       }
@@ -304,8 +304,8 @@ export default function KomparoPage() {
                             <article className="card-body">
                               <h3 className="scan-title">{scannedData?.title}</h3>
                               <article style={{display: 'flex', alignItems: 'center'}}>
-                              <h4 className="price" style={{ fontSize: '22px', marginRight: '10px' }}>${scannedData?.price}</h4>
-                              {scannedData?.compareAtPrice && (<del className="price" style={{ fontSize: '14px', color: 'gray' }}>${scannedData?.compareAtPrice}</del>)}
+                              <h4 className="price" style={{ fontSize: '22px', marginRight: '10px' }}>${scannedData?.price ? Number(scannedData.price).toFixed(2) : '0.00'}</h4>
+                              {scannedData?.compareAtPrice && (<del className="price" style={{ fontSize: '14px', color: 'gray' }}>${scannedData?.compareAtPrice ? Number(scannedData.compareAtPrice).toFixed(2) : '0.00'}</del>)}
                               </article>
                               <p className="scan-desc" style={{ padding: '25px', backgroundColor: 'white', borderRadius: '20px', marginTop: '20px' }}>
                                 {scannedData?.description && scannedData.description.length != 0 ? scannedData.description : 'No description provided!'}
@@ -531,23 +531,24 @@ export default function KomparoPage() {
                                   {fetchedData.length > 0 && <BarChartGraph dataSet={barChartGraphData} />}
 
                                   {/* <p style={{ textAlign: 'center', marginRight: '30px', marginTop: '10px' }}><b>Average Price : </b> ${averagePrice.toFixed(2)} &nbsp; <b>Median Price : </b> ${medianPrice} &nbsp; <b>Mode Price : </b> ${modePrice}</p> */}
-<br />
-{fetchedData.length > 0 && <table>
-<tbody>
-<tr>
-    <th style={{borderBottomColor: 'white'}}>Average Price</th>
-    <td>${averagePrice.toFixed(2)}</td>
-  </tr>
-  <tr>
-    <th style={{borderBottomColor: 'white'}}>Most Frequent Price</th>
-    <td>${modePrice[0].toFixed(2)}</td>
-  </tr>
-   <tr>
-    <th>Highest NOP Price</th>
-    <td>${highestNOPPrice.toFixed(2)}</td>
-  </tr>
-</tbody>
-</table>}
+                                  <br />
+                                  
+                                  {fetchedData.length > 0 && <table>
+                                  <tbody>
+                                  <tr>
+                                      <th style={{borderBottomColor: 'white'}}>Average Price</th>
+                                      <td>${averagePrice.toFixed(2)}</td>
+                                    </tr>
+                                    <tr>
+                                      <th style={{borderBottomColor: 'white'}}>Most Frequent Price</th>
+                                      <td>${modePrice[0].toFixed(2)}</td>
+                                    </tr>
+                                    <tr>
+                                      <th>Highest NOP Price</th>
+                                      <td>${highestNOPPrice.toFixed(2)}</td>
+                                    </tr>
+                                  </tbody>
+                                  </table>}
 
                                   <br />
 
@@ -565,7 +566,6 @@ export default function KomparoPage() {
                                     <p
                                       style={{
                                         fontSize: "18px",
-                                        marginBottom: "25px",
                                         marginLeft: "30px",
                                         textAlign: "left",
                                       }}
@@ -574,16 +574,51 @@ export default function KomparoPage() {
                                         className="btn"
                                         style={{ fontWeight: "bold" }}
                                       >
-                                        Current Price &nbsp; &nbsp;$
-                                      </span>
-                                      <span className="form-default">
-                                        {scannedData?.price && Number(scannedData.price).toFixed(2)}
+                                        Current Pricing &nbsp; &nbsp;
                                       </span>
                                     </p>
+
+                                    <div style={{ display: "flex", marginTop: "25px", marginBottom: "25px" }}>
                                     <p
                                       style={{
                                         fontSize: "18px",
-                                        marginLeft: "55px",
+                                        marginLeft: "60px",
+                                        textAlign: "left",
+                                      }}
+                                      >
+                                        
+                                      <span className="btn">
+                                        Price &nbsp; &nbsp; 
+                                      </span>
+                                        
+                                      <span className="form-default">
+                                        ${scannedData?.price && Number(scannedData.price).toFixed(2)} 
+                                        </span>
+                                      </p>
+
+                                      <p  
+                                      style={{
+                                        fontSize: "18px",
+                                        marginLeft: "60px",
+                                        textAlign: "left",
+                                      }}>
+                                        <span className="btn">
+                                            Compare-at Price &nbsp; &nbsp; 
+                                        </span>
+                                          
+                                        <span className="form-default">
+                                          ${scannedData?.price && Number(scannedData.compareAtPrice).toFixed(2)}
+                                        </span>
+                                      </p>
+                                    </div>
+
+                                    <Divider borderColor="border-inverse" />
+
+                                    <p
+                                      style={{
+                                        fontSize: "18px",
+                                        marginTop: "25px",
+                                        marginLeft: "30px",
                                         textAlign: "left",
                                       }}
                                     >
@@ -591,8 +626,21 @@ export default function KomparoPage() {
                                         className="btn"
                                         style={{ fontWeight: "bold" }}
                                       >
-                                        New Price &nbsp; &nbsp;$
-                                      </span>{" "}
+                                        New Pricing  &nbsp; &nbsp;
+                                      </span>
+                                    </p>
+
+                                    <div style={{ display: "flex", marginTop: "25px", marginBottom: "25px" }}>
+                                    <p
+                                      style={{
+                                        fontSize: "18px",
+                                        marginLeft: "55px",
+                                        textAlign: "left",
+                                      }}
+                                    >
+                                      <span className="btn">
+                                        Price &nbsp; &nbsp;<strong>$</strong>
+                                      </span>
                                       <input
                                         id="ipu"
                                         className="form-input-default"
@@ -616,15 +664,16 @@ export default function KomparoPage() {
                                       style={{
                                         fontSize: "18px",
                                         textAlign: "left",
-                                        marginTop: "25px",
+                                          // marginTop: "25px",
+                                        marginLeft: "25px",
                                       }}
                                     >
                                       <span
                                         className="btn"
-                                        style={{ fontWeight: "bold" }}
+                                        // style={{ fontWeight: "bold" }}
                                       >
-                                        Compare-at Price &nbsp; &nbsp;$
-                                      </span>{" "}
+                                        Compare-at Price &nbsp; &nbsp;<strong>$</strong>
+                                      </span>
                                       <input
                                         id="ipu-c"
                                         className="form-input-default"
@@ -638,17 +687,22 @@ export default function KomparoPage() {
                                           fontSize: "18px",
                                         }}
                                         onChange={(e) => setNewPriceCompare(e.target.value)}
-                                        name="price"
+                                        name="compare-at price"
                                         type="number"
                                         min="0"
                                         step="0.01"
                                       />
-                                    </p>
+                                      </p>
+                                    </div>
+
+                                    <Divider borderColor="border-inverse" />
+
                                     <button
                                       style={{
                                         color: "white",
                                         backgroundColor: "#3d3d3d",
                                         // backgroundColor: "#578E7E",
+                                        marginTop: "25px",
                                         border: "none",
                                         padding: "8px 20px",
                                         borderRadius: "22px",
@@ -662,6 +716,9 @@ export default function KomparoPage() {
                                       Update
                                     </button>
                                   </form>
+
+                                  <Divider borderColor="border-inverse" />
+                                
                                 </>
                               )}
                           </section>
