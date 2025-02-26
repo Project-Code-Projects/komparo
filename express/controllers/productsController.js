@@ -112,7 +112,7 @@ export const getScrappedProducts = async (req, res) => {
         
 
         console.log("[END]")
-        res.status(200).json({alibaba: alibabaArrNew, amazon: amazonArrNew});
+        res.status(200).json([...alibabaArrNew, ...amazonArrNew]);
         // res.status(200).json(res); checker, title
 
     } catch (error) {

@@ -16,6 +16,7 @@ export { loader }
 import {
   PageDownIcon
 } from '@shopify/polaris-icons';
+import ScatterChartGraph from "../components/ScatterChart.jsx"
 
 export default function KomparoPage() {
   const [scannedData, setScannedData] = useState(null);
@@ -486,7 +487,10 @@ export default function KomparoPage() {
 
                                               <p style={{ textAlign: 'center', margin: '10px 0', marginBottom: '15px' }}>
                                                 <Button
-                                                  onClick={() => setShowPriceModal(true)}
+                                                  onClick={() => {
+                                                    setShowPriceModal(true);
+                                                    // console.log(product);
+                                                  }}
                                                 >
                                                   Price History
                                                 </Button>
@@ -529,7 +533,9 @@ export default function KomparoPage() {
 
                                   {fetchedData.length > 0 && <BarChartGraph dataSet={barChartGraphData} />}
 
-                                  {/* <p style={{ textAlign: 'center', marginRight: '30px', marginTop: '10px' }}><b>Average Price : </b> ${averagePrice.toFixed(2)} &nbsp; <b>Median Price : </b> ${medianPrice} &nbsp; <b>Mode Price : </b> ${modePrice}</p> */}
+                                  {fetchedData.length > 0 && <ScatterChartGraph/>}
+
+                                  
 <br />
 {fetchedData.length > 0 && <table>
 <tbody>
