@@ -253,6 +253,10 @@
 import { PrismaClient } from "@prisma/client";
 import { Options } from "selenium-webdriver/edge.js";
 import { Builder, By, until } from "selenium-webdriver";
+import { promises as fs } from "fs";
+import path from "path";
+import { uploadCsv } from "../cloudinaryUtils.js";
+import { convertJsonToCsv } from "../jsonToCsv.js";
 
 const prisma = new PrismaClient();
 
@@ -480,6 +484,7 @@ export async function scrapeAlibabaProducts(
     } else {
       console.log("No valid products to save.");
     }
+
   } catch (error) {
     console.error("Scrapping error:", error);
   } finally {

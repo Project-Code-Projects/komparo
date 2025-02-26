@@ -189,6 +189,14 @@
 import { PrismaClient } from "@prisma/client";
 import { Builder, By, until } from "selenium-webdriver";
 import { Options } from "selenium-webdriver/edge.js";
+import { promises as fs } from "fs";
+import { fileURLToPath } from "url";
+import path from "path";
+import { convertJsonToCsv } from "../jsonToCsv.js";
+import { uploadCsv } from "../cloudinaryUtils.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const prisma = new PrismaClient();
 
