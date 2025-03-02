@@ -566,7 +566,7 @@ export default function KomparoPage() {
 
                                   {fetchedData.length > 0 && <BarChartGraph dataSet={barChartGraphData} />}
 
-                                  {/* {fetchedData.length > 0 && <ScatterChartGraph graphData={scatteredGraphData} />} */}
+                                  {fetchedData.length > 0 && <ScatterChartGraph graphData={scatteredGraphData} />}
 
                                   
 <br />
